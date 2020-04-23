@@ -17,9 +17,30 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// Print MPD version
 	ver, err := player.Version()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("Connected to MPD version %v", ver)
+	fmt.Printf("Connected to MPD version %v\n", ver)
+
+	// Print out status
+	status, err := player.Status()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println("MPD status:")
+	for k, v := range status {
+		fmt.Printf("  - %v: %v\n", k, v)
+	}
+
+	// Print out statistics
+	stats, err := player.Stats()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println("MPD database statistics:")
+	for k, v := range stats {
+		fmt.Printf("  - %v: %v\n", k, v)
+	}
 }

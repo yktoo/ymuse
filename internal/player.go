@@ -28,6 +28,20 @@ func (player *Player) connect(address string) error {
 	return err
 }
 
+func (player *Player) Stats() (mpd.Attrs, error) {
+	if err := player.verifyConnected(); err != nil {
+		return nil, err
+	}
+	return player.client.Stats()
+}
+
+func (player *Player) Status() (mpd.Attrs, error) {
+	if err := player.verifyConnected(); err != nil {
+		return nil, err
+	}
+	return player.client.Status()
+}
+
 func (player *Player) Version() (string, error) {
 	if err := player.verifyConnected(); err != nil {
 		return "", err
