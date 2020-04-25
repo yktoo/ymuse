@@ -1,14 +1,14 @@
 package ui
 
 import (
-	"fmt"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/yktoo/ymuse/internal"
+	"github.com/pkg/errors"
+	//"github.com/yktoo/ymuse/internal"
 	"log"
 )
 
 type MainWindow struct {
-	win *gtk.ApplicationWindow
+	GtkWindow *gtk.ApplicationWindow
 }
 
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
@@ -17,22 +17,46 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Initialize GTK without parsing any command line arguments.
 	gtk.Init(nil)
 
-	// Instantiate a GTK window
-	win, err := gtk.ApplicationWindowNew(application)
-	if err != nil {
-		return nil, err
-	}
-	mainWindow.win = win
-
 	// Set up the window
-	mainWindow.setup()
+	builder, err := gtk.BuilderNewFromFile("internal/ui/player.glade")
+	if err != nil {
+		return nil, errors.Errorf("Failed to create GtkBuilder: %v", err)
+	}
+
+	// Map the handlers to callback functions
+	signals := map[string]interface{}{
+		"on_mainWindow_destroy": onMainWindowDestroy,
+		"on_mainWindow_map":     onMainWindowMap,
+	}
+	builder.ConnectSignals(signals)
+
+	// Find the app window
+	obj, err := builder.GetObject("mainWindow")
+	if err != nil {
+		return nil, errors.Errorf("Failed to find mainWindow widget: %v", err)
+	}
+
+	// Validate its type
+	gtkAppWindow, ok := obj.(*gtk.ApplicationWindow)
+	if !ok {
+		return nil, errors.New("mainWindow is not a gtk.ApplicationWindow")
+	}
+
+	mainWindow.GtkWindow = gtkAppWindow
+	application.AddWindow(mainWindow.GtkWindow)
+
+	// Show the window
+	mainWindow.GtkWindow.ShowAll()
 	return mainWindow, nil
 }
 
-func (win *MainWindow) setup() {
-	win.win.SetTitle("Ymuse")
-	win.win.SetDefaultSize(800, 600)
+func onMainWindowDestroy() {
+	log.Println("onMainWindowDestroy")
+}
 
+func onMainWindowMap() {
+	log.Println("onMainWindowMap")
+	/*TODO
 	box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 12)
 	if err != nil {
 		log.Fatal(err)
@@ -84,11 +108,5 @@ func (win *MainWindow) setup() {
 	for k, v := range stats {
 		addText(buf, fmt.Sprintf("  - %v: %v\n", k, v))
 	}
-
-	// Show the window
-	win.win.ShowAll()
-}
-
-func addText(buf *gtk.TextBuffer, s string) {
-	buf.Insert(buf.GetEndIter(), s)
+	*/
 }
