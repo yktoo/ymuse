@@ -2,6 +2,12 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkAdjustment" id="adjPlayPosition">
+    <property name="upper">100</property>
+    <property name="value">24.999999999776481</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkApplicationWindow" id="mainWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Ymuse</property>
@@ -125,6 +131,17 @@
           </packing>
         </child>
         <child>
+          <object class="GtkLabel" id="lblStatus">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkBox" id="bxBottomBar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -135,7 +152,8 @@
               <object class="GtkButtonBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="layout_style">start</property>
+                <property name="homogeneous">True</property>
+                <property name="layout_style">center</property>
                 <child>
                   <object class="GtkButton">
                     <property name="label">gtk-media-previous</property>
@@ -157,6 +175,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="relief">half</property>
                     <property name="use_stock">True</property>
                     <property name="always_show_image">True</property>
                   </object>
@@ -166,19 +185,20 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
+                <child type="center">
                   <object class="GtkButton">
                     <property name="label">gtk-media-next</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="use_stock">True</property>
+                    <property name="image_position">right</property>
                     <property name="always_show_image">True</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -189,15 +209,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar">
+              <object class="GtkScale" id="scPlayPosition">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="fraction">0.5</property>
+                <property name="can_focus">True</property>
+                <property name="adjustment">adjPlayPosition</property>
+                <property name="restrict_to_fill_level">False</property>
+                <property name="fill_level">0</property>
+                <property name="round_digits">1</property>
+                <property name="draw_value">False</property>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -218,7 +240,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

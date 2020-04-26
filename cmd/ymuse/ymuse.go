@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/yktoo/ymuse/internal/ui"
+	"github.com/yktoo/ymuse/internal/player"
 	"log"
 	"os"
 )
@@ -32,7 +32,7 @@ func main() {
 
 func onActivate(application *gtk.Application) {
 	// Create the main window
-	if _, err := ui.NewMainWindow(application); err != nil {
+	if _, err := player.NewMainWindow(application, ":6600"); err != nil {
 		log.Fatal("Could not create application window", err)
 	}
 }
