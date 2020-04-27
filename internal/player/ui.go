@@ -6,16 +6,23 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
+	"log"
 	"sync"
 	"time"
-
-	//"github.com/yktoo/ymuse/internal"
-	"log"
 )
 
 type MainWindow struct {
-	GtkWindow *gtk.ApplicationWindow
-	lblStatus *gtk.Label
+	// Widgets
+	window          *gtk.ApplicationWindow
+	lblStatus       *gtk.Label
+	lblCurrentTrack *gtk.Label
+	btnPrevious     *gtk.Button
+	btnPlayPause    *gtk.Button
+	btnNext         *gtk.Button
+	scPlayPosition  *gtk.Scale
+	trvQueue        *gtk.TreeView
+	lstQueue        *gtk.ListStore
+
 	// Connector's start channel
 	chConnectorStart chan int
 	// Connector's quit channel
@@ -48,44 +55,45 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 	gtk.Init(nil)
 
 	// Set up the window
-	builder, err := gtk.BuilderNewFromFile("internal/player/player.glade")
-	if err != nil {
-		return nil, errors.Errorf("Failed to create GtkBuilder: %v", err)
-	}
+	builder := NewBuilder("internal/player/player.glade")
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_mainWindow_destroy": w.onDestroy,
-		"on_mainWindow_map":     w.onMap,
+		"on_mainWindow_destroy":   w.onDestroy,
+		"on_mainWindow_map":       w.onMap,
+		"on_btnPrevious_clicked":  w.onPreviousClicked,
+		"on_btnPlayPause_clicked": w.onPlayPauseClicked,
+		"on_btnNext_clicked":      w.onNextClicked,
 	})
 
-	// Find the app window
-	obj, err := builder.GetObject("mainWindow")
-	if err != nil {
-		return nil, errors.Errorf("Failed to find mainWindow widget: %v", err)
+	// Find widgets
+	w.window = builder.getApplicationWindow("mainWindow")
+	w.lblStatus = builder.getLabel("lblStatus")
+	w.lblCurrentTrack = builder.getLabel("lblCurrentTrack")
+	w.btnPrevious = builder.getButton("btnPrevious")
+	w.btnPlayPause = builder.getButton("btnPlayPause")
+	w.btnNext = builder.getButton("btnNext")
+	w.scPlayPosition = builder.getScale("scPlayPosition")
+	w.trvQueue = builder.getTreeView("trvQueue")
+	w.lstQueue = builder.getListStore("lstQueue")
+
+	// Tweak buttons
+	if icon, err := gtk.ImageNewFromIconName("media-skip-backward", gtk.ICON_SIZE_BUTTON); err == nil {
+		w.btnPrevious.SetImage(icon)
+	}
+	if icon, err := gtk.ImageNewFromIconName("media-skip-forward", gtk.ICON_SIZE_BUTTON); err == nil {
+		w.btnNext.SetImage(icon)
 	}
 
-	// Validate its type
-	gtkAppWindow, ok := obj.(*gtk.ApplicationWindow)
-	if !ok {
-		return nil, errors.New("mainWindow is not a gtk.ApplicationWindow")
-	}
-	w.GtkWindow = gtkAppWindow
-	application.AddWindow(w.GtkWindow)
-
-	// Map widgets
-	obj, err = builder.GetObject("lblStatus")
-	if err != nil {
-		return nil, errors.Errorf("Failed to find lblStatus widget: %v", err)
-	}
-	w.lblStatus, _ = obj.(*gtk.Label)
+	// Register the main window with the app
+	application.AddWindow(w.window)
 
 	// Start connector and watcher threads
 	go w.connect()
 	go w.watch()
 
 	// Show the window
-	w.GtkWindow.ShowAll()
+	w.window.ShowAll()
 	return w, nil
 }
 
@@ -102,6 +110,27 @@ func (w *MainWindow) onMap() {
 
 	// Start connecting
 	w.chConnectorStart <- 1
+}
+
+func (w *MainWindow) onPreviousClicked() {
+	log.Println("onPreviousClicked")
+	w.ifConnected(func(client *mpd.Client) { _ = client.Previous() }, nil)
+}
+
+func (w *MainWindow) onPlayPauseClicked() {
+	log.Println("onPlayPauseClicked")
+	w.ifConnected(
+		func(client *mpd.Client) {
+			if status, err := client.Status(); err == nil {
+				_ = client.Pause(status["state"] == "play")
+			}
+		},
+		nil)
+}
+
+func (w *MainWindow) onNextClicked() {
+	log.Println("onNextClicked")
+	w.ifConnected(func(client *mpd.Client) { _ = client.Next() }, nil)
 }
 
 // connect() establishes a connection to MPD
@@ -132,7 +161,7 @@ func (w *MainWindow) connect() {
 				} else {
 					w.mpdClient = client
 					// Notify the app
-					_, _ = glib.IdleAdd(w.onConnectStatus, true)
+					_, _ = glib.IdleAdd(w.updateAll)
 					// Start the watcher
 					w.chWatcherStart <- 1
 				}
@@ -238,13 +267,108 @@ func (w *MainWindow) watch() {
 	}
 }
 
-// onConnectStatus() is called whenever connection status changes. Always on GTK+ main loop thread
-func (w *MainWindow) onConnectStatus(connected bool) {
-	log.Printf("onConnectStatus(%v)", connected)
-	w.lblStatus.SetText(fmt.Sprintf("Connected: %v", connected))
-}
-
 // onSubsystemChange() is called whenever MPD's subsystem receives an event. Always on GTK+ main loop thread
 func (w *MainWindow) onSubsystemChange(subsystem string) {
 	log.Printf("onSubsystemChange(%v)", subsystem)
+	switch subsystem {
+	case "player":
+		w.updatePlayer()
+	case "playlist":
+		w.updateQueue()
+	}
+}
+
+// isConnected() returns whether a connection with MPD has been successfully established
+func (w *MainWindow) isConnected() bool {
+	w.mpdClientMutex.Lock()
+	defer w.mpdClientMutex.Unlock()
+	return w.mpdClient != nil
+}
+
+// ifConnected() runs MPD client code if there's a connection with MPD and/or code if there's no connection
+func (w *MainWindow) ifConnected(funcIfConnected func(client *mpd.Client), funcIfDisconnected func()) {
+	w.mpdClientMutex.Lock()
+	defer w.mpdClientMutex.Unlock()
+	switch {
+	case w.mpdClient == nil && funcIfDisconnected != nil:
+		funcIfDisconnected()
+	case w.mpdClient != nil && funcIfConnected != nil:
+		funcIfConnected(w.mpdClient)
+	}
+}
+
+// updateAll() updates all player's widgets and lists
+func (w *MainWindow) updateAll() {
+	w.updatePlayer()
+	w.updateQueue()
+}
+
+// updatePlayer() updates player control widgets
+func (w *MainWindow) updatePlayer() {
+	// Enable or disable widgets based on the connection status
+	connected := w.isConnected()
+	w.btnPrevious.SetSensitive(connected)
+	w.btnPlayPause.SetSensitive(connected)
+	w.btnNext.SetSensitive(connected)
+	w.scPlayPosition.SetSensitive(connected)
+
+	w.ifConnected(
+		// Connected
+		func(client *mpd.Client) {
+			// Request player status
+			status, err := client.Status()
+			if err != nil {
+				return
+			}
+			switch status["state"] {
+			case "play":
+				if icon, err := gtk.ImageNewFromIconName("media-playback-pause", gtk.ICON_SIZE_BUTTON); err == nil {
+					w.btnPlayPause.SetImage(icon)
+				}
+			case "stop", "pause":
+				if icon, err := gtk.ImageNewFromIconName("media-playback-start", gtk.ICON_SIZE_BUTTON); err == nil {
+					w.btnPlayPause.SetImage(icon)
+				}
+			}
+
+			// Fetch current song
+			curSong, err := client.CurrentSong()
+			if err != nil {
+				w.lblCurrentTrack.SetText(fmt.Sprintf("Error: %v", err))
+			} else {
+				w.lblCurrentTrack.SetText(curSong["title"])
+			}
+		},
+		// Disconnected
+		func() {
+			w.lblCurrentTrack.SetText("(not connected)")
+		})
+}
+
+// updateQueue() updates the current play queue contents
+func (w *MainWindow) updateQueue() {
+	w.ifConnected(
+		// Connected
+		func(client *mpd.Client) {
+			if attrs, err := client.PlaylistInfo(-1, -1); err == nil {
+				w.lstQueue.Clear()
+				for _, a := range attrs {
+					w.lstQueue.SetCols(
+						w.lstQueue.Append(),
+						map[int]interface{}{
+							0: a["Artist"],
+							1: a["Date"],
+							2: a["Album"],
+							3: a["Track"],
+							4: a["Title"],
+							5: a["duration"],
+						})
+				}
+				w.window.ShowAll()
+			}
+		},
+		// Disconnected - clear the queue
+		func() {
+			w.lstQueue.Clear()
+		})
 }
