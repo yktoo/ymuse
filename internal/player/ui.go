@@ -5,8 +5,8 @@ import (
 	"github.com/fhs/gompd/v2/mpd"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/pkg/errors"
-	"log"
+	"github.com/yktoo/ymuse/internal/util"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -15,16 +15,16 @@ type MainWindow struct {
 	// Widgets
 	window          *gtk.ApplicationWindow
 	lblStatus       *gtk.Label
-	lblCurrentTrack *gtk.Label
 	btnPrevious     *gtk.Button
 	btnPlayPause    *gtk.Button
 	btnNext         *gtk.Button
 	scPlayPosition  *gtk.Scale
+	adjPlayPosition *gtk.Adjustment
 	trvQueue        *gtk.TreeView
 	lstQueue        *gtk.ListStore
 
-	// Connector's start channel
-	chConnectorStart chan int
+	// Connector's connect channel
+	chConnectorConnect chan int
 	// Connector's quit channel
 	chConnectorQuit chan int
 	// Watcher's start channel
@@ -44,36 +44,34 @@ type MainWindow struct {
 
 func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow, error) {
 	w := &MainWindow{
-		mpdAddress:       mpdAddress,
-		chConnectorStart: make(chan int),
-		chConnectorQuit:  make(chan int),
-		chWatcherStart:   make(chan int),
-		chWatcherQuit:    make(chan int),
+		mpdAddress:         mpdAddress,
+		chConnectorConnect: make(chan int),
+		chConnectorQuit:    make(chan int),
+		chWatcherStart:     make(chan int),
+		chWatcherQuit:      make(chan int),
 	}
-
-	// Initialize GTK without parsing any command line arguments.
-	gtk.Init(nil)
 
 	// Set up the window
 	builder := NewBuilder("internal/player/player.glade")
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_mainWindow_destroy":   w.onDestroy,
-		"on_mainWindow_map":       w.onMap,
-		"on_btnPrevious_clicked":  w.onPreviousClicked,
-		"on_btnPlayPause_clicked": w.onPlayPauseClicked,
-		"on_btnNext_clicked":      w.onNextClicked,
+		"on_mainWindow_destroy":         w.onDestroy,
+		"on_mainWindow_map":             w.onMap,
+		"on_btnPrevious_clicked":        w.onPreviousClicked,
+		"on_btnPlayPause_clicked":       w.onPlayPauseClicked,
+		"on_btnNext_clicked":            w.onNextClicked,
+		"on_scPlayPosition_formatValue": w.onPlayPositionFormatValue,
 	})
 
 	// Find widgets
 	w.window = builder.getApplicationWindow("mainWindow")
 	w.lblStatus = builder.getLabel("lblStatus")
-	w.lblCurrentTrack = builder.getLabel("lblCurrentTrack")
 	w.btnPrevious = builder.getButton("btnPrevious")
 	w.btnPlayPause = builder.getButton("btnPlayPause")
 	w.btnNext = builder.getButton("btnNext")
 	w.scPlayPosition = builder.getScale("scPlayPosition")
+	w.adjPlayPosition = builder.getAdjustment("adjPlayPosition")
 	w.trvQueue = builder.getTreeView("trvQueue")
 	w.lstQueue = builder.getListStore("lstQueue")
 
@@ -97,8 +95,14 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 	return w, nil
 }
 
+// whenIdle() schedules a function call on GLib's main loop thread
+func whenIdle(name string, f interface{}, args ...interface{}) {
+	_, err := glib.IdleAdd(f, args...)
+	errCheck(err, "glib.IdleAdd() failed for "+name)
+}
+
 func (w *MainWindow) onDestroy() {
-	log.Println("onDestroy")
+	log.Debug("onDestroy()")
 
 	// Signal quit
 	close(w.chConnectorQuit)
@@ -106,109 +110,118 @@ func (w *MainWindow) onDestroy() {
 }
 
 func (w *MainWindow) onMap() {
-	log.Println("onMap")
+	log.Debug("onMap()")
 
 	// Start connecting
-	w.chConnectorStart <- 1
+	w.startConnector()
 }
 
 func (w *MainWindow) onPreviousClicked() {
-	log.Println("onPreviousClicked")
-	w.ifConnected(func(client *mpd.Client) { _ = client.Previous() }, nil)
+	log.Debug("onPreviousClicked()")
+	w.ifConnected(
+		func(client *mpd.Client) { errCheck(client.Previous(), "Previous() failed") },
+		nil)
 }
 
 func (w *MainWindow) onPlayPauseClicked() {
-	log.Println("onPlayPauseClicked")
+	log.Debug("onPlayPauseClicked()")
 	w.ifConnected(
 		func(client *mpd.Client) {
 			if status, err := client.Status(); err == nil {
-				_ = client.Pause(status["state"] == "play")
+				errCheck(client.Pause(status["state"] == "play"), "Pause() failed")
+			} else {
+				errCheck(err, "Status() failed")
 			}
 		},
 		nil)
 }
 
 func (w *MainWindow) onNextClicked() {
-	log.Println("onNextClicked")
-	w.ifConnected(func(client *mpd.Client) { _ = client.Next() }, nil)
+	log.Debug("onNextClicked()")
+	w.ifConnected(
+		func(client *mpd.Client) { errCheck(client.Next(), "Next() failed") },
+		nil)
 }
 
-// connect() establishes a connection to MPD
+func (w *MainWindow) onPlayPositionFormatValue(_ *gtk.Scale, v float64) string {
+	return util.FormatSeconds(v) + "/" + util.FormatSeconds(w.adjPlayPosition.GetUpper())
+}
+
+// startConnector() signals the connector to initiate connection process
+func (w *MainWindow) startConnector() {
+	w.chConnectorConnect <- 1
+}
+
+// connect() takes care of establishing a connection to MPD
 func (w *MainWindow) connect() {
-	var reconnectTimer *time.Timer
+	log.Debug("connect()")
+	var keepaliveTicker = time.NewTicker(time.Second)
 	for {
 		select {
 		// Request to connect
-		case <-w.chConnectorStart:
-			log.Println("Start connecting")
+		case <-w.chConnectorConnect:
+			log.Debug("Start connector")
 
-			// Remove the timer
-			reconnectTimer = nil
-
-			// If no client yet
-			w.mpdClientMutex.Lock()
-			if w.mpdClient == nil {
-				client, err := tryConnect(w.mpdAddress)
-				// Failed to connect
-				if err != nil {
-					log.Printf("Failed to connect to MPD: %v", err)
-					// Schedule a reconnection
-					reconnectTimer = time.AfterFunc(3*time.Second, func() {
-						w.chConnectorStart <- 1
-					})
+			// If disconnected
+			w.ifConnected(
+				nil,
+				func() {
+					// Try to connect to MPD
+					client, err := mpd.Dial("tcp", w.mpdAddress)
+					if err != nil {
+						errCheck(err, "Dial() failed")
+						return
+					}
 
 					// Connection succeeded
-				} else {
 					w.mpdClient = client
+
 					// Notify the app
-					_, _ = glib.IdleAdd(w.updateAll)
+					whenIdle("updateAll()", w.updateAll)
+
 					// Start the watcher
 					w.chWatcherStart <- 1
-				}
-			}
-			w.mpdClientMutex.Unlock()
+				})
+
+		// Keepalive tick
+		case <-keepaliveTicker.C:
+			w.ifConnected(
+				func(client *mpd.Client) {
+					// Connection lost
+					if err := client.Ping(); err != nil {
+						log.Debug("Ping(): connection to MPD lost", err)
+						w.mpdClient = nil
+						go w.startConnector()
+					}
+				},
+				func() {
+					go w.startConnector()
+				})
+
+			// Update the seek bar
+			whenIdle("updateSeekBar()", w.updateSeekBar)
 
 		// Request to quit
 		case <-w.chConnectorQuit:
-			// Kill the reconnection timer, if any
-			if reconnectTimer != nil {
-				reconnectTimer.Stop()
-			}
+			// Kill the keepalive timer
+			keepaliveTicker.Stop()
 
 			// Close the connection to MPD, if any
-			w.mpdClientMutex.Lock()
-			if w.mpdClient != nil {
-				log.Println("Stop connection")
-				_ = w.mpdClient.Close()
-				w.mpdClient = nil
-			}
-			w.mpdClientMutex.Unlock()
+			w.ifConnected(
+				func(client *mpd.Client) {
+					log.Debug("Stop connector")
+					errCheck(client.Close(), "Close() failed")
+					w.mpdClient = nil
+				},
+				nil)
 			return
 		}
 	}
 }
 
-func tryConnect(address string) (*mpd.Client, error) {
-	log.Printf("tryConnect(%v)\n", address)
-
-	// Try to connect to MPD
-	client, err := mpd.Dial("tcp", address)
-	if err != nil {
-		return nil, errors.Errorf("Dial() failed: %v", err)
-	}
-
-	// Client is available, validate connection status
-	_, err = client.Status()
-	if err != nil {
-		return nil, errors.Errorf("Status() failed: %v", err)
-	}
-
-	// All OK
-	return client, nil
-}
-
 // watch() watches MPD subsystem changes
 func (w *MainWindow) watch() {
+	log.Debug("watch()")
 	var rewatchTimer *time.Timer
 	var eventChannel chan string = nil
 	var errorChannel chan error = nil
@@ -216,7 +229,7 @@ func (w *MainWindow) watch() {
 		select {
 		// Request to watch
 		case <-w.chWatcherStart:
-			log.Println("Start watching")
+			log.Debug("Start watcher")
 
 			// Remove the timer
 			rewatchTimer = nil
@@ -226,7 +239,7 @@ func (w *MainWindow) watch() {
 				watcher, err := mpd.NewWatcher("tcp", w.mpdAddress, "")
 				// Failed to connect
 				if err != nil {
-					log.Printf("Failed to watch MPD: %v", err)
+					log.Warning("Failed to watch MPD", err)
 					// Schedule a reconnection
 					rewatchTimer = time.AfterFunc(3*time.Second, func() {
 						w.chWatcherStart <- 1
@@ -242,12 +255,11 @@ func (w *MainWindow) watch() {
 
 		// Watcher's event
 		case subsystem := <-eventChannel:
-			// Notify the app
-			_, _ = glib.IdleAdd(w.onSubsystemChange, subsystem)
+			whenIdle("onSubsystemChange()", w.onSubsystemChange, subsystem)
 
 		// Watcher's error
 		case err := <-errorChannel:
-			log.Printf("Watcher error: %v", err)
+			log.Warning("Watcher error", err)
 
 		// Request to quit
 		case <-w.chWatcherQuit:
@@ -258,8 +270,8 @@ func (w *MainWindow) watch() {
 
 			// Close the connection to MPD, if any
 			if w.mpdWatcher != nil {
-				log.Println("Stop watcher")
-				_ = w.mpdWatcher.Close()
+				log.Debug("Stop watcher")
+				errCheck(w.mpdWatcher.Close(), "mpdWatcher.Close() failed")
 				w.mpdWatcher = nil
 			}
 			return
@@ -269,7 +281,7 @@ func (w *MainWindow) watch() {
 
 // onSubsystemChange() is called whenever MPD's subsystem receives an event. Always on GTK+ main loop thread
 func (w *MainWindow) onSubsystemChange(subsystem string) {
-	log.Printf("onSubsystemChange(%v)", subsystem)
+	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
 	case "player":
 		w.updatePlayer()
@@ -278,20 +290,15 @@ func (w *MainWindow) onSubsystemChange(subsystem string) {
 	}
 }
 
-// isConnected() returns whether a connection with MPD has been successfully established
-func (w *MainWindow) isConnected() bool {
-	w.mpdClientMutex.Lock()
-	defer w.mpdClientMutex.Unlock()
-	return w.mpdClient != nil
-}
-
 // ifConnected() runs MPD client code if there's a connection with MPD and/or code if there's no connection
 func (w *MainWindow) ifConnected(funcIfConnected func(client *mpd.Client), funcIfDisconnected func()) {
 	w.mpdClientMutex.Lock()
 	defer w.mpdClientMutex.Unlock()
 	switch {
+	// Disconnected
 	case w.mpdClient == nil && funcIfDisconnected != nil:
 		funcIfDisconnected()
+	// Connected
 	case w.mpdClient != nil && funcIfConnected != nil:
 		funcIfConnected(w.mpdClient)
 	}
@@ -305,19 +312,14 @@ func (w *MainWindow) updateAll() {
 
 // updatePlayer() updates player control widgets
 func (w *MainWindow) updatePlayer() {
-	// Enable or disable widgets based on the connection status
-	connected := w.isConnected()
-	w.btnPrevious.SetSensitive(connected)
-	w.btnPlayPause.SetSensitive(connected)
-	w.btnNext.SetSensitive(connected)
-	w.scPlayPosition.SetSensitive(connected)
-
+	connected := true
 	w.ifConnected(
 		// Connected
 		func(client *mpd.Client) {
 			// Request player status
 			status, err := client.Status()
 			if err != nil {
+				errCheck(err, "Status() failed")
 				return
 			}
 			switch status["state"] {
@@ -334,15 +336,22 @@ func (w *MainWindow) updatePlayer() {
 			// Fetch current song
 			curSong, err := client.CurrentSong()
 			if err != nil {
-				w.lblCurrentTrack.SetText(fmt.Sprintf("Error: %v", err))
+				errCheck(err, "CurrentSong() failed")
+				w.lblStatus.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
-				w.lblCurrentTrack.SetText(curSong["title"])
+				w.lblStatus.SetText(curSong["Title"])
 			}
 		},
 		// Disconnected
 		func() {
-			w.lblCurrentTrack.SetText("(not connected)")
+			w.lblStatus.SetText("(not connected)")
+			connected = false
 		})
+
+	// Enable or disable widgets based on the connection status
+	w.btnPrevious.SetSensitive(connected)
+	w.btnPlayPause.SetSensitive(connected)
+	w.btnNext.SetSensitive(connected)
 }
 
 // updateQueue() updates the current play queue contents
@@ -353,16 +362,18 @@ func (w *MainWindow) updateQueue() {
 			if attrs, err := client.PlaylistInfo(-1, -1); err == nil {
 				w.lstQueue.Clear()
 				for _, a := range attrs {
-					w.lstQueue.SetCols(
-						w.lstQueue.Append(),
-						map[int]interface{}{
-							0: a["Artist"],
-							1: a["Date"],
-							2: a["Album"],
-							3: a["Track"],
-							4: a["Title"],
-							5: a["duration"],
-						})
+					errCheck(
+						w.lstQueue.SetCols(
+							w.lstQueue.Append(),
+							map[int]interface{}{
+								0: a["Artist"],
+								1: a["Date"],
+								2: a["Album"],
+								3: a["Track"],
+								4: a["Title"],
+								5: a["duration"],
+							}),
+						"lstQueue.SetCols() failed")
 				}
 				w.window.ShowAll()
 			}
@@ -371,4 +382,29 @@ func (w *MainWindow) updateQueue() {
 		func() {
 			w.lstQueue.Clear()
 		})
+}
+
+// updateSeekBar() updates the seek bar position and status
+func (w *MainWindow) updateSeekBar() {
+	seekable := false
+	w.ifConnected(
+		// Connected
+		func(client *mpd.Client) {
+			status, err := client.Status()
+			switch {
+			case err != nil:
+				errCheck(err, "Status() failed")
+			case status["state"] == "play":
+				seekable = true
+				if f, err := strconv.ParseFloat(status["duration"], 32); err == nil {
+					w.adjPlayPosition.SetUpper(f)
+				}
+				if f, err := strconv.ParseFloat(status["elapsed"], 32); err == nil {
+					w.adjPlayPosition.SetValue(f)
+				}
+			}
+		},
+		// Disconnected - send a ping
+		nil)
+	w.scPlayPosition.SetSensitive(seekable)
 }

@@ -1,19 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/op/go-logging"
 	"github.com/yktoo/ymuse/internal/player"
-	"log"
+	"github.com/yktoo/ymuse/internal/util"
 	"os"
 )
 
 const appVersion = "0.01"
 const appID = "com.yktoo.ymuse"
 
+var log *logging.Logger
+
 func main() {
-	fmt.Printf("Ymuse version %s\n", appVersion)
+	// Init logging
+	logging.SetFormatter(logging.MustStringFormatter(`%{time:15:04:05.000} %{level:-5s} %{module} %{message}`))
+	log = logging.MustGetLogger("main")
+	logging.SetLevel(util.GetConfig().LogLevel, "main")
+
+	// Start the app
+	log.Info("Ymuse version", appVersion)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
 	application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
@@ -27,7 +35,7 @@ func main() {
 	}
 
 	// Run the application
-	os.Exit(application.Run(os.Args))
+	os.Exit(application.Run(nil))
 }
 
 func onActivate(application *gtk.Application) {

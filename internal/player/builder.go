@@ -1,9 +1,9 @@
 package player
 
 import (
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
-	"log"
 )
 
 // Builder instance capable of finding specific types of widgets
@@ -14,97 +14,79 @@ type Builder struct {
 func NewBuilder(fileName string) *Builder {
 	builder, err := gtk.BuilderNewFromFile(fileName)
 	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to instantiate a gtk.Builder"))
+		log.Fatal(errors.Errorf("Failed to instantiate a gtk.Builder"))
 	}
 	return &Builder{Builder: builder}
 }
 
-// getApplicationWindow() finds and returns an application window by its name
-func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
+// get() fetches an object with the given name or terminates the app on a failure
+func (b *Builder) get(name string) glib.IObject {
 	obj, err := b.GetObject(name)
 	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find application window %v: %v", name, err))
+		log.Fatal(err)
 	}
+	return obj
+}
 
-	// Check object type
-	result, ok := obj.(*gtk.ApplicationWindow)
+// getApplicationWindow() finds and returns an application window by its name
+func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
+	result, ok := b.get(name).(*gtk.ApplicationWindow)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.ApplicationWindow", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.ApplicationWindow", name))
 	}
 	return result
 }
 
 // getLabel() finds and returns a label by its name
 func (b *Builder) getLabel(name string) *gtk.Label {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find label %v: %v", name, err))
-	}
-
-	// Check object type
-	result, ok := obj.(*gtk.Label)
+	result, ok := b.get(name).(*gtk.Label)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.Label", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.Label", name))
 	}
 	return result
 }
 
 // getButton() finds and returns a button by its name
 func (b *Builder) getButton(name string) *gtk.Button {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find button %v: %v", name, err))
-	}
-
-	// Check object type
-	result, ok := obj.(*gtk.Button)
+	result, ok := b.get(name).(*gtk.Button)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.Button", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.Button", name))
 	}
 	return result
 }
 
 // getScale() finds and returns a scale by its name
 func (b *Builder) getScale(name string) *gtk.Scale {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find scale %v: %v", name, err))
-	}
-
-	// Check object type
-	result, ok := obj.(*gtk.Scale)
+	result, ok := b.get(name).(*gtk.Scale)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.Scale", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.Scale", name))
+	}
+	return result
+}
+
+// getAdjustment() finds and returns an adjustment by its name
+func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
+	result, ok := b.get(name).(*gtk.Adjustment)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Adjustment", name))
 	}
 	return result
 }
 
 // getTreeView() finds and returns a tree view by its name
 func (b *Builder) getTreeView(name string) *gtk.TreeView {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find tree view %v: %v", name, err))
-	}
-
-	// Check object type
-	result, ok := obj.(*gtk.TreeView)
+	result, ok := b.get(name).(*gtk.TreeView)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.TreeView", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.TreeView", name))
 	}
 	return result
 }
 
 // getListStore() finds and returns a list store by its name
 func (b *Builder) getListStore(name string) *gtk.ListStore {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatalln(errors.Errorf("Failed to find list store %v: %v", name, err))
-	}
-
-	// Check object type
-	result, ok := obj.(*gtk.ListStore)
+	result, ok := b.get(name).(*gtk.ListStore)
 	if !ok {
-		log.Fatalln(errors.Errorf("%v is not a gtk.ListStore", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
 	}
 	return result
 }
