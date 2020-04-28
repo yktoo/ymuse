@@ -15,6 +15,7 @@ type MainWindow struct {
 	// Widgets
 	window          *gtk.ApplicationWindow
 	lblStatus       *gtk.Label
+	lblPosition     *gtk.Label
 	btnPrevious     *gtk.Button
 	btnPlayPause    *gtk.Button
 	btnNext         *gtk.Button
@@ -56,17 +57,17 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_mainWindow_destroy":         w.onDestroy,
-		"on_mainWindow_map":             w.onMap,
-		"on_btnPrevious_clicked":        w.onPreviousClicked,
-		"on_btnPlayPause_clicked":       w.onPlayPauseClicked,
-		"on_btnNext_clicked":            w.onNextClicked,
-		"on_scPlayPosition_formatValue": w.onPlayPositionFormatValue,
+		"on_mainWindow_destroy":   w.onDestroy,
+		"on_mainWindow_map":       w.onMap,
+		"on_btnPrevious_clicked":  w.onPreviousClicked,
+		"on_btnPlayPause_clicked": w.onPlayPauseClicked,
+		"on_btnNext_clicked":      w.onNextClicked,
 	})
 
 	// Find widgets
 	w.window = builder.getApplicationWindow("mainWindow")
 	w.lblStatus = builder.getLabel("lblStatus")
+	w.lblPosition = builder.getLabel("lblPosition")
 	w.btnPrevious = builder.getButton("btnPrevious")
 	w.btnPlayPause = builder.getButton("btnPlayPause")
 	w.btnNext = builder.getButton("btnNext")
@@ -141,10 +142,6 @@ func (w *MainWindow) onNextClicked() {
 	w.ifConnected(
 		func(client *mpd.Client) { errCheck(client.Next(), "Next() failed") },
 		nil)
-}
-
-func (w *MainWindow) onPlayPositionFormatValue(_ *gtk.Scale, v float64) string {
-	return util.FormatSeconds(v) + "/" + util.FormatSeconds(w.adjPlayPosition.GetUpper())
 }
 
 // startConnector() signals the connector to initiate connection process
@@ -339,7 +336,7 @@ func (w *MainWindow) updatePlayer() {
 				errCheck(err, "CurrentSong() failed")
 				w.lblStatus.SetText(fmt.Sprintf("Error: %v", err))
 			} else {
-				w.lblStatus.SetText(curSong["Title"])
+				w.lblStatus.SetText(fmt.Sprintf("%v • %v • %v", curSong["Artist"], curSong["Album"], curSong["Title"]))
 			}
 		},
 		// Disconnected
@@ -371,7 +368,7 @@ func (w *MainWindow) updateQueue() {
 								2: a["Album"],
 								3: a["Track"],
 								4: a["Title"],
-								5: a["duration"],
+								5: util.FormatSecondsStr(a["duration"]),
 							}),
 						"lstQueue.SetCols() failed")
 				}
@@ -396,15 +393,27 @@ func (w *MainWindow) updateSeekBar() {
 				errCheck(err, "Status() failed")
 			case status["state"] == "play":
 				seekable = true
-				if f, err := strconv.ParseFloat(status["duration"], 32); err == nil {
-					w.adjPlayPosition.SetUpper(f)
+				// Update the seek bar position
+				trackLen, err := strconv.ParseFloat(status["duration"], 32)
+				if err == nil {
+					w.adjPlayPosition.SetUpper(trackLen)
 				}
-				if f, err := strconv.ParseFloat(status["elapsed"], 32); err == nil {
-					w.adjPlayPosition.SetValue(f)
+				trackPos, err := strconv.ParseFloat(status["elapsed"], 32)
+				if err == nil {
+					w.adjPlayPosition.SetValue(trackPos)
 				}
+				// Update position text
+				w.lblPosition.SetText(util.FormatSeconds(trackPos) + "/" + util.FormatSeconds(trackLen))
 			}
 		},
 		// Disconnected - send a ping
 		nil)
+
+	// Enable the seek bar based on status
 	w.scPlayPosition.SetSensitive(seekable)
+
+	// If not seekable, remove position text
+	if !seekable {
+		w.lblPosition.SetText("")
+	}
 }

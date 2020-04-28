@@ -103,7 +103,9 @@
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">Year</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
+                              <object class="GtkCellRendererText">
+                                <property name="alignment">right</property>
+                              </object>
                               <attributes>
                                 <attribute name="text">1</attribute>
                               </attributes>
@@ -130,7 +132,9 @@
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">#</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
+                              <object class="GtkCellRendererText">
+                                <property name="alignment">right</property>
+                              </object>
                               <attributes>
                                 <attribute name="text">3</attribute>
                               </attributes>
@@ -144,7 +148,9 @@
                             <property name="fixed_width">200</property>
                             <property name="title" translatable="yes">Track</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
+                              <object class="GtkCellRendererText">
+                                <property name="alignment">right</property>
+                              </object>
                               <attributes>
                                 <attribute name="text">4</attribute>
                               </attributes>
@@ -157,7 +163,9 @@
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">Length</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
+                              <object class="GtkCellRendererText">
+                                <property name="alignment">right</property>
+                              </object>
                               <attributes>
                                 <attribute name="text">5</attribute>
                               </attributes>
@@ -168,8 +176,9 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="name">page0</property>
-                    <property name="title" translatable="yes">page0</property>
+                    <property name="name">queue</property>
+                    <property name="title" translatable="yes">Queue</property>
+                    <property name="icon_name">view-list</property>
                   </packing>
                 </child>
                 <child>
@@ -190,8 +199,8 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="name">page1</property>
-                    <property name="title" translatable="yes">page1</property>
+                    <property name="name">library</property>
+                    <property name="title" translatable="yes">Library</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -213,14 +222,15 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="name">page2</property>
-                    <property name="title" translatable="yes">page2</property>
+                    <property name="name">playlists</property>
+                    <property name="title" translatable="yes">Playlists</property>
+                    <property name="icon_name">media-playlist-repeat</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -316,14 +326,26 @@
                 <property name="fill_level">0</property>
                 <property name="round_digits">0</property>
                 <property name="digits">0</property>
+                <property name="draw_value">False</property>
                 <property name="value_pos">right</property>
-                <signal name="format-value" handler="on_scPlayPosition_formatValue" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="padding">6</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblPosition">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">00:00</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">6</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
