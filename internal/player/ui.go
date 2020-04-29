@@ -22,6 +22,9 @@ type MainWindow struct {
 	btnPrevious     *gtk.ToolButton
 	btnPlayPause    *gtk.ToolButton
 	btnNext         *gtk.ToolButton
+	btnRandom       *gtk.ToggleToolButton
+	btnRepeat       *gtk.ToggleToolButton
+	btnConsume      *gtk.ToggleToolButton
 	scPlayPosition  *gtk.Scale
 	adjPlayPosition *gtk.Adjustment
 	// Queue widgets
@@ -29,11 +32,16 @@ type MainWindow struct {
 	trvQueue     *gtk.TreeView
 	lstQueue     *gtk.ListStore
 
+	// Last reported MPD status
+	mpdStatus mpd.Attrs
+
 	// Playlist's track index (last) marked as current
 	currentIndex int
 
 	// Play position manual update flag
 	playPosUpdating bool
+	// Options update flag
+	optionsUpdating bool
 }
 
 //noinspection GoSnakeCaseUsage
@@ -68,6 +76,9 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		btnPrevious:     builder.getToolButton("btnPrevious"),
 		btnPlayPause:    builder.getToolButton("btnPlayPause"),
 		btnNext:         builder.getToolButton("btnNext"),
+		btnRandom:       builder.getToggleToolButton("btnRandom"),
+		btnRepeat:       builder.getToggleToolButton("btnRepeat"),
+		btnConsume:      builder.getToggleToolButton("btnConsume"),
 		scPlayPosition:  builder.getScale("scPlayPosition"),
 		adjPlayPosition: builder.getAdjustment("adjPlayPosition"),
 		// Queue
@@ -85,6 +96,9 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		"on_btnStop_clicked":            w.onStopClicked,
 		"on_btnPlayPause_clicked":       w.onPlayPauseClicked,
 		"on_btnNext_clicked":            w.onNextClicked,
+		"on_btnRandom_toggled":          w.onRandomToggled,
+		"on_btnRepeat_toggled":          w.onRepeatToggled,
+		"on_btnConsume_toggled":         w.onConsumeToggled,
 		"on_scPlayPosition_buttonEvent": w.onPlayPositionButtonEvent,
 	})
 
@@ -103,16 +117,24 @@ func whenIdle(name string, f interface{}, args ...interface{}) {
 }
 
 func (w *MainWindow) onConnectorConnected() {
-	whenIdle("updateAll()", w.updateAll)
+	whenIdle("onConnectorConnected()", w.updateAll)
 }
 
 func (w *MainWindow) onConnectorKeepalive() {
-	whenIdle("updateSeekBar()", w.updateSeekBar)
+	whenIdle("onConnectorKeepalive()", func() {
+		w.fetchStatus()
+		w.updateSeekBar()
+	})
 }
 
 func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
+	case "options":
+		whenIdle("updateOptions()", func() {
+			w.fetchStatus()
+			w.updateOptions()
+		})
 	case "player":
 		whenIdle("updatePlayer()", w.updatePlayer)
 	case "playlist":
@@ -173,11 +195,7 @@ func (w *MainWindow) onPlayPauseClicked() {
 	log.Debug("onPlayPauseClicked()")
 	w.connector.IfConnected(
 		func(client *mpd.Client) {
-			if status, err := client.Status(); err == nil {
-				errCheck(client.Pause(status["state"] == "play"), "Pause() failed")
-			} else {
-				errCheck(err, "Status() failed")
-			}
+			errCheck(client.Pause(w.mpdStatus["state"] == "play"), "Pause() failed")
 		},
 		nil)
 }
@@ -187,6 +205,39 @@ func (w *MainWindow) onNextClicked() {
 	w.connector.IfConnected(
 		func(client *mpd.Client) { errCheck(client.Next(), "Next() failed") },
 		nil)
+}
+
+func (w *MainWindow) onRandomToggled() {
+	if !w.optionsUpdating {
+		log.Debug("onRandomToggled()")
+		w.connector.IfConnected(
+			func(client *mpd.Client) {
+				errCheck(client.Random(w.mpdStatus["random"] == "0"), "Random() failed")
+			},
+			nil)
+	}
+}
+
+func (w *MainWindow) onRepeatToggled() {
+	if !w.optionsUpdating {
+		log.Debug("onRepeatToggled()")
+		w.connector.IfConnected(
+			func(client *mpd.Client) {
+				errCheck(client.Repeat(w.mpdStatus["repeat"] == "0"), "Repeat() failed")
+			},
+			nil)
+	}
+}
+
+func (w *MainWindow) onConsumeToggled() {
+	if !w.optionsUpdating {
+		log.Debug("onConsumeToggled()")
+		w.connector.IfConnected(
+			func(client *mpd.Client) {
+				errCheck(client.Consume(w.mpdStatus["consume"] == "0"), "Consume() failed")
+			},
+			nil)
+	}
 }
 
 func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
@@ -233,27 +284,57 @@ func (w *MainWindow) setQueueSelection(index int, selected bool) {
 	}
 }
 
+// fetchStatus() updates stored MPD's status info
+func (w *MainWindow) fetchStatus() {
+	w.connector.IfConnected(
+		func(client *mpd.Client) {
+			// Request player status
+			if status, err := client.Status(); err == nil {
+				w.mpdStatus = status
+			} else {
+				// Error: provide an empty map
+				errCheck(err, "Status() failed")
+				w.mpdStatus = mpd.Attrs{}
+			}
+		},
+		func() {
+			// No connection: provide an empty map
+			w.mpdStatus = mpd.Attrs{}
+		})
+}
+
 // updateAll() updates all player's widgets and lists
 func (w *MainWindow) updateAll() {
+	w.fetchStatus()
 	w.updateQueue()
-	w.updatePlayer()
+	w.updateOptions()
+	w.updatePlayer(false)
+}
+
+// updateOptions() updates player options widgets
+func (w *MainWindow) updateOptions() {
+	w.optionsUpdating = true
+	w.btnRandom.SetActive(w.mpdStatus["random"] == "1")
+	w.btnRepeat.SetActive(w.mpdStatus["repeat"] == "1")
+	w.btnConsume.SetActive(w.mpdStatus["consume"] == "1")
+	w.optionsUpdating = false
 }
 
 // updatePlayer() updates player control widgets
-func (w *MainWindow) updatePlayer() {
+func (w *MainWindow) updatePlayer(fetchStatus bool) {
 	connected := true
+
+	// Fetch MPD status, if needed
+	if fetchStatus {
+		w.fetchStatus()
+	}
+
+	// Process player state
 	w.connector.IfConnected(
 		// Connected
 		func(client *mpd.Client) {
-			// Request player status
-			status, err := client.Status()
-			if err != nil {
-				errCheck(err, "Status() failed")
-				return
-			}
-
 			// Update play/pause button's appearance
-			switch status["state"] {
+			switch w.mpdStatus["state"] {
 			case "play":
 				w.btnPlayPause.SetIconName("media-playback-pause")
 			default:
@@ -277,7 +358,7 @@ func (w *MainWindow) updatePlayer() {
 			w.lblStatus.SetText(str)
 
 			// Update queue selection
-			if curIdx := util.AtoiDef(status["song"], -1); w.currentIndex != curIdx {
+			if curIdx := util.AtoiDef(w.mpdStatus["song"], -1); w.currentIndex != curIdx {
 				w.setQueueSelection(w.currentIndex, false)
 				w.setQueueSelection(curIdx, true)
 				w.currentIndex = curIdx
@@ -300,6 +381,9 @@ func (w *MainWindow) updatePlayer() {
 	w.btnPrevious.SetSensitive(connected)
 	w.btnPlayPause.SetSensitive(connected)
 	w.btnNext.SetSensitive(connected)
+	w.btnRandom.SetSensitive(connected)
+	w.btnRepeat.SetSensitive(connected)
+	w.btnConsume.SetSensitive(connected)
 }
 
 // updateQueue() updates the current play queue contents
@@ -371,20 +455,16 @@ func (w *MainWindow) updateSeekBar() {
 	w.connector.IfConnected(
 		// Connected
 		func(client *mpd.Client) {
-			if status, err := client.Status(); err != nil {
-				errCheck(err, "Status() failed")
-			} else {
-				// Update the seek bar position
-				trackLen := util.ParseFloatDef(status["duration"], -1)
-				trackPos := util.ParseFloatDef(status["elapsed"], -1)
-				seekable = trackLen >= 0 && trackPos >= 0
-				w.adjPlayPosition.SetUpper(trackLen)
-				w.adjPlayPosition.SetValue(trackPos)
+			// Update the seek bar position
+			trackLen := util.ParseFloatDef(w.mpdStatus["duration"], -1)
+			trackPos := util.ParseFloatDef(w.mpdStatus["elapsed"], -1)
+			seekable = trackLen >= 0 && trackPos >= 0
+			w.adjPlayPosition.SetUpper(trackLen)
+			w.adjPlayPosition.SetValue(trackPos)
 
-				// Update position text
-				if seekable {
-					w.lblPosition.SetText(util.FormatSeconds(trackPos) + "/" + util.FormatSeconds(trackLen))
-				}
+			// Update position text
+			if seekable {
+				w.lblPosition.SetText(util.FormatSeconds(trackPos) + "/" + util.FormatSeconds(trackLen))
 			}
 		},
 		// Disconnected - send a ping
