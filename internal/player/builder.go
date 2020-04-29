@@ -46,11 +46,11 @@ func (b *Builder) getLabel(name string) *gtk.Label {
 	return result
 }
 
-// getButton() finds and returns a button by its name
-func (b *Builder) getButton(name string) *gtk.Button {
-	result, ok := b.get(name).(*gtk.Button)
+// getButton() finds and returns a tool button by its name
+func (b *Builder) getToolButton(name string) *gtk.ToolButton {
+	result, ok := b.get(name).(*gtk.ToolButton)
 	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Button", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.ToolButton", name))
 	}
 	return result
 }

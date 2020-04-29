@@ -10,17 +10,21 @@
   </object>
   <object class="GtkListStore" id="lstQueue">
     <columns>
-      <!-- column-name Artist -->
+      <!-- column-name artist -->
       <column type="gchararray"/>
-      <!-- column-name Year -->
+      <!-- column-name year -->
       <column type="gchararray"/>
-      <!-- column-name Album -->
+      <!-- column-name album -->
       <column type="gchararray"/>
-      <!-- column-name Num -->
+      <!-- column-name number -->
       <column type="gchararray"/>
-      <!-- column-name Track -->
+      <!-- column-name track -->
       <column type="gchararray"/>
-      <!-- column-name Length -->
+      <!-- column-name length -->
+      <column type="gchararray"/>
+      <!-- column-name weight -->
+      <column type="gint"/>
+      <!-- column-name bgcolor -->
       <column type="gchararray"/>
     </columns>
   </object>
@@ -66,113 +70,155 @@
                 <property name="vexpand">True</property>
                 <property name="transition_type">crossfade</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="swQueue">
+                  <object class="GtkBox" id="bxQueue">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkTreeView" id="trvQueue">
+                      <object class="GtkScrolledWindow" id="swQueue">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">lstQueue</property>
-                        <property name="fixed_height_mode">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
-                        </child>
+                        <property name="shadow_type">in</property>
                         <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="fixed_width">200</property>
-                            <property name="title" translatable="yes">Artist</property>
-                            <child>
-                              <object class="GtkCellRendererText"/>
-                              <attributes>
-                                <attribute name="text">0</attribute>
-                              </attributes>
+                          <object class="GtkTreeView" id="trvQueue">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="model">lstQueue</property>
+                            <property name="fixed_height_mode">True</property>
+                            <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection"/>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="title" translatable="yes">Year</property>
                             <child>
-                              <object class="GtkCellRendererText">
-                                <property name="alignment">right</property>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="fixed_width">200</property>
+                                <property name="title" translatable="yes">Artist</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueArtist"/>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">0</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
                               </object>
-                              <attributes>
-                                <attribute name="text">1</attribute>
-                              </attributes>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="fixed_width">200</property>
-                            <property name="title" translatable="yes">Album</property>
                             <child>
-                              <object class="GtkCellRendererText"/>
-                              <attributes>
-                                <attribute name="text">2</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="title" translatable="yes">#</property>
-                            <child>
-                              <object class="GtkCellRendererText">
-                                <property name="alignment">right</property>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="title" translatable="yes">Year</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueYear">
+                                    <property name="alignment">right</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">1</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
                               </object>
-                              <attributes>
-                                <attribute name="text">3</attribute>
-                              </attributes>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="fixed_width">200</property>
-                            <property name="title" translatable="yes">Track</property>
                             <child>
-                              <object class="GtkCellRendererText">
-                                <property name="alignment">right</property>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="fixed_width">200</property>
+                                <property name="title" translatable="yes">Album</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueAlbum"/>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">2</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
                               </object>
-                              <attributes>
-                                <attribute name="text">4</attribute>
-                              </attributes>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn">
-                            <property name="resizable">True</property>
-                            <property name="sizing">fixed</property>
-                            <property name="title" translatable="yes">Length</property>
                             <child>
-                              <object class="GtkCellRendererText">
-                                <property name="alignment">right</property>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="title" translatable="yes">#</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueNumber">
+                                    <property name="alignment">right</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">3</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
                               </object>
-                              <attributes>
-                                <attribute name="text">5</attribute>
-                              </attributes>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="fixed_width">200</property>
+                                <property name="title" translatable="yes">Track</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueTrack">
+                                    <property name="alignment">right</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">4</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn">
+                                <property name="resizable">True</property>
+                                <property name="sizing">fixed</property>
+                                <property name="title" translatable="yes">Length</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="colQueueLength">
+                                    <property name="alignment">right</property>
+                                  </object>
+                                  <attributes>
+                                    <attribute name="background">7</attribute>
+                                    <attribute name="text">5</attribute>
+                                    <attribute name="weight">6</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
                             </child>
                           </object>
                         </child>
                       </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="lblQueueInfo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">False</property>
+                        <property name="label" translatable="yes">...</property>
+                        <property name="ellipsize">end</property>
+                        <property name="track_visited_links">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="padding">6</property>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -246,6 +292,8 @@
           <object class="GtkLabel" id="lblStatus">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="ellipsize">middle</property>
+            <property name="track_visited_links">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -261,52 +309,63 @@
             <property name="vexpand">False</property>
             <property name="spacing">12</property>
             <child>
-              <object class="GtkButtonBox">
+              <object class="GtkToolbar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="homogeneous">True</property>
-                <property name="layout_style">center</property>
                 <child>
-                  <object class="GtkButton" id="btnPrevious">
+                  <object class="GtkToolButton" id="btnPrevious">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="always_show_image">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Previous</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">media-skip-backward</property>
                     <signal name="clicked" handler="on_btnPrevious_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="btnPlayPause">
+                  <object class="GtkToolButton" id="btnStop">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="relief">half</property>
-                    <property name="always_show_image">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Stop</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">media-playback-stop</property>
+                    <signal name="clicked" handler="on_btnStop_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="btnPlayPause">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Play/Pause</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">media-playback-start</property>
                     <signal name="clicked" handler="on_btnPlayPause_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
                   </packing>
                 </child>
-                <child type="center">
-                  <object class="GtkButton" id="btnNext">
+                <child>
+                  <object class="GtkToolButton" id="btnNext">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="always_show_image">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Next</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">media-skip-forward</property>
                     <signal name="clicked" handler="on_btnNext_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
                   </packing>
                 </child>
               </object>
@@ -319,7 +378,7 @@
             <child>
               <object class="GtkScale" id="scPlayPosition">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
                 <property name="adjustment">adjPlayPosition</property>
                 <property name="restrict_to_fill_level">False</property>
@@ -328,6 +387,8 @@
                 <property name="digits">0</property>
                 <property name="draw_value">False</property>
                 <property name="value_pos">right</property>
+                <signal name="button-press-event" handler="on_scPlayPosition_buttonEvent" swapped="no"/>
+                <signal name="button-release-event" handler="on_scPlayPosition_buttonEvent" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

@@ -5,20 +5,37 @@ import (
 	"strconv"
 )
 
-// FormatSeconds formats a number seconds as a string
-func FormatSeconds(seconds float64) string {
-	mins, secs := int(seconds)/60, int(seconds)%60
-	if mins >= 60 {
-		return fmt.Sprintf("%d:%02d:%02d", mins/60, mins, secs)
+// AtoiDef() converts a string into an int, returning the given default value if conversion failed
+func AtoiDef(s string, def int) int {
+	if i, err := strconv.Atoi(s); err == nil {
+		return i
+	} else {
+		return def
 	}
-	return fmt.Sprintf("%d:%02d", mins, secs)
 }
 
-// FormatSecondsStr formats a number seconds expressed as a string, into a string.
-// If seconds is unparseable, returns an empty string
-func FormatSecondsStr(seconds string) string {
-	if f, err := strconv.ParseFloat(seconds, 32); err == nil {
-		return FormatSeconds(f)
+// ParseFloatDef() converts a string into a float64, returning the given default value if conversion failed
+func ParseFloatDef(s string, def float64) float64 {
+	if f, err := strconv.ParseFloat(s, 32); err == nil {
+		return f
+	} else {
+		return def
 	}
-	return ""
+}
+
+// FormatSeconds() formats a number seconds as a string
+func FormatSeconds(seconds float64) string {
+	minutes, secs := int(seconds)/60, int(seconds)%60
+	hours, mins := minutes/60, minutes%60
+	days, hrs := hours/24, hours%24
+	switch {
+	case days > 1:
+		return fmt.Sprintf("%d days %d:%02d:%02d", days, hrs, mins, secs)
+	case days == 1:
+		return fmt.Sprintf("One day %d:%02d:%02d", hrs, mins, secs)
+	case hours >= 1:
+		return fmt.Sprintf("%d:%02d:%02d", hrs, mins, secs)
+	default:
+		return fmt.Sprintf("%d:%02d", mins, secs)
+	}
 }
