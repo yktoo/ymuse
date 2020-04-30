@@ -46,6 +46,15 @@ func (b *Builder) getLabel(name string) *gtk.Label {
 	return result
 }
 
+// getListBox() finds and returns a list box by its name
+func (b *Builder) getListBox(name string) *gtk.ListBox {
+	result, ok := b.get(name).(*gtk.ListBox)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ListBox", name))
+	}
+	return result
+}
+
 // getToolButton() finds and returns a tool button by its name
 func (b *Builder) getToolButton(name string) *gtk.ToolButton {
 	result, ok := b.get(name).(*gtk.ToolButton)

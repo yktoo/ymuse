@@ -33,6 +33,8 @@ type MainWindow struct {
 	lblQueueInfo *gtk.Label
 	trvQueue     *gtk.TreeView
 	lstQueue     *gtk.ListStore
+	// Playlists widgets
+	lbxPlaylists *gtk.ListBox
 
 	// Last reported MPD status
 	mpdStatus mpd.Attrs
@@ -88,6 +90,8 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		lblQueueInfo: builder.getLabel("lblQueueInfo"),
 		trvQueue:     builder.getTreeView("trvQueue"),
 		lstQueue:     builder.getListStore("lstQueue"),
+		// Playlists
+		lbxPlaylists: builder.getListBox("lbxPlaylists"),
 	}
 
 	// Map the handlers to callback functions
@@ -161,6 +165,8 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 		whenIdle("updatePlayer()", w.updatePlayer, true)
 	case "playlist":
 		whenIdle("updateQueue()", w.updateQueue)
+	case "stored_playlist":
+		whenIdle("updatePlaylists()", w.updatePlaylists)
 	}
 }
 
@@ -344,6 +350,7 @@ func (w *MainWindow) fetchStatus() {
 func (w *MainWindow) updateAll() {
 	w.fetchStatus()
 	w.updateQueue()
+	w.updatePlaylists()
 	w.updateOptions(false)
 	w.updatePlayer(false)
 }
@@ -427,6 +434,67 @@ func (w *MainWindow) updatePlayer(fetchStatus bool) {
 	w.btnRandom.SetSensitive(connected)
 	w.btnRepeat.SetSensitive(connected)
 	w.btnConsume.SetSensitive(connected)
+}
+
+// updatePlaylists() updates the current playlists list contents
+func (w *MainWindow) updatePlaylists() {
+	w.connector.IfConnected(
+		// Connected
+		func(client *mpd.Client) {
+			// Fetch the current playlist
+			attrs, err := client.ListPlaylists()
+			if errCheck(err, "ListPlaylists() failed") {
+				return
+			}
+
+			// Clear the playlists list
+			w.lbxPlaylists.GetChildren().Foreach(func(item interface{}) {
+				w.lbxPlaylists.Remove(item.(gtk.IWidget))
+			})
+
+			// Repopulate the playlists list
+			for _, a := range attrs {
+				// Add a new list box row
+				row, err := gtk.ListBoxRowNew()
+				if errCheck(err, "ListBoxRowNew() failed") {
+					return
+				}
+
+				// Add horizontal box
+				hbx, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 12)
+				if errCheck(err, "ListBoxRowNew() failed") {
+					return
+				}
+				row.Add(hbx)
+
+				// Insert icon
+				img, err := gtk.ImageNewFromIconName("format-justify-left", gtk.ICON_SIZE_SMALL_TOOLBAR)
+				if errCheck(err, "ImageNewFromIconName() failed") {
+					return
+				}
+				hbx.PackStart(img, false, false, 0)
+
+				// Insert label with playlist name
+				lbl, err := gtk.LabelNew(a["playlist"])
+				if errCheck(err, "LabelNew() failed") {
+					return
+				}
+				lbl.SetXAlign(0)
+				hbx.PackStart(lbl, true, true, 0)
+
+				// Add the row to the list box
+				w.lbxPlaylists.Add(row)
+			}
+
+			// Show all rows
+			w.lbxPlaylists.ShowAll()
+		},
+		// Disconnected - clear the playlists list
+		func() {
+			w.lbxPlaylists.GetChildren().Foreach(func(item interface{}) {
+				w.lbxPlaylists.Remove(item.(gtk.IWidget))
+			})
+		})
 }
 
 // updateQueue() updates the current play queue contents

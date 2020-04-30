@@ -290,11 +290,14 @@
                 <property name="vexpand">True</property>
                 <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkTreeView" id="trvPlaylists">
+                  <object class="GtkViewport" id="vwpPlaylists">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkListBox" id="lbxPlaylists">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
                     </child>
                   </object>
                 </child>
