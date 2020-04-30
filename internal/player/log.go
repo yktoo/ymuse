@@ -15,8 +15,10 @@ func init() {
 }
 
 // errCheck() logs a warning if the error is not nil.
-func errCheck(err error, message string) {
+func errCheck(err error, message string) bool {
 	if err != nil {
 		log.Warning(message, err)
+		return true
 	}
+	return false
 }

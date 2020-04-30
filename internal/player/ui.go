@@ -12,6 +12,8 @@ import (
 )
 
 type MainWindow struct {
+	// Application reference
+	app *gtk.Application
 	// Connector instance
 	connector *Connector
 	// Main window
@@ -69,6 +71,7 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 	builder := NewBuilder("internal/player/player.glade")
 
 	w := &MainWindow{
+		app: application,
 		// Find widgets
 		window:          builder.getApplicationWindow("mainWindow"),
 		lblStatus:       builder.getLabel("lblStatus"),
@@ -102,11 +105,16 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		"on_scPlayPosition_buttonEvent": w.onPlayPositionButtonEvent,
 	})
 
+	// Create actions
+	w.addAction("about", "F1", w.onAbout)
+	w.addAction("prefs", "<Ctrl>comma", w.notImplemented)
+	w.addAction("quit", "<Ctrl>Q", w.window.Close)
+
 	// Register the main window with the app
 	application.AddWindow(w.window)
 
 	// Instantiate a connector
-	w.connector = NewConnector(mpdAddress, w.onConnectorConnected, w.onConnectorKeepalive, w.onConnectorSubsystemChange)
+	w.connector = NewConnector(mpdAddress, w.onConnectorConnected, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
 	return w, nil
 }
 
@@ -116,12 +124,29 @@ func whenIdle(name string, f interface{}, args ...interface{}) {
 	errCheck(err, "glib.IdleAdd() failed for "+name)
 }
 
+func (w *MainWindow) notImplemented() {
+	dlg := gtk.MessageDialogNew(w.window, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Function not implemented.")
+	dlg.Run()
+	dlg.Destroy()
+}
+
+func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) {
+	action := glib.SimpleActionNew(name, nil)
+	if _, err := action.Connect("activate", onActivate); err != nil {
+		log.Fatalf("Failed to connect activate signal of action '%v': %v", name, err)
+	}
+	w.app.AddAction(action)
+	if shortcut != "" {
+		w.app.SetAccelsForAction("app."+name, []string{shortcut})
+	}
+}
+
 func (w *MainWindow) onConnectorConnected() {
 	whenIdle("onConnectorConnected()", w.updateAll)
 }
 
-func (w *MainWindow) onConnectorKeepalive() {
-	whenIdle("onConnectorKeepalive()", func() {
+func (w *MainWindow) onConnectorHeartbeat() {
+	whenIdle("onConnectorHeartbeat()", func() {
 		w.fetchStatus()
 		w.updateSeekBar()
 	})
@@ -131,15 +156,27 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
 	case "options":
-		whenIdle("updateOptions()", func() {
-			w.fetchStatus()
-			w.updateOptions()
-		})
+		whenIdle("updateOptions()", w.updateOptions, true)
 	case "player":
-		whenIdle("updatePlayer()", w.updatePlayer)
+		whenIdle("updatePlayer()", w.updatePlayer, true)
 	case "playlist":
 		whenIdle("updateQueue()", w.updateQueue)
 	}
+}
+
+func (w *MainWindow) onAbout() {
+	dlg, err := gtk.AboutDialogNew()
+	if errCheck(err, "AboutDialogNew() failed") {
+		return
+	}
+	dlg.SetLogoIconName("dialog-information")
+	dlg.SetProgramName(util.AppName)
+	dlg.SetCopyright("Written by Dmitry Kann")
+	dlg.SetLicense(util.AppLicense)
+	dlg.SetWebsite(util.AppWebsite)
+	dlg.SetWebsiteLabel(util.AppWebsiteLabel)
+	_, _ = dlg.Connect("response", func() { dlg.Destroy() })
+	dlg.Run()
 }
 
 func (w *MainWindow) onMap() {
@@ -307,12 +344,18 @@ func (w *MainWindow) fetchStatus() {
 func (w *MainWindow) updateAll() {
 	w.fetchStatus()
 	w.updateQueue()
-	w.updateOptions()
+	w.updateOptions(false)
 	w.updatePlayer(false)
 }
 
 // updateOptions() updates player options widgets
-func (w *MainWindow) updateOptions() {
+func (w *MainWindow) updateOptions(fetchStatus bool) {
+	// Fetch MPD status, if needed
+	if fetchStatus {
+		w.fetchStatus()
+	}
+
+	// Update option widgets
 	w.optionsUpdating = true
 	w.btnRandom.SetActive(w.mpdStatus["random"] == "1")
 	w.btnRepeat.SetActive(w.mpdStatus["repeat"] == "1")
@@ -464,7 +507,7 @@ func (w *MainWindow) updateSeekBar() {
 
 			// Update position text
 			if seekable {
-				w.lblPosition.SetText(util.FormatSeconds(trackPos) + "/" + util.FormatSeconds(trackLen))
+				w.lblPosition.SetText(util.FormatSeconds(trackPos) + " / " + util.FormatSeconds(trackLen))
 			}
 		},
 		// Disconnected - send a ping

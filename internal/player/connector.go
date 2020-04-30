@@ -29,13 +29,13 @@ type Connector struct {
 
 	// Callback for connection status change notifications
 	onConnected func()
-	// Callback for periodic keep-alive message notifications
-	onKeepalive func()
+	// Callback for periodic message notifications
+	onHeartbeat func()
 	// Callback for subsystem change notifications
 	onSubsystemChange func(subsystem string)
 }
 
-func NewConnector(mpdAddress string, onConnected func(), onKeepalive func(), onSubsystemChange func(subsystem string)) *Connector {
+func NewConnector(mpdAddress string, onConnected func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
 	return &Connector{
 		mpdAddress:         mpdAddress,
 		chConnectorConnect: make(chan int),
@@ -43,7 +43,7 @@ func NewConnector(mpdAddress string, onConnected func(), onKeepalive func(), onS
 		chWatcherStart:     make(chan int),
 		chWatcherQuit:      make(chan int),
 		onConnected:        onConnected,
-		onKeepalive:        onKeepalive,
+		onHeartbeat:        onHeartbeat,
 		onSubsystemChange:  onSubsystemChange,
 	}
 }
@@ -83,7 +83,7 @@ func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client), funcIf
 // connect() takes care of establishing a connection to MPD
 func (c *Connector) connect() {
 	log.Debug("connect()")
-	var keepaliveTicker = time.NewTicker(time.Second)
+	var heartbeatTicker = time.NewTicker(time.Second)
 	for {
 		select {
 		// Request to connect
@@ -111,8 +111,8 @@ func (c *Connector) connect() {
 					c.onConnected()
 				})
 
-		// Keepalive tick
-		case <-keepaliveTicker.C:
+		// Heartbeat tick
+		case <-heartbeatTicker.C:
 			c.IfConnected(
 				func(client *mpd.Client) {
 					// Connection lost
@@ -127,12 +127,12 @@ func (c *Connector) connect() {
 				})
 
 			// Notify the callback
-			c.onKeepalive()
+			c.onHeartbeat()
 
 		// Request to quit
 		case <-c.chConnectorQuit:
-			// Kill the keepalive timer
-			keepaliveTicker.Stop()
+			// Kill the heartbeat timer
+			heartbeatTicker.Stop()
 
 			// Close the connection to MPD, if any
 			c.IfConnected(

@@ -9,9 +9,6 @@ import (
 	"os"
 )
 
-const appVersion = "0.01"
-const appID = "com.yktoo.ymuse"
-
 var log *logging.Logger
 
 func main() {
@@ -21,10 +18,10 @@ func main() {
 	logging.SetLevel(util.GetConfig().LogLevel, "main")
 
 	// Start the app
-	log.Info("Ymuse version", appVersion)
+	log.Info("Ymuse version", util.AppVersion)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
-	application, err := gtk.ApplicationNew(appID, glib.APPLICATION_FLAGS_NONE)
+	application, err := gtk.ApplicationNew(util.AppID, glib.APPLICATION_FLAGS_NONE)
 	if err != nil {
 		log.Fatal("Could not create application", err)
 	}
