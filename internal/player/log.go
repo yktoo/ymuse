@@ -1,6 +1,8 @@
 package player
 
 import (
+	"errors"
+	"fmt"
 	"github.com/op/go-logging"
 	"github.com/yktoo/ymuse/internal/util"
 )
@@ -17,7 +19,7 @@ func init() {
 // errCheck() logs a warning if the error is not nil.
 func errCheck(err error, message string) bool {
 	if err != nil {
-		log.Warning(message, err)
+		log.Warning(errors.New(fmt.Sprintf("%v: %v", message, err)))
 		return true
 	}
 	return false

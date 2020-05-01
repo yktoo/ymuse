@@ -66,8 +66,17 @@ func (c *Connector) Stop() {
 	close(c.chWatcherQuit)
 }
 
-// IfConnected() runs MPD client code if there's a connection with MPD and/or code if there's no connection
-func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client), funcIfDisconnected func()) {
+// IfConnected() runs MPD client code if there's a connection with MPD
+func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client)) {
+	c.mpdClientMutex.Lock()
+	defer c.mpdClientMutex.Unlock()
+	if c.mpdClient != nil {
+		funcIfConnected(c.mpdClient)
+	}
+}
+
+// IfConnectedElse() runs MPD client code if there's a connection with MPD and/or code if there's no connection
+func (c *Connector) IfConnectedElse(funcIfConnected func(client *mpd.Client), funcIfDisconnected func()) {
 	c.mpdClientMutex.Lock()
 	defer c.mpdClientMutex.Unlock()
 	switch {
@@ -91,7 +100,7 @@ func (c *Connector) connect() {
 			log.Debug("Start connector")
 
 			// If disconnected
-			c.IfConnected(
+			c.IfConnectedElse(
 				nil,
 				func() {
 					// Try to connect to MPD
@@ -113,7 +122,7 @@ func (c *Connector) connect() {
 
 		// Heartbeat tick
 		case <-heartbeatTicker.C:
-			c.IfConnected(
+			c.IfConnectedElse(
 				func(client *mpd.Client) {
 					// Connection lost
 					if err := client.Ping(); err != nil {
@@ -135,13 +144,11 @@ func (c *Connector) connect() {
 			heartbeatTicker.Stop()
 
 			// Close the connection to MPD, if any
-			c.IfConnected(
-				func(client *mpd.Client) {
-					log.Debug("Stop connector")
-					errCheck(client.Close(), "Close() failed")
-					c.mpdClient = nil
-				},
-				nil)
+			c.IfConnected(func(client *mpd.Client) {
+				log.Debug("Stop connector")
+				errCheck(client.Close(), "Close() failed")
+				c.mpdClient = nil
+			})
 			return
 		}
 	}

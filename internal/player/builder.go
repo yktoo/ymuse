@@ -37,6 +37,15 @@ func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
 	return result
 }
 
+// getBox() finds and returns a box by its name
+func (b *Builder) getBox(name string) *gtk.Box {
+	result, ok := b.get(name).(*gtk.Box)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Box", name))
+	}
+	return result
+}
+
 // getLabel() finds and returns a label by its name
 func (b *Builder) getLabel(name string) *gtk.Label {
 	result, ok := b.get(name).(*gtk.Label)

@@ -84,7 +84,7 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolbar">
+                  <object class="GtkToolbar" id="tbQueue">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
@@ -123,6 +123,7 @@
                         <property name="model">lstQueue</property>
                         <property name="fixed_height_mode">True</property>
                         <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
+                        <signal name="key-press-event" handler="on_trvQueue_keyPress" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -260,20 +261,56 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="swLibrary">
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="shadow_type">in</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkTreeView" id="trvLibrary">
+                  <object class="GtkBox" id="bxLibraryPath">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">6</property>
+                    <property name="margin_right">6</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="swLibrary">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkViewport" id="vwpLibrary">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkListBox" id="lbxLibrary">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <signal name="button-press-event" handler="on_lbxLibrary_buttonPress" swapped="no"/>
+                            <signal name="key-press-event" handler="on_lbxLibrary_keyPress" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </object>
               <packing>
@@ -297,6 +334,8 @@
                       <object class="GtkListBox" id="lbxPlaylists">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="button-press-event" handler="on_lbxPlaylists_buttonPress" swapped="no"/>
+                        <signal name="key-press-event" handler="on_lbxPlaylists_keyPress" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -345,6 +384,7 @@
                   <object class="GtkToolButton" id="btnPrevious">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Previous track</property>
                     <property name="label" translatable="yes">Previous</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-skip-backward</property>
@@ -359,6 +399,7 @@
                   <object class="GtkToolButton" id="btnStop">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Stop playback</property>
                     <property name="label" translatable="yes">Stop</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playback-stop</property>
@@ -373,6 +414,7 @@
                   <object class="GtkToolButton" id="btnPlayPause">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Pause or resume playback</property>
                     <property name="label" translatable="yes">Play/Pause</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playback-start</property>
@@ -387,6 +429,7 @@
                   <object class="GtkToolButton" id="btnNext">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Next track</property>
                     <property name="label" translatable="yes">Next</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-skip-forward</property>
@@ -411,6 +454,7 @@
                   <object class="GtkToggleToolButton" id="btnRandom">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Shuffle mode</property>
                     <property name="label" translatable="yes">Random</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playlist-shuffle</property>
@@ -425,6 +469,7 @@
                   <object class="GtkToggleToolButton" id="btnRepeat">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Repeat mode</property>
                     <property name="label" translatable="yes">Repeat</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playlist-repeat</property>
@@ -439,6 +484,7 @@
                   <object class="GtkToggleToolButton" id="btnConsume">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Consume mode</property>
                     <property name="label" translatable="yes">Consume</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">edit-cut</property>
@@ -569,6 +615,7 @@
       </object>
       <packing>
         <property name="submenu">main</property>
+        <property name="position">1</property>
       </packing>
     </child>
   </object>
