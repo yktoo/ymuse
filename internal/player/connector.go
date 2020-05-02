@@ -2,18 +2,22 @@ package player
 
 import (
 	"github.com/fhs/gompd/v2/mpd"
+	"github.com/yktoo/ymuse/internal/util"
+	"sort"
+	"strconv"
 	"sync"
 	"time"
 )
 
 // Connector encapsulates functionality for connecting to MPD and watch for its changes
 type Connector struct {
-	// MPD's IP address
-	mpdAddress string
-
 	// MPD client instance
 	mpdClient      *mpd.Client
 	mpdClientMutex sync.Mutex
+
+	// Last reported MPD status
+	mpdStatus      mpd.Attrs
+	mpdStatusMutex sync.Mutex
 
 	// Connector's connect channel
 	chConnectorConnect chan int
@@ -35,9 +39,9 @@ type Connector struct {
 	onSubsystemChange func(subsystem string)
 }
 
-func NewConnector(mpdAddress string, onConnected func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
+func NewConnector(onConnected func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
 	return &Connector{
-		mpdAddress:         mpdAddress,
+		mpdStatus:          mpd.Attrs{},
 		chConnectorConnect: make(chan int),
 		chConnectorQuit:    make(chan int),
 		chWatcherStart:     make(chan int),
@@ -48,7 +52,7 @@ func NewConnector(mpdAddress string, onConnected func(), onHeartbeat func(), onS
 	}
 }
 
-// Start() signals the connector to initiate connection process
+// Start() initialises the connector
 func (c *Connector) Start() {
 	// Start the connect goroutine
 	go c.connect()
@@ -56,8 +60,14 @@ func (c *Connector) Start() {
 	// Start the watch goroutine
 	go c.watch()
 
-	// Signal the connector to start
-	go func() { c.chConnectorConnect <- 1 }()
+	c.startConnecting()
+}
+
+// Status() returns the last known MPD status
+func (c *Connector) Status() mpd.Attrs {
+	c.mpdStatusMutex.Lock()
+	defer c.mpdStatusMutex.Unlock()
+	return c.mpdStatus
 }
 
 // Stop() signals the connector to shut down
@@ -89,6 +99,120 @@ func (c *Connector) IfConnectedElse(funcIfConnected func(client *mpd.Client), fu
 	}
 }
 
+// PlayerPrevious() rewinds the player to the previous track
+func (c *Connector) PlayerPrevious() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Previous(), "Previous() failed")
+	})
+}
+
+// PlayerStop() stops the playback
+func (c *Connector) PlayerStop() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Stop(), "Stop() failed")
+	})
+}
+
+// PlayerPlayPause() pauses or resumes the playback
+func (c *Connector) PlayerPlayPause() {
+	c.IfConnected(func(client *mpd.Client) {
+		switch c.Status()["state"] {
+		case "pause":
+			errCheck(client.Pause(false), "Pause(false) failed")
+		case "play":
+			errCheck(client.Pause(true), "Pause(true) failed")
+		default:
+			errCheck(client.Play(-1), "Play() failed")
+		}
+	})
+}
+
+// PlayerNext() advances the player to the next track
+func (c *Connector) PlayerNext() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Next(), "Next() failed")
+	})
+}
+
+// PlayerToggleRandom() toggles player's random mode
+func (c *Connector) PlayerToggleRandom() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Random(c.Status()["random"] == "0"), "Random() failed")
+	})
+}
+
+// PlayerToggleRepeat() toggles player's repeat mode
+func (c *Connector) PlayerToggleRepeat() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Repeat(c.Status()["repeat"] == "0"), "Repeat() failed")
+	})
+}
+
+// PlayerToggleConsume() toggles player's consume mode
+func (c *Connector) PlayerToggleConsume() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Consume(c.Status()["consume"] == "0"), "Consume() failed")
+	})
+}
+
+// QueueClear() empties MPD's play queue
+func (c *Connector) QueueClear() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Clear(), "Clear() failed")
+	})
+}
+
+// QueueShuffle() randomises MPD's play queue
+func (c *Connector) QueueShuffle() {
+	c.IfConnected(func(client *mpd.Client) {
+		errCheck(client.Shuffle(-1, -1), "Shuffle() failed")
+	})
+}
+
+// QueueSort() orders MPD's play queue on the provided attribute
+func (c *Connector) QueueSort(attrName string, numeric, descending bool) {
+	c.IfConnected(func(client *mpd.Client) {
+		// Fetch the current playlist
+		attrs, err := client.PlaylistInfo(-1, -1)
+		if errCheck(err, "PlaylistInfo() failed") {
+			return
+		}
+
+		// Sort the list
+		sort.SliceStable(attrs, func(i, j int) bool {
+			a, b := attrs[i][attrName], attrs[j][attrName]
+			if numeric {
+				an, bn := util.ParseFloatDef(a, 0), util.ParseFloatDef(b, 0)
+				if descending {
+					return bn < an
+				}
+				return an < bn
+			}
+			if descending {
+				return b < a
+			}
+			return a < b
+		})
+
+		// Post the changes back to MPD
+		commands := client.BeginCommandList()
+		for index, a := range attrs {
+			id, err := strconv.Atoi(a["Id"])
+			if errCheck(err, "ID attribute conversion to int failed") {
+				return
+			}
+			commands.MoveID(id, index)
+		}
+		errCheck(commands.End(), "QueueSort: CommandList execution failed")
+
+	})
+}
+
+// startConnecting() signals the connector to initiate connection process
+func (c *Connector) startConnecting() {
+	go func() { c.chConnectorConnect <- 1 }()
+}
+
 // connect() takes care of establishing a connection to MPD
 func (c *Connector) connect() {
 	log.Debug("connect()")
@@ -104,9 +228,9 @@ func (c *Connector) connect() {
 				nil,
 				func() {
 					// Try to connect to MPD
-					client, err := mpd.Dial("tcp", c.mpdAddress)
-					if err != nil {
-						errCheck(err, "Dial() failed")
+					cfg := util.GetConfig()
+					client, err := mpd.DialAuthenticated("tcp", cfg.MpdAddress, cfg.MpdPassword)
+					if errCheck(err, "Dial() failed") {
 						return
 					}
 
@@ -115,6 +239,16 @@ func (c *Connector) connect() {
 
 					// Start the watcher
 					go func() { c.chWatcherStart <- 1 }()
+
+					// Actualise the status
+					status, err := client.Status()
+					c.mpdStatusMutex.Lock()
+					if errCheck(err, "connect(): Status() failed") {
+						c.mpdStatus = mpd.Attrs{}
+					} else {
+						c.mpdStatus = status
+					}
+					c.mpdStatusMutex.Unlock()
 
 					// Notify the callback
 					c.onConnected()
@@ -125,14 +259,28 @@ func (c *Connector) connect() {
 			c.IfConnectedElse(
 				func(client *mpd.Client) {
 					// Connection lost
-					if err := client.Ping(); err != nil {
-						log.Debug("Ping(): connection to MPD lost", err)
+					status, err := client.Status()
+					if errCheck(err, "Status() failed: connection to MPD lost") {
 						c.mpdClient = nil
-						c.Start()
+						// Clear the status
+						c.mpdStatusMutex.Lock()
+						c.mpdStatus = mpd.Attrs{}
+						c.mpdStatusMutex.Unlock()
+						// Restart the connector goroutine
+						c.startConnecting()
+
+					} else {
+						// Connection is okay, store the status
+						c.mpdStatusMutex.Lock()
+						c.mpdStatus = status
+						c.mpdStatusMutex.Unlock()
 					}
 				},
 				func() {
-					c.Start()
+					c.mpdStatusMutex.Lock()
+					c.mpdStatus = mpd.Attrs{}
+					c.mpdStatusMutex.Unlock()
+					c.startConnecting()
 				})
 
 			// Notify the callback
@@ -171,7 +319,8 @@ func (c *Connector) watch() {
 
 			// If no watcher yet
 			if c.mpdWatcher == nil {
-				watcher, err := mpd.NewWatcher("tcp", c.mpdAddress, "")
+				cfg := util.GetConfig()
+				watcher, err := mpd.NewWatcher("tcp", cfg.MpdAddress, cfg.MpdPassword)
 				// Failed to connect
 				if err != nil {
 					log.Warning("Failed to watch MPD", err)
@@ -190,6 +339,24 @@ func (c *Connector) watch() {
 
 		// Watcher's event
 		case subsystem := <-eventChannel:
+			// Provide an empty map as fallback
+			status := mpd.Attrs{}
+
+			// Request player status if there's a connection
+			c.IfConnected(func(client *mpd.Client) {
+				st, err := client.Status()
+				if errCheck(err, "watch(): Status() failed") {
+					return
+				}
+				status = st
+			})
+
+			// Update the MPD's status
+			c.mpdStatusMutex.Lock()
+			c.mpdStatus = status
+			c.mpdStatusMutex.Unlock()
+
+			// Notify the callback
 			c.onSubsystemChange(subsystem)
 
 		// Watcher's error

@@ -64,6 +64,15 @@ func (b *Builder) getListBox(name string) *gtk.ListBox {
 	return result
 }
 
+// getPopoverMenu() finds and returns a popover menu by its name
+func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
+	result, ok := b.get(name).(*gtk.PopoverMenu)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.PopoverMenu", name))
+	}
+	return result
+}
+
 // getToolButton() finds and returns a tool button by its name
 func (b *Builder) getToolButton(name string) *gtk.ToolButton {
 	result, ok := b.get(name).(*gtk.ToolButton)

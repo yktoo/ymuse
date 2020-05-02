@@ -7,6 +7,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/yktoo/ymuse/internal/util"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -22,9 +23,7 @@ type MainWindow struct {
 	// Control widgets
 	lblStatus       *gtk.Label
 	lblPosition     *gtk.Label
-	btnPrevious     *gtk.ToolButton
 	btnPlayPause    *gtk.ToolButton
-	btnNext         *gtk.ToolButton
 	btnRandom       *gtk.ToggleToolButton
 	btnRepeat       *gtk.ToggleToolButton
 	btnConsume      *gtk.ToggleToolButton
@@ -34,14 +33,24 @@ type MainWindow struct {
 	lblQueueInfo *gtk.Label
 	trvQueue     *gtk.TreeView
 	lstQueue     *gtk.ListStore
+	pmnQueueSort *gtk.PopoverMenu
 	// Library widgets
 	bxLibraryPath *gtk.Box
 	lbxLibrary    *gtk.ListBox
 	// Playlists widgets
 	lbxPlaylists *gtk.ListBox
 
-	// Last reported MPD status
-	mpdStatus mpd.Attrs
+	// Actions
+	aQueueNowPlaying *glib.SimpleAction
+	aQueueClear      *glib.SimpleAction
+	aQueueSort       *glib.SimpleAction
+	aPlayerPrevious  *glib.SimpleAction
+	aPlayerStop      *glib.SimpleAction
+	aPlayerPlayPause *glib.SimpleAction
+	aPlayerNext      *glib.SimpleAction
+	aPlayerRandom    *glib.SimpleAction
+	aPlayerRepeat    *glib.SimpleAction
+	aPlayerConsume   *glib.SimpleAction
 
 	// Playlist's track index (last) marked as current
 	currentIndex int
@@ -75,7 +84,7 @@ const (
 	BackgroundColorActive = "#ffffe0"
 )
 
-func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow, error) {
+func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
 	builder := NewBuilder("internal/player/player.glade")
 
@@ -85,9 +94,7 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		window:          builder.getApplicationWindow("mainWindow"),
 		lblStatus:       builder.getLabel("lblStatus"),
 		lblPosition:     builder.getLabel("lblPosition"),
-		btnPrevious:     builder.getToolButton("btnPrevious"),
 		btnPlayPause:    builder.getToolButton("btnPlayPause"),
-		btnNext:         builder.getToolButton("btnNext"),
 		btnRandom:       builder.getToggleToolButton("btnRandom"),
 		btnRepeat:       builder.getToggleToolButton("btnRepeat"),
 		btnConsume:      builder.getToggleToolButton("btnConsume"),
@@ -97,6 +104,7 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		lblQueueInfo: builder.getLabel("lblQueueInfo"),
 		trvQueue:     builder.getTreeView("trvQueue"),
 		lstQueue:     builder.getListStore("lstQueue"),
+		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
 		// Library
 		bxLibraryPath: builder.getBox("bxLibraryPath"),
 		lbxLibrary:    builder.getListBox("lbxLibrary"),
@@ -114,26 +122,14 @@ func NewMainWindow(application *gtk.Application, mpdAddress string) (*MainWindow
 		"on_lbxLibrary_keyPress":        w.onLibraryListBoxKeyPress,
 		"on_lbxPlaylists_buttonPress":   w.onPlaylistListBoxButtonPress,
 		"on_lbxPlaylists_keyPress":      w.onPlaylistListBoxKeyPress,
-		"on_btnPrevious_clicked":        w.onPreviousClicked,
-		"on_btnStop_clicked":            w.onStopClicked,
-		"on_btnPlayPause_clicked":       w.onPlayPauseClicked,
-		"on_btnNext_clicked":            w.onNextClicked,
-		"on_btnRandom_toggled":          w.onRandomToggled,
-		"on_btnRepeat_toggled":          w.onRepeatToggled,
-		"on_btnConsume_toggled":         w.onConsumeToggled,
 		"on_scPlayPosition_buttonEvent": w.onPlayPositionButtonEvent,
 	})
-
-	// Create actions
-	w.addAction("about", "F1", w.onAbout)
-	w.addAction("prefs", "<Ctrl>comma", w.notImplemented)
-	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 
 	// Register the main window with the app
 	application.AddWindow(w.window)
 
 	// Instantiate a connector
-	w.connector = NewConnector(mpdAddress, w.onConnectorConnected, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
+	w.connector = NewConnector(w.onConnectorConnected, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
 	return w, nil
 }
 
@@ -145,7 +141,7 @@ func (w *MainWindow) notImplemented() {
 }
 
 // addAction() add a new application action, with an optional keyboard shortcut
-func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) {
+func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *glib.SimpleAction {
 	action := glib.SimpleActionNew(name, nil)
 	if _, err := action.Connect("activate", onActivate); err != nil {
 		log.Fatalf("Failed to connect activate signal of action '%v': %v", name, err)
@@ -154,32 +150,33 @@ func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) {
 	if shortcut != "" {
 		w.app.SetAccelsForAction("app."+name, []string{shortcut})
 	}
+	return action
 }
 
 func (w *MainWindow) onConnectorConnected() {
-	whenIdle("onConnectorConnected()", w.updateAll)
+	util.WhenIdle("onConnectorConnected()", w.updateAll)
 }
 
 func (w *MainWindow) onConnectorHeartbeat() {
-	whenIdle("onConnectorHeartbeat()", func() {
-		w.fetchStatus()
-		w.updateSeekBar()
-	})
+	util.WhenIdle("onConnectorHeartbeat()", w.updateSeekBar)
 }
 
 func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
 	case "database":
-		whenIdle("updateLibrary()", w.updateLibrary, 0)
+		util.WhenIdle("updateLibrary()", w.updateLibrary, 0)
 	case "options":
-		whenIdle("updateOptions()", w.updateOptions, true)
+		util.WhenIdle("updateOptions()", w.updateOptions)
 	case "player":
-		whenIdle("updatePlayer()", w.updatePlayer, true)
+		util.WhenIdle("updatePlayer()", w.updatePlayer)
 	case "playlist":
-		whenIdle("updateQueue()", w.updateQueue)
+		util.WhenIdle("updateQueue()", func() {
+			w.updateQueue()
+			w.updatePlayer()
+		})
 	case "stored_playlist":
-		whenIdle("updatePlaylists()", w.updatePlaylists)
+		util.WhenIdle("updatePlaylists()", w.updatePlaylists)
 	}
 }
 
@@ -200,6 +197,54 @@ func (w *MainWindow) onAbout() {
 
 func (w *MainWindow) onMap() {
 	log.Debug("onMap()")
+
+	// Create actions
+	// Application
+	w.addAction("about", "F1", w.onAbout)
+	w.addAction("prefs", "<Ctrl>comma", w.notImplemented)
+	w.addAction("quit", "<Ctrl>Q", w.window.Close)
+	// Queue
+	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
+	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.connector.QueueClear)
+	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
+	w.addAction("queue.sort.artist.asc", "", func() { w.connector.QueueSort("Artist", false, false) })
+	w.addAction("queue.sort.artist.desc", "", func() { w.connector.QueueSort("Artist", false, true) })
+	w.addAction("queue.sort.album.asc", "", func() { w.connector.QueueSort("Album", false, false) })
+	w.addAction("queue.sort.album.desc", "", func() { w.connector.QueueSort("Album", false, true) })
+	w.addAction("queue.sort.title.asc", "", func() { w.connector.QueueSort("Title", false, false) })
+	w.addAction("queue.sort.title.desc", "", func() { w.connector.QueueSort("Title", false, true) })
+	w.addAction("queue.sort.number.asc", "", func() { w.connector.QueueSort("Track", true, false) })
+	w.addAction("queue.sort.number.desc", "", func() { w.connector.QueueSort("Track", true, true) })
+	w.addAction("queue.sort.length.asc", "", func() { w.connector.QueueSort("duration", true, false) })
+	w.addAction("queue.sort.length.desc", "", func() { w.connector.QueueSort("duration", true, true) })
+	w.addAction("queue.sort.fullpath.asc", "", func() { w.connector.QueueSort("file", false, false) })
+	w.addAction("queue.sort.fullpath.desc", "", func() { w.connector.QueueSort("file", false, true) })
+	w.addAction("queue.sort.year.asc", "", func() { w.connector.QueueSort("Date", true, false) })
+	w.addAction("queue.sort.year.desc", "", func() { w.connector.QueueSort("Date", true, true) })
+	w.addAction("queue.sort.genre.asc", "", func() { w.connector.QueueSort("Genre", false, false) })
+	w.addAction("queue.sort.genre.desc", "", func() { w.connector.QueueSort("Genre", false, true) })
+	w.addAction("queue.sort.shuffle", "", w.connector.QueueShuffle)
+	// Player
+	w.aPlayerPrevious = w.addAction("player.previous", "<Ctrl>Left", w.connector.PlayerPrevious)
+	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.connector.PlayerStop)
+	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.connector.PlayerPlayPause)
+	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.connector.PlayerNext)
+	// TODO convert to stateful actions once Gotk3 supporting GVariant is released
+	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", func() {
+		if !w.optionsUpdating {
+			w.connector.PlayerToggleRandom()
+		}
+	})
+	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", func() {
+		if !w.optionsUpdating {
+			w.connector.PlayerToggleRepeat()
+		}
+	})
+	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", func() {
+		if !w.optionsUpdating {
+			w.connector.PlayerToggleConsume()
+		}
+	})
 
 	// Start connecting
 	w.connector.Start()
@@ -265,68 +310,6 @@ func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event)
 	}
 }
 
-func (w *MainWindow) onPreviousClicked() {
-	log.Debug("onPreviousClicked()")
-	w.connector.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Previous(), "Previous() failed")
-	})
-}
-
-func (w *MainWindow) onStopClicked() {
-	log.Debug("onStopClicked()")
-	w.connector.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Stop(), "Stop() failed")
-	})
-}
-
-func (w *MainWindow) onPlayPauseClicked() {
-	log.Debug("onPlayPauseClicked()")
-	w.connector.IfConnected(func(client *mpd.Client) {
-		switch w.mpdStatus["state"] {
-		case "pause":
-			errCheck(client.Pause(false), "Pause(false) failed")
-		case "play":
-			errCheck(client.Pause(true), "Pause(true) failed")
-		default:
-			errCheck(client.Play(-1), "Play() failed")
-		}
-	})
-}
-
-func (w *MainWindow) onNextClicked() {
-	log.Debug("onNextClicked()")
-	w.connector.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Next(), "Next() failed")
-	})
-}
-
-func (w *MainWindow) onRandomToggled() {
-	if !w.optionsUpdating {
-		log.Debug("onRandomToggled()")
-		w.connector.IfConnected(func(client *mpd.Client) {
-			errCheck(client.Random(w.mpdStatus["random"] == "0"), "Random() failed")
-		})
-	}
-}
-
-func (w *MainWindow) onRepeatToggled() {
-	if !w.optionsUpdating {
-		log.Debug("onRepeatToggled()")
-		w.connector.IfConnected(func(client *mpd.Client) {
-			errCheck(client.Repeat(w.mpdStatus["repeat"] == "0"), "Repeat() failed")
-		})
-	}
-}
-
-func (w *MainWindow) onConsumeToggled() {
-	if !w.optionsUpdating {
-		log.Debug("onConsumeToggled()")
-		w.connector.IfConnected(func(client *mpd.Client) {
-			errCheck(client.Consume(w.mpdStatus["consume"] == "0"), "Consume() failed")
-		})
-	}
-}
-
 func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
 	switch gdk.EventButtonNewFromEvent(event).Type() {
 	case gdk.EVENT_BUTTON_PRESS:
@@ -358,20 +341,20 @@ func (w *MainWindow) applyLibrarySelection(replace bool) {
 	}
 
 	// Calculate final path
-	path := w.currentLibPath
-	if len(path) > 0 {
-		path += "/"
+	libPath := w.currentLibPath
+	if len(libPath) > 0 {
+		libPath += "/"
 	}
-	path += s[2:]
+	libPath += s[2:]
 
 	switch {
 	// Directory - navigate inside it
 	case strings.HasPrefix(s, "d:"):
-		w.setLibraryPath(path)
+		w.setLibraryPath(libPath)
 
 	// File - append/replace the queue
 	case strings.HasPrefix(s, "f:"):
-		w.queueOne(replace, path)
+		w.queueOne(replace, libPath)
 	}
 }
 
@@ -410,21 +393,6 @@ func (w *MainWindow) applyQueueSelection() {
 	// Start playback from the given index
 	w.connector.IfConnected(func(client *mpd.Client) {
 		errCheck(client.Play(indices[0]), "Play() failed")
-	})
-}
-
-// fetchStatus() updates stored MPD's status info
-func (w *MainWindow) fetchStatus() {
-	// Provide an empty map as fallback
-	w.mpdStatus = mpd.Attrs{}
-
-	// Request player status if there's a connection
-	w.connector.IfConnected(func(client *mpd.Client) {
-		status, err := client.Status()
-		if errCheck(err, "Status() failed") {
-			return
-		}
-		w.mpdStatus = status
 	})
 }
 
@@ -484,8 +452,8 @@ func (w *MainWindow) setLibraryPath(path string) {
 	w.lbxLibrary.GrabFocus()
 }
 
-// setQueueSelection() selects or deselects an item in the Queue tree view at the given index
-func (w *MainWindow) setQueueSelection(index int, selected bool) {
+// setQueueHighlight() selects or deselects an item in the Queue tree view at the given index
+func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	if index >= 0 {
 		if iter, err := w.lstQueue.GetIterFromString(strconv.Itoa(index)); err == nil {
 			weight := FontWeightNormal
@@ -506,19 +474,19 @@ func (w *MainWindow) setQueueSelection(index int, selected bool) {
 
 // updateAll() updates all player's widgets and lists
 func (w *MainWindow) updateAll() {
-	w.fetchStatus()
 	w.updateQueue()
 	w.updateLibraryPath()
 	w.updateLibrary(0)
 	w.updatePlaylists()
-	w.updateOptions(false)
-	w.updatePlayer(false)
+	w.updateOptions()
+	w.updatePlayer()
+	w.updateSeekBar()
 }
 
 // updateLibrary() updates the current library list contents
 func (w *MainWindow) updateLibrary(indexToSelect int) {
 	// Clear the library list
-	clearChildren(w.lbxLibrary.Container)
+	util.ClearChildren(w.lbxLibrary.Container)
 
 	// Update the library list if there's a connection
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -551,8 +519,8 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 
 			// Add a new list box row
 			name := strings.TrimPrefix(uri, pathPrefix)
-			row, hbx, err := newListBoxRow(w.lbxLibrary, name, prefix+name, iconName)
-			if errCheck(err, "newListBoxRow() failed") {
+			row, hbx, err := util.NewListBoxRow(w.lbxLibrary, name, prefix+name, iconName)
+			if errCheck(err, "NewListBoxRow() failed") {
 				return
 			}
 			if indexToSelect == idxRow {
@@ -560,8 +528,8 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 			}
 
 			// Add replace/append buttons
-			hbx.PackEnd(newButton("", "Append to the queue", "", "list-add", func() { w.queueOne(false, uri) }), false, false, 0)
-			hbx.PackEnd(newButton("", "Replace the queue", "", "edit-paste", func() { w.queueOne(true, uri) }), false, false, 0)
+			hbx.PackEnd(util.NewButton("", "Append to the queue", "", "list-add", func() { w.queueOne(false, uri) }), false, false, 0)
+			hbx.PackEnd(util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queueOne(true, uri) }), false, false, 0)
 
 			// Add a label with track length, if any
 			if secs := util.ParseFloatDef(a["duration"], 0); secs > 0 {
@@ -587,28 +555,28 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 // updateLibraryPath() updates the current library path selector
 func (w *MainWindow) updateLibraryPath() {
 	// Remove all buttons from the box
-	clearChildren(w.bxLibraryPath.Container)
+	util.ClearChildren(w.bxLibraryPath.Container)
 
 	// Create buttons if there's a connection
 	w.connector.IfConnected(func(client *mpd.Client) {
 		// Create a button for "root"
-		newBoxToggleButton(w.bxLibraryPath, "Files", "", "drive-harddisk", w.currentLibPath == "", func() { w.setLibraryPath("") })
+		util.NewBoxToggleButton(w.bxLibraryPath, "Files", "", "drive-harddisk", w.currentLibPath == "", func() { w.setLibraryPath("") })
 
 		// Create buttons for path elements
 		if len(w.currentLibPath) > 0 {
-			path := ""
+			libPath := ""
 			for i, s := range strings.Split(w.currentLibPath, "/") {
 				// Accumulate path
 				if i > 0 {
-					path += "/"
+					libPath += "/"
 				}
-				path += s
+				libPath += s
 
-				// Create a local (in-loop) copy of path to use in the click event closure below
-				pathCopy := path
+				// Create a local (in-loop) copy of libPath to use in the click event closure below
+				pathCopy := libPath
 
 				// Create a button. The last button must be depressed
-				newBoxToggleButton(w.bxLibraryPath, s, "", "folder", path == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
+				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
 			}
 		}
 
@@ -618,35 +586,24 @@ func (w *MainWindow) updateLibraryPath() {
 }
 
 // updateOptions() updates player options widgets
-func (w *MainWindow) updateOptions(fetchStatus bool) {
-	// Fetch MPD status, if needed
-	if fetchStatus {
-		w.fetchStatus()
-	}
-
-	// Update option widgets
+func (w *MainWindow) updateOptions() {
 	w.optionsUpdating = true
-	w.btnRandom.SetActive(w.mpdStatus["random"] == "1")
-	w.btnRepeat.SetActive(w.mpdStatus["repeat"] == "1")
-	w.btnConsume.SetActive(w.mpdStatus["consume"] == "1")
+	status := w.connector.Status()
+	w.btnRandom.SetActive(status["random"] == "1")
+	w.btnRepeat.SetActive(status["repeat"] == "1")
+	w.btnConsume.SetActive(status["consume"] == "1")
 	w.optionsUpdating = false
 }
 
 // updatePlayer() updates player control widgets
-func (w *MainWindow) updatePlayer(fetchStatus bool) {
+func (w *MainWindow) updatePlayer() {
 	connected := true
-
-	// Fetch MPD status, if needed
-	if fetchStatus {
-		w.fetchStatus()
-	}
-
-	// Process player state
 	w.connector.IfConnectedElse(
 		// Connected
 		func(client *mpd.Client) {
 			// Update play/pause button's appearance
-			switch w.mpdStatus["state"] {
+			status := w.connector.Status()
+			switch status["state"] {
 			case "play":
 				w.btnPlayPause.SetIconName("media-playback-pause")
 			default:
@@ -655,33 +612,32 @@ func (w *MainWindow) updatePlayer(fetchStatus bool) {
 
 			// Fetch current song
 			curSong, err := client.CurrentSong()
-			str := ""
-			switch {
-			case err != nil:
-				errCheck(err, "CurrentSong() failed")
+			var str string
+			if errCheck(err, "CurrentSong() failed") {
 				str = fmt.Sprintf("Error: %v", err)
-			case curSong["Artist"] != "" || curSong["Album"] != "" || curSong["Title"] != "":
-				str = fmt.Sprintf("%v • %v • %v", curSong["Artist"], curSong["Album"], curSong["Title"])
-			case curSong["Name"] != "":
-				str = curSong["Name"]
-			default:
-				str = "(unknown)"
-			}
-			w.lblStatus.SetText(str)
+			} else {
+				// Try to determine track's display name. First check artist/album/title
+				log.Debugf("Current track: %+v", curSong)
+				artist, okArtist := curSong["Artist"]
+				album, okAlbum := curSong["Album"]
+				title, okTitle := curSong["Title"]
+				if okArtist || okAlbum || okTitle {
+					str = fmt.Sprintf("%v • %v • %v", artist, album, title)
 
-			// Update queue selection
-			if curIdx := util.AtoiDef(w.mpdStatus["song"], -1); w.currentIndex != curIdx {
-				w.setQueueSelection(w.currentIndex, false)
-				w.setQueueSelection(curIdx, true)
-				w.currentIndex = curIdx
-			}
+				} else if name, ok := curSong["Name"]; ok {
+					// Next, check name
+					str = name
 
-			// Scroll the tree to the currently played item
-			if w.currentIndex >= 0 {
-				if path, err := gtk.TreePathNewFromString(strconv.Itoa(w.currentIndex)); err == nil {
-					w.trvQueue.ScrollToCell(path, nil, true, 0.5, 0)
+				} else if file, ok := curSong["file"]; ok {
+					// Then use the file's base name
+					str = path.Base(file)
+
+				} else {
+					// All failed
+					str = "(unknown)"
 				}
 			}
+			w.lblStatus.SetText(str)
 		},
 		// Disconnected
 		func() {
@@ -689,19 +645,26 @@ func (w *MainWindow) updatePlayer(fetchStatus bool) {
 			connected = false
 		})
 
+	// Highlight and scroll the tree to the currently played item
+	w.updateQueueNowPlaying()
+
 	// Enable or disable widgets based on the connection status
-	w.btnPrevious.SetSensitive(connected)
-	w.btnPlayPause.SetSensitive(connected)
-	w.btnNext.SetSensitive(connected)
-	w.btnRandom.SetSensitive(connected)
-	w.btnRepeat.SetSensitive(connected)
-	w.btnConsume.SetSensitive(connected)
+	w.aQueueNowPlaying.SetEnabled(connected)
+	w.aQueueClear.SetEnabled(connected)
+	w.aQueueSort.SetEnabled(connected)
+	w.aPlayerPrevious.SetEnabled(connected)
+	w.aPlayerStop.SetEnabled(connected)
+	w.aPlayerPlayPause.SetEnabled(connected)
+	w.aPlayerNext.SetEnabled(connected)
+	w.aPlayerRandom.SetEnabled(connected)
+	w.aPlayerRepeat.SetEnabled(connected)
+	w.aPlayerConsume.SetEnabled(connected)
 }
 
 // updatePlaylists() updates the current playlists list contents
 func (w *MainWindow) updatePlaylists() {
 	// Clear the playlists list
-	clearChildren(w.lbxPlaylists.Container)
+	util.ClearChildren(w.lbxPlaylists.Container)
 
 	// Update playlists if there's a connection
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -714,14 +677,14 @@ func (w *MainWindow) updatePlaylists() {
 		// Repopulate the playlists list
 		for _, a := range attrs {
 			name := a["playlist"]
-			_, hbx, err := newListBoxRow(w.lbxPlaylists, name, name, "format-justify-left")
-			if errCheck(err, "newListBoxRow() failed") {
+			_, hbx, err := util.NewListBoxRow(w.lbxPlaylists, name, name, "format-justify-left")
+			if errCheck(err, "NewListBoxRow() failed") {
 				return
 			}
 
 			// Add replace/append buttons
-			hbx.PackEnd(newButton("", "Append to the queue", "", "list-add", func() { w.queuePlaylist(false, name) }), false, false, 0)
-			hbx.PackEnd(newButton("", "Replace the queue", "", "edit-paste", func() { w.queuePlaylist(true, name) }), false, false, 0)
+			hbx.PackEnd(util.NewButton("", "Append to the queue", "", "list-add", func() { w.queuePlaylist(false, name) }), false, false, 0)
+			hbx.PackEnd(util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queuePlaylist(true, name) }), false, false, 0)
 		}
 
 		// Show all rows
@@ -789,8 +752,28 @@ func (w *MainWindow) updateQueue() {
 		}
 	})
 
+	// Highlight and scroll the tree to the currently played item
+	w.updateQueueNowPlaying()
+
 	// Update the queue info
 	w.lblQueueInfo.SetText(status)
+}
+
+// updateQueueNowPlaying() scrolls the queue tree view to the currently played track
+func (w *MainWindow) updateQueueNowPlaying() {
+	// Update queue highlight
+	if curIdx := util.AtoiDef(w.connector.Status()["song"], -1); w.currentIndex != curIdx {
+		w.setQueueHighlight(w.currentIndex, false)
+		w.setQueueHighlight(curIdx, true)
+		w.currentIndex = curIdx
+	}
+
+	// Scroll to the currently playing
+	if w.currentIndex >= 0 {
+		if treePath, err := gtk.TreePathNewFromString(strconv.Itoa(w.currentIndex)); err == nil {
+			w.trvQueue.ScrollToCell(treePath, nil, true, 0.5, 0)
+		}
+	}
 }
 
 // updateSeekBar() updates the seek bar position and status
@@ -803,8 +786,9 @@ func (w *MainWindow) updateSeekBar() {
 	// Update the seek bar position if there's a connection
 	seekable := false
 	w.connector.IfConnected(func(client *mpd.Client) {
-		trackLen := util.ParseFloatDef(w.mpdStatus["duration"], -1)
-		trackPos := util.ParseFloatDef(w.mpdStatus["elapsed"], -1)
+		status := w.connector.Status()
+		trackLen := util.ParseFloatDef(status["duration"], -1)
+		trackPos := util.ParseFloatDef(status["elapsed"], -1)
 		seekable = trackLen >= 0 && trackPos >= 0
 		w.adjPlayPosition.SetUpper(trackLen)
 		w.adjPlayPosition.SetValue(trackPos)

@@ -9,18 +9,16 @@ import (
 func AtoiDef(s string, def int) int {
 	if i, err := strconv.Atoi(s); err == nil {
 		return i
-	} else {
-		return def
 	}
+	return def
 }
 
 // ParseFloatDef() converts a string into a float64, returning the given default value if conversion failed
 func ParseFloatDef(s string, def float64) float64 {
 	if f, err := strconv.ParseFloat(s, 32); err == nil {
 		return f
-	} else {
-		return def
 	}
+	return def
 }
 
 // FormatSeconds() formats a number seconds as a string

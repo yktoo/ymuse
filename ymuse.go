@@ -37,7 +37,7 @@ func main() {
 
 func onActivate(application *gtk.Application) {
 	// Create the main window
-	if window, err := player.NewMainWindow(application, ":6600"); err != nil {
+	if window, err := player.NewMainWindow(application); err != nil {
 		log.Fatal("Could not create application window", err)
 	} else {
 		window.Show()

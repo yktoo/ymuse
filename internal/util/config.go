@@ -25,6 +25,8 @@ with this program. If not, see http://www.gnu.org/licenses/`
 
 type Config struct {
 	LogLevel               logging.Level // The logging level
+	MpdAddress             string        // MPD's IP address or hostname and port number
+	MpdPassword            string        // MPD's password (optional)
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
 }
@@ -32,6 +34,8 @@ type Config struct {
 // Config singleton with all the defaults
 var config = &Config{
 	LogLevel:               logging.WARNING,
+	MpdAddress:             ":6600",
+	MpdPassword:            "",
 	TrackDefaultReplace:    false,
 	PlaylistDefaultReplace: true,
 }

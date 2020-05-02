@@ -8,6 +8,16 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkImage" id="imgDropdown">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">go-down</property>
+  </object>
+  <object class="GtkImage" id="imgNowPlaying">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">mail-send</property>
+  </object>
   <object class="GtkListStore" id="lstQueue">
     <columns>
       <!-- column-name artist -->
@@ -84,20 +94,60 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolbar" id="tbQueue">
+                  <object class="GtkBox" id="bxQueueToolbar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_left">6</property>
+                    <property name="margin_right">6</property>
+                    <property name="margin_top">6</property>
+                    <property name="margin_bottom">6</property>
+                    <property name="spacing">6</property>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueShuffle">
+                      <object class="GtkButton" id="btnQueueNowPlaying">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Shuffle</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">media-playlist-shuffle</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Jump to the currently played track</property>
+                        <property name="action_name">app.queue.now-playing</property>
+                        <property name="image">imgNowPlaying</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="homogeneous">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="btnQueueClear">
+                        <property name="label" translatable="yes">Clear</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Clear the queue</property>
+                        <property name="action_name">app.queue.clear</property>
+                        <property name="always_show_image">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="btnQueueSort">
+                        <property name="label" translatable="yes">Sort</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="action_name">app.queue.sort</property>
+                        <property name="image">imgDropdown</property>
+                        <property name="image_position">right</property>
+                        <property name="always_show_image">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
@@ -261,7 +311,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="bxLibrary">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
@@ -385,10 +435,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Previous track</property>
+                    <property name="action_name">app.player.previous</property>
                     <property name="label" translatable="yes">Previous</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-skip-backward</property>
-                    <signal name="clicked" handler="on_btnPrevious_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -400,10 +450,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Stop playback</property>
+                    <property name="action_name">app.player.stop</property>
                     <property name="label" translatable="yes">Stop</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playback-stop</property>
-                    <signal name="clicked" handler="on_btnStop_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -415,10 +465,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Pause or resume playback</property>
+                    <property name="action_name">app.player.play-pause</property>
                     <property name="label" translatable="yes">Play/Pause</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playback-start</property>
-                    <signal name="clicked" handler="on_btnPlayPause_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -430,10 +480,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Next track</property>
+                    <property name="action_name">app.player.next</property>
                     <property name="label" translatable="yes">Next</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-skip-forward</property>
-                    <signal name="clicked" handler="on_btnNext_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -455,10 +505,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Shuffle mode</property>
+                    <property name="action_name">app.player.toggle.random</property>
                     <property name="label" translatable="yes">Random</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playlist-shuffle</property>
-                    <signal name="toggled" handler="on_btnRandom_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -470,10 +520,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Repeat mode</property>
+                    <property name="action_name">app.player.toggle.repeat</property>
                     <property name="label" translatable="yes">Repeat</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">media-playlist-repeat</property>
-                    <signal name="toggled" handler="on_btnRepeat_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -485,10 +535,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Consume mode</property>
+                    <property name="action_name">app.player.toggle.consume</property>
                     <property name="label" translatable="yes">Consume</property>
                     <property name="use_underline">True</property>
                     <property name="icon_name">edit-cut</property>
-                    <signal name="toggled" handler="on_btnConsume_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -610,6 +660,366 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkPopoverMenu" id="pmnQueueSort">
+    <property name="can_focus">False</property>
+    <property name="relative_to">btnQueueSort</property>
+    <child>
+      <object class="GtkBox" id="bxQueueSort">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_left">12</property>
+        <property name="margin_right">12</property>
+        <property name="margin_top">12</property>
+        <property name="margin_bottom">12</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkGrid">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="column_spacing">6</property>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortArtistTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By artist</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortAlbumTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By album</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortTitleTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By track title</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortNumberTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By track number</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortLengthTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By track length</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortFullPathTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By directory and file name</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortYearTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By year</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblQueueSortGenreTitle">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">By genre</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortArtistAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.artist.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortAlbumAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.album.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortTitleAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.title.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortNumberAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.number.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortLengthAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.length.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortFullPathAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.fullpath.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortYearAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.year.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortGenreAsc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.genre.asc</property>
+                <property name="text" translatable="yes">Ascending</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortArtistDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.artist.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortAlbumDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.album.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortTitleDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.title.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortNumberDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.number.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortLengthDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.length.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortFullPathDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.fullpath.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortYearDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.year.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="btnQueueSortGenreDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="action_name">app.queue.sort.genre.desc</property>
+                <property name="text" translatable="yes">Descending</property>
+              </object>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="top_attach">7</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="btnQueueSortShuffle">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.queue.sort.shuffle</property>
+            <property name="text" translatable="yes">Shuffle</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

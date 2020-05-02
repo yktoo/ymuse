@@ -1,4 +1,4 @@
-package player
+package util
 
 import (
 	"github.com/gotk3/gotk3/glib"
@@ -6,21 +6,21 @@ import (
 	"github.com/gotk3/gotk3/pango"
 )
 
-// whenIdle() schedules a function call on GLib's main loop thread
-func whenIdle(name string, f interface{}, args ...interface{}) {
+// WhenIdle() schedules a function call on GLib's main loop thread
+func WhenIdle(name string, f interface{}, args ...interface{}) {
 	_, err := glib.IdleAdd(f, args...)
 	errCheck(err, "glib.IdleAdd() failed for "+name)
 }
 
-// clearChildren() removes all container's children
-func clearChildren(container gtk.Container) {
+// ClearChildren() removes all container's children
+func ClearChildren(container gtk.Container) {
 	container.GetChildren().Foreach(func(item interface{}) {
 		container.Remove(item.(gtk.IWidget))
 	})
 }
 
-// newButton() creates and returns a new button
-func newButton(label, tooltip, name, icon string, onClicked interface{}, onClickedData ...interface{}) *gtk.Button {
+// NewButton() creates and returns a new button
+func NewButton(label, tooltip, name, icon string, onClicked interface{}, onClickedData ...interface{}) *gtk.Button {
 	btn, err := gtk.ButtonNewWithLabel(label)
 	if errCheck(err, "ButtonNewWithLabel() failed") {
 		return nil
@@ -45,8 +45,8 @@ func newButton(label, tooltip, name, icon string, onClicked interface{}, onClick
 	return btn
 }
 
-// newBoxToggleButton() creates, adds to a box and returns a new toggle button
-func newBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onClicked interface{}, onClickedData ...interface{}) *gtk.ToggleButton {
+// NewBoxToggleButton() creates, adds to a box and returns a new toggle button
+func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onClicked interface{}, onClickedData ...interface{}) *gtk.ToggleButton {
 	btn, err := gtk.ToggleButtonNewWithLabel(label)
 	if errCheck(err, "ToggleButtonNewWithLabel() failed") {
 		return nil
@@ -74,12 +74,12 @@ func newBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 	return btn
 }
 
-// newListBoxRow() adds a new row to the list box, a horizontal box, an image and a label to it
+// NewListBoxRow() adds a new row to the list box, a horizontal box, an image and a label to it
 // listBox: list box instance
 // label: text for the row
 // name: name of the row
 // icon: optional icon name for the row
-func newListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBoxRow, *gtk.Box, error) {
+func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBoxRow, *gtk.Box, error) {
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
 	if err != nil {
