@@ -99,6 +99,13 @@ func (c *Connector) IfConnectedElse(funcIfConnected func(client *mpd.Client), fu
 	}
 }
 
+// IsConnected() returns whether there's a connection with MPD
+func (c *Connector) IsConnected() bool {
+	c.mpdClientMutex.Lock()
+	defer c.mpdClientMutex.Unlock()
+	return c.mpdClient != nil
+}
+
 // PlayerPrevious() rewinds the player to the previous track
 func (c *Connector) PlayerPrevious() {
 	c.IfConnected(func(client *mpd.Client) {

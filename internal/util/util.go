@@ -30,7 +30,7 @@ func FormatSeconds(seconds float64) string {
 	case days > 1:
 		return fmt.Sprintf("%d days %d:%02d:%02d", days, hrs, mins, secs)
 	case days == 1:
-		return fmt.Sprintf("One day %d:%02d:%02d", hrs, mins, secs)
+		return fmt.Sprintf("one day %d:%02d:%02d", hrs, mins, secs)
 	case hours >= 1:
 		return fmt.Sprintf("%d:%02d:%02d", hrs, mins, secs)
 	default:

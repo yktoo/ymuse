@@ -117,3 +117,85 @@ func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBox
 	listBox.Add(row)
 	return row, hbx, nil
 }
+
+// NotImplemented() shows a "function not implemented" message dialog
+func NotImplemented(parent gtk.IWindow) {
+	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Function not implemented.")
+	defer dlg.Destroy()
+	dlg.Run()
+}
+
+// ConfirmDialog() shows a confirmation message dialog
+func ConfirmDialog(parent gtk.IWindow, text string) bool {
+	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, text)
+	defer dlg.Destroy()
+	return dlg.Run() == gtk.RESPONSE_OK
+}
+
+// ErrorDialog() shows an error message dialog
+func ErrorDialog(parent gtk.IWindow, text string) {
+	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text)
+	defer dlg.Destroy()
+	dlg.Run()
+}
+
+// EditDialog() show a dialog with a single text entry
+func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool) {
+	// Create a dialog
+	dlg, err := gtk.DialogNewWithButtons(
+		title,
+		parent,
+		gtk.DIALOG_MODAL,
+		[]interface{}{okButton, gtk.RESPONSE_OK},
+		[]interface{}{"Cancel", gtk.RESPONSE_CANCEL})
+	if errCheck(err, "DialogNewWithButtons() failed") {
+		return "", false
+	}
+	defer dlg.Destroy()
+
+	// Obtain the dialog's content area
+	bx, err := dlg.GetContentArea()
+	if errCheck(err, "GetContentArea() failed") {
+		return "", false
+	}
+
+	// Add a text entry to the dialog
+	entry, err := gtk.EntryNew()
+	if errCheck(err, "EntryNew() failed") {
+		return "", false
+	}
+	entry.SetSizeRequest(400, -1)
+	entry.SetText(value)
+	entry.SetMarginStart(12)
+	entry.SetMarginEnd(12)
+	entry.SetMarginTop(12)
+	entry.SetMarginBottom(12)
+	entry.GrabFocus()
+	bx.Add(entry)
+
+	bx.ShowAll()
+
+	// Enable or disable the OK button based on text presence
+	validate := func() {
+		if w, err := dlg.GetWidgetForResponse(gtk.RESPONSE_OK); err == nil {
+			text, err := entry.GetText()
+			w.SetSensitive(err == nil && text != "")
+		}
+	}
+	_, _ = entry.Connect("changed", validate)
+	_, _ = dlg.Connect("map", validate)
+	dlg.SetDefaultResponse(gtk.RESPONSE_OK)
+
+	// Run the dialog
+	response := dlg.Run()
+	value, err = entry.GetText()
+	if errCheck(err, "entry.GetText() failed") {
+		return "", false
+	}
+
+	// Check the response
+	if response == gtk.RESPONSE_OK {
+		return value, true
+	}
+	return "", false
+}

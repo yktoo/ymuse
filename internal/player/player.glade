@@ -8,16 +8,6 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkImage" id="imgDropdown">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">go-down</property>
-  </object>
-  <object class="GtkImage" id="imgNowPlaying">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">mail-send</property>
-  </object>
   <object class="GtkListStore" id="lstQueue">
     <columns>
       <!-- column-name artist -->
@@ -49,6 +39,7 @@
       <object class="GtkHeaderBar" id="hdbMain">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Ymuse</property>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkStackSwitcher" id="stswMain">
@@ -79,75 +70,71 @@
       <object class="GtkBox" id="bxMain">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">6</property>
+        <property name="margin_right">6</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
         <child>
           <object class="GtkStack" id="stkClient">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <property name="transition_type">crossfade</property>
+            <property name="transition_type">slide-left-right</property>
             <child>
               <object class="GtkBox" id="bxQueue">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox" id="bxQueueToolbar">
+                  <object class="GtkToolbar" id="tbLibrary">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
-                    <property name="margin_right">6</property>
-                    <property name="margin_top">6</property>
-                    <property name="margin_bottom">6</property>
-                    <property name="spacing">6</property>
+                    <property name="icon_size">2</property>
                     <child>
-                      <object class="GtkButton" id="btnQueueNowPlaying">
+                      <object class="GtkToolButton" id="btnQueueNowPlaying">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Jump to the currently played track</property>
                         <property name="action_name">app.queue.now-playing</property>
-                        <property name="image">imgNowPlaying</property>
+                        <property name="label" translatable="yes">Now playing</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">audio-card</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btnQueueClear">
-                        <property name="label" translatable="yes">Clear</property>
+                      <object class="GtkToolButton" id="btnQueueClear">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Clear the queue</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Clear the play queue</property>
                         <property name="action_name">app.queue.clear</property>
-                        <property name="always_show_image">True</property>
+                        <property name="label" translatable="yes">Clear</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">edit-delete</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="btnQueueSort">
-                        <property name="label" translatable="yes">Sort</property>
+                      <object class="GtkToolButton" id="btnQueueSort">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Sort the play queue</property>
                         <property name="action_name">app.queue.sort</property>
-                        <property name="image">imgDropdown</property>
-                        <property name="image_position">right</property>
-                        <property name="always_show_image">True</property>
+                        <property name="label" translatable="yes">Sort</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">view-sort-descending</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </object>
@@ -362,6 +349,23 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkLabel" id="lblLibraryInfo">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">False</property>
+                    <property name="label" translatable="yes">...</property>
+                    <property name="ellipsize">end</property>
+                    <property name="track_visited_links">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">6</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="name">library</property>
@@ -370,25 +374,112 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="swPlaylists">
+              <object class="GtkBox" id="bxPlaylists">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="shadow_type">in</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkViewport" id="vwpPlaylists">
+                  <object class="GtkToolbar" id="tbPlaylists">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="icon_size">2</property>
                     <child>
-                      <object class="GtkListBox" id="lbxPlaylists">
+                      <object class="GtkToolButton" id="btnPlaylistsNew">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <signal name="button-press-event" handler="on_lbxPlaylists_buttonPress" swapped="no"/>
-                        <signal name="key-press-event" handler="on_lbxPlaylists_keyPress" swapped="no"/>
+                        <property name="tooltip_text" translatable="yes">New playlist</property>
+                        <property name="action_name">app.playlist.new</property>
+                        <property name="label" translatable="yes">New playlist</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">list-add</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnPlaylistsRename">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Rename selected playlist</property>
+                        <property name="action_name">app.playlist.rename</property>
+                        <property name="label" translatable="yes">Rename playlist</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">gtk-edit</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnPlaylistsNew2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Delete selected playlist</property>
+                        <property name="action_name">app.playlist.delete</property>
+                        <property name="label" translatable="yes">Delete playlist</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">list-remove</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="swPlaylists">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkViewport" id="vwpPlaylists">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkListBox" id="lbxPlaylists">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <signal name="button-press-event" handler="on_lbxPlaylists_buttonPress" swapped="no"/>
+                            <signal name="key-press-event" handler="on_lbxPlaylists_keyPress" swapped="no"/>
+                            <signal name="selected-rows-changed" handler="on_lbxPlaylists_selectionChange" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="lblPlaylistsInfo">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">False</property>
+                    <property name="label" translatable="yes">...</property>
+                    <property name="ellipsize">end</property>
+                    <property name="track_visited_links">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">6</property>
+                    <property name="position">2</property>
+                  </packing>
                 </child>
               </object>
               <packing>
@@ -405,11 +496,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lblStatus">
+          <object class="GtkSeparator" id="sepPlayerBottom">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="ellipsize">middle</property>
-            <property name="track_visited_links">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -418,9 +507,26 @@
           </packing>
         </child>
         <child>
+          <object class="GtkLabel" id="lblStatus">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">6</property>
+            <property name="justify">center</property>
+            <property name="ellipsize">end</property>
+            <property name="track_visited_links">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">6</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkBox" id="bxBottomBar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_bottom">6</property>
             <property name="hexpand">True</property>
             <property name="vexpand">False</property>
             <property name="border_width">1</property>
@@ -591,7 +697,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </object>
@@ -682,7 +788,7 @@
         <property name="margin_bottom">12</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkGrid">
+          <object class="GtkGrid" id="gQueueSort">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="column_spacing">6</property>
