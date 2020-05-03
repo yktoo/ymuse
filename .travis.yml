@@ -4,6 +4,9 @@ go:
 
 go_import_path: github.com/yktoo/ymuse
 
+before_install:
+    - sudo apt-get -y install libgtk-3-dev
+
 script:
     - go install -v ./...
     # Verify no formatting issues
