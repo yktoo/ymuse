@@ -1,0 +1,9 @@
+language: go
+go_import_path: github.com/yktoo/ymuse
+
+script:
+  - go install -v ./...
+  # Verify no formatting issues
+  - test `gofmt -l . | wc -l` = 0
+  # Run tests
+  - go test -v ./...
