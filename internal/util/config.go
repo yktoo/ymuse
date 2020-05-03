@@ -3,6 +3,8 @@ package util
 import (
 	"flag"
 	"github.com/op/go-logging"
+	"os"
+	"strings"
 	"sync"
 )
 
@@ -44,6 +46,13 @@ var once sync.Once
 // GetConfig() returns a global Config instance
 func GetConfig() *Config {
 	once.Do(func() {
+		// Ignore if we're testing
+		for _, arg := range os.Args {
+			if strings.Contains(arg, "-test.") {
+				return
+			}
+		}
+
 		// Process command line
 		verbInfo := flag.Bool("v", false, "verbose logging")
 		verbDebug := flag.Bool("vv", false, "more verbose logging")
