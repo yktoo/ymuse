@@ -183,11 +183,13 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueArtist">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="fixed_width">200</property>
                             <property name="title" translatable="yes">Artist</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueArtist"/>
                               <attributes>
@@ -199,10 +201,12 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueYear">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">Year</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueYear">
                                 <property name="alignment">right</property>
@@ -216,11 +220,13 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueAlbum">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="fixed_width">200</property>
                             <property name="title" translatable="yes">Album</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueAlbum"/>
                               <attributes>
@@ -232,10 +238,12 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueNumber">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">#</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueNumber">
                                 <property name="alignment">right</property>
@@ -249,11 +257,13 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueTrack">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="fixed_width">200</property>
                             <property name="title" translatable="yes">Track</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueTrack">
                                 <property name="alignment">right</property>
@@ -267,10 +277,12 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn">
+                          <object class="GtkTreeViewColumn" id="tvColQueueLength">
                             <property name="resizable">True</property>
                             <property name="sizing">fixed</property>
                             <property name="title" translatable="yes">Length</property>
+                            <property name="clickable">True</property>
+                            <signal name="clicked" handler="on_trvQueue_colClicked" swapped="no"/>
                             <child>
                               <object class="GtkCellRendererText" id="colQueueLength">
                                 <property name="alignment">right</property>

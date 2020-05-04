@@ -168,6 +168,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_mainWindow_map":               w.onMap,
 		"on_trvQueue_buttonPress":         w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":            w.onQueueTreeViewKeyPress,
+		"on_trvQueue_colClicked":          w.onQueueTreeViewColClicked,
 		"on_lbxLibrary_buttonPress":       w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":          w.onLibraryListBoxKeyPress,
 		"on_lbxPlaylists_buttonPress":     w.onPlaylistListBoxButtonPress,
@@ -336,6 +337,48 @@ func (w *MainWindow) onPlaylistRename() {
 
 	// Check for error (outside IfConnected() because it would keep the client locked)
 	w.errCheckDialog(err, "Failed to rename the playlist")
+}
+
+func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn) {
+	// Determine the sort order: on first click on a column ascending, on next descending
+	descending := col.GetSortIndicator() && col.GetSortOrder() == gtk.SORT_ASCENDING
+	sortType := gtk.SORT_ASCENDING
+	if descending {
+		sortType = gtk.SORT_DESCENDING
+	}
+
+	// Determine the index of the clicked column
+	i, colIndex := 0, -1
+	title := col.GetTitle()
+	for c := w.trvQueue.GetColumns(); c != nil; c = c.Next() {
+		// Need to resort to comparison by title for no better alternative is available
+		item := c.Data().(*gtk.TreeViewColumn)
+		thisCol := item.GetTitle() == title
+		if thisCol {
+			colIndex = i
+			// Set sort direction
+			item.SetSortOrder(sortType)
+		}
+		// Update the column's sort indicator
+		item.SetSortIndicator(thisCol)
+		i++
+	}
+
+	// Sort the queue
+	switch colIndex {
+	case ColQueue_Artist:
+		w.queueSort("Artist", false, descending)
+	case ColQueue_Year:
+		w.queueSort("Date", true, descending)
+	case ColQueue_Album:
+		w.queueSort("Album", false, descending)
+	case ColQueue_Number:
+		w.queueSort("Track", true, descending)
+	case ColQueue_Track:
+		w.queueSort("Title", false, descending)
+	case ColQueue_Length:
+		w.queueSort("duration", true, descending)
+	}
 }
 
 func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Event) {
