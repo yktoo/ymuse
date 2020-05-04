@@ -26,6 +26,7 @@ import (
 	"html"
 	"html/template"
 	"path"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -250,50 +251,38 @@ func (w *MainWindow) onMap() {
 	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
 	// Queue
 	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
-	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.connector.QueueClear)
+	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.queueClear)
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
-	w.addAction("queue.sort.artist.asc", "", func() { w.connector.QueueSort("Artist", false, false) })
-	w.addAction("queue.sort.artist.desc", "", func() { w.connector.QueueSort("Artist", false, true) })
-	w.addAction("queue.sort.album.asc", "", func() { w.connector.QueueSort("Album", false, false) })
-	w.addAction("queue.sort.album.desc", "", func() { w.connector.QueueSort("Album", false, true) })
-	w.addAction("queue.sort.title.asc", "", func() { w.connector.QueueSort("Title", false, false) })
-	w.addAction("queue.sort.title.desc", "", func() { w.connector.QueueSort("Title", false, true) })
-	w.addAction("queue.sort.number.asc", "", func() { w.connector.QueueSort("Track", true, false) })
-	w.addAction("queue.sort.number.desc", "", func() { w.connector.QueueSort("Track", true, true) })
-	w.addAction("queue.sort.length.asc", "", func() { w.connector.QueueSort("duration", true, false) })
-	w.addAction("queue.sort.length.desc", "", func() { w.connector.QueueSort("duration", true, true) })
-	w.addAction("queue.sort.fullpath.asc", "", func() { w.connector.QueueSort("file", false, false) })
-	w.addAction("queue.sort.fullpath.desc", "", func() { w.connector.QueueSort("file", false, true) })
-	w.addAction("queue.sort.year.asc", "", func() { w.connector.QueueSort("Date", true, false) })
-	w.addAction("queue.sort.year.desc", "", func() { w.connector.QueueSort("Date", true, true) })
-	w.addAction("queue.sort.genre.asc", "", func() { w.connector.QueueSort("Genre", false, false) })
-	w.addAction("queue.sort.genre.desc", "", func() { w.connector.QueueSort("Genre", false, true) })
-	w.addAction("queue.sort.shuffle", "", w.connector.QueueShuffle)
+	w.addAction("queue.sort.artist.asc", "", func() { w.queueSort("Artist", false, false) })
+	w.addAction("queue.sort.artist.desc", "", func() { w.queueSort("Artist", false, true) })
+	w.addAction("queue.sort.album.asc", "", func() { w.queueSort("Album", false, false) })
+	w.addAction("queue.sort.album.desc", "", func() { w.queueSort("Album", false, true) })
+	w.addAction("queue.sort.title.asc", "", func() { w.queueSort("Title", false, false) })
+	w.addAction("queue.sort.title.desc", "", func() { w.queueSort("Title", false, true) })
+	w.addAction("queue.sort.number.asc", "", func() { w.queueSort("Track", true, false) })
+	w.addAction("queue.sort.number.desc", "", func() { w.queueSort("Track", true, true) })
+	w.addAction("queue.sort.length.asc", "", func() { w.queueSort("duration", true, false) })
+	w.addAction("queue.sort.length.desc", "", func() { w.queueSort("duration", true, true) })
+	w.addAction("queue.sort.fullpath.asc", "", func() { w.queueSort("file", false, false) })
+	w.addAction("queue.sort.fullpath.desc", "", func() { w.queueSort("file", false, true) })
+	w.addAction("queue.sort.year.asc", "", func() { w.queueSort("Date", true, false) })
+	w.addAction("queue.sort.year.desc", "", func() { w.queueSort("Date", true, true) })
+	w.addAction("queue.sort.genre.asc", "", func() { w.queueSort("Genre", false, false) })
+	w.addAction("queue.sort.genre.desc", "", func() { w.queueSort("Genre", false, true) })
+	w.addAction("queue.sort.shuffle", "", w.queueShuffle)
 	// Playlist
 	w.aPlaylistNew = w.addAction("playlist.new", "", w.onPlaylistNew)
 	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
 	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
 	// Player
-	w.aPlayerPrevious = w.addAction("player.previous", "<Ctrl>Left", w.connector.PlayerPrevious)
-	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.connector.PlayerStop)
-	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.connector.PlayerPlayPause)
-	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.connector.PlayerNext)
+	w.aPlayerPrevious = w.addAction("player.previous", "<Ctrl>Left", w.playerPrevious)
+	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.playerStop)
+	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.playerPlayPause)
+	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.playerNext)
 	// TODO convert to stateful actions once Gotk3 supporting GVariant is released
-	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", func() {
-		if !w.optionsUpdating {
-			w.connector.PlayerToggleRandom()
-		}
-	})
-	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", func() {
-		if !w.optionsUpdating {
-			w.connector.PlayerToggleRepeat()
-		}
-	})
-	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", func() {
-		if !w.optionsUpdating {
-			w.connector.PlayerToggleConsume()
-		}
-	})
+	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
+	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
+	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
 
 	// Start connecting
 	w.connector.Start()
@@ -503,6 +492,105 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 	return name
 }
 
+// playerPrevious() rewinds the player to the previous track
+func (w *MainWindow) playerPrevious() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Previous()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to skip to previous track")
+}
+
+// playerStop() stops the playback
+func (w *MainWindow) playerStop() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Stop()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to stop playback")
+}
+
+// playerPlayPause() pauses or resumes the playback
+func (w *MainWindow) playerPlayPause() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		switch w.connector.Status()["state"] {
+		case "pause":
+			err = client.Pause(false)
+		case "play":
+			err = client.Pause(true)
+		default:
+			err = client.Play(-1)
+		}
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to toggle playback")
+}
+
+// playerNext() advances the player to the next track
+func (w *MainWindow) playerNext() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Next()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to skip to next track")
+}
+
+// playerToggleRandom() toggles player's random mode
+func (w *MainWindow) playerToggleRandom() {
+	// Ignore if the state of the button is being updated programmatically
+	if w.optionsUpdating {
+		return
+	}
+
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Random(w.connector.Status()["random"] == "0")
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to toggle random mode")
+}
+
+// playerToggleRepeat() toggles player's repeat mode
+func (w *MainWindow) playerToggleRepeat() {
+	// Ignore if the state of the button is being updated programmatically
+	if w.optionsUpdating {
+		return
+	}
+
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Repeat(w.connector.Status()["repeat"] == "0")
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to toggle repeat mode")
+}
+
+// playerToggleConsume() toggles player's consume mode
+func (w *MainWindow) playerToggleConsume() {
+	// Ignore if the state of the button is being updated programmatically
+	if w.optionsUpdating {
+		return
+	}
+
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Consume(w.connector.Status()["consume"] == "0")
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to toggle consume mode")
+}
+
 // queue() adds or replaces the content of the queue with the specified URIs
 func (w *MainWindow) queue(replace bool, uris []string) {
 	var err error
@@ -525,6 +613,17 @@ func (w *MainWindow) queue(replace bool, uris []string) {
 
 	// Check for error
 	w.errCheckDialog(err, "Failed to add track(s) to the queue")
+}
+
+// queueClear() empties MPD's play queue
+func (w *MainWindow) queueClear() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Clear()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to clear the queue")
 }
 
 // queueOne() adds or replaces the content of the queue with one specified URI
@@ -552,6 +651,59 @@ func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 
 	// Check for error
 	w.errCheckDialog(err, "Failed to add playlist to the queue")
+}
+
+// queueShuffle() randomises MPD's play queue
+func (w *MainWindow) queueShuffle() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Shuffle(-1, -1)
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to shuffle the queue")
+}
+
+// queueSort() orders MPD's play queue on the provided attribute
+func (w *MainWindow) queueSort(attrName string, numeric, descending bool) {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		// Fetch the current playlist
+		var attrs []mpd.Attrs
+		if attrs, err = client.PlaylistInfo(-1, -1); err != nil {
+			return
+		}
+
+		// Sort the list
+		sort.SliceStable(attrs, func(i, j int) bool {
+			a, b := attrs[i][attrName], attrs[j][attrName]
+			if numeric {
+				an, bn := util.ParseFloatDef(a, 0), util.ParseFloatDef(b, 0)
+				if descending {
+					return bn < an
+				}
+				return an < bn
+			}
+			if descending {
+				return b < a
+			}
+			return a < b
+		})
+
+		// Post the changes back to MPD
+		commands := client.BeginCommandList()
+		for index, a := range attrs {
+			var id int
+			if id, err = strconv.Atoi(a["Id"]); err != nil {
+				return
+			}
+			commands.MoveID(id, index)
+		}
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to sort the queue")
 }
 
 // Show() shows the window and all its child widgets

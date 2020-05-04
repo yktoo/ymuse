@@ -18,8 +18,6 @@ package player
 import (
 	"github.com/fhs/gompd/v2/mpd"
 	"github.com/yktoo/ymuse/internal/util"
-	"sort"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -119,115 +117,6 @@ func (c *Connector) IsConnected() bool {
 	c.mpdClientMutex.Lock()
 	defer c.mpdClientMutex.Unlock()
 	return c.mpdClient != nil
-}
-
-// PlayerPrevious() rewinds the player to the previous track
-func (c *Connector) PlayerPrevious() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Previous(), "Previous() failed")
-	})
-}
-
-// PlayerStop() stops the playback
-func (c *Connector) PlayerStop() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Stop(), "Stop() failed")
-	})
-}
-
-// PlayerPlayPause() pauses or resumes the playback
-func (c *Connector) PlayerPlayPause() {
-	c.IfConnected(func(client *mpd.Client) {
-		switch c.Status()["state"] {
-		case "pause":
-			errCheck(client.Pause(false), "Pause(false) failed")
-		case "play":
-			errCheck(client.Pause(true), "Pause(true) failed")
-		default:
-			errCheck(client.Play(-1), "Play() failed")
-		}
-	})
-}
-
-// PlayerNext() advances the player to the next track
-func (c *Connector) PlayerNext() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Next(), "Next() failed")
-	})
-}
-
-// PlayerToggleRandom() toggles player's random mode
-func (c *Connector) PlayerToggleRandom() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Random(c.Status()["random"] == "0"), "Random() failed")
-	})
-}
-
-// PlayerToggleRepeat() toggles player's repeat mode
-func (c *Connector) PlayerToggleRepeat() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Repeat(c.Status()["repeat"] == "0"), "Repeat() failed")
-	})
-}
-
-// PlayerToggleConsume() toggles player's consume mode
-func (c *Connector) PlayerToggleConsume() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Consume(c.Status()["consume"] == "0"), "Consume() failed")
-	})
-}
-
-// QueueClear() empties MPD's play queue
-func (c *Connector) QueueClear() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Clear(), "Clear() failed")
-	})
-}
-
-// QueueShuffle() randomises MPD's play queue
-func (c *Connector) QueueShuffle() {
-	c.IfConnected(func(client *mpd.Client) {
-		errCheck(client.Shuffle(-1, -1), "Shuffle() failed")
-	})
-}
-
-// QueueSort() orders MPD's play queue on the provided attribute
-func (c *Connector) QueueSort(attrName string, numeric, descending bool) {
-	c.IfConnected(func(client *mpd.Client) {
-		// Fetch the current playlist
-		attrs, err := client.PlaylistInfo(-1, -1)
-		if errCheck(err, "PlaylistInfo() failed") {
-			return
-		}
-
-		// Sort the list
-		sort.SliceStable(attrs, func(i, j int) bool {
-			a, b := attrs[i][attrName], attrs[j][attrName]
-			if numeric {
-				an, bn := util.ParseFloatDef(a, 0), util.ParseFloatDef(b, 0)
-				if descending {
-					return bn < an
-				}
-				return an < bn
-			}
-			if descending {
-				return b < a
-			}
-			return a < b
-		})
-
-		// Post the changes back to MPD
-		commands := client.BeginCommandList()
-		for index, a := range attrs {
-			id, err := strconv.Atoi(a["Id"])
-			if errCheck(err, "ID attribute conversion to int failed") {
-				return
-			}
-			commands.MoveID(id, index)
-		}
-		errCheck(commands.End(), "QueueSort: CommandList execution failed")
-
-	})
 }
 
 // startConnecting() signals the connector to initiate connection process
