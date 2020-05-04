@@ -31,6 +31,7 @@ type Config struct {
 	MpdPassword            string        // MPD's password (optional)
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
+	PlayerTitleTemplate    string        // Track's title formatting template for the player
 }
 
 // Config singleton with all the defaults
@@ -40,6 +41,17 @@ var config = &Config{
 	MpdPassword:            "",
 	TrackDefaultReplace:    false,
 	PlaylistDefaultReplace: true,
+	PlayerTitleTemplate: `{{- if or .Title .Album | or .Artist -}}
+<big><b>{{ .Title | default "(unknown title)" }}</b></big>
+by <b>{{ .Artist | default "(unknown artist)" }}</b> from <b>{{ .Album | default "(unknown album)" }}</b>
+{{- else if .Name -}}
+<big><b>{{ .Name }}</b></big>
+{{- else if .file -}}
+File <big><b>{{ .file | basename }}</b></big>
+from <b>{{ .file | dirname }}</b>
+{{- else -}}
+<i>(no track)</i>
+{{- end -}}`,
 }
 var once sync.Once
 

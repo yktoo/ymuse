@@ -81,3 +81,36 @@ func TestParseFloatDef(t *testing.T) {
 		})
 	}
 }
+
+func TestDefault(t *testing.T) {
+	type args struct {
+		def   string
+		value interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"nil is no value", args{"Foo", nil}, "Foo"},
+		{"empty string is no value", args{"Foo", ""}, "Foo"},
+		{"non-empty string is value", args{"Foo", "barr"}, "barr"},
+		{"false is value", args{"Foo", false}, "false"},
+		{"true is value", args{"Foo", true}, "true"},
+		{"struct is value", args{"Foo", struct{}{}}, "{}"},
+		{"int 0 is no value", args{"Foo", 0}, "Foo"},
+		{"positive int is value", args{"Foo", 14}, "14"},
+		{"negative int is value", args{"Foo", -2}, "-2"},
+		{"float 0 is no value", args{"Foo", 0.0}, "Foo"},
+		{"positive float is value", args{"Foo", 14.0}, "14"},
+		{"negative float is value", args{"Foo", -2.3}, "-2.3"},
+		{"complex is value", args{"Foo", 3 + 2i}, "(3+2i)"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Default(tt.args.def, tt.args.value); got != tt.want {
+				t.Errorf("Default() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

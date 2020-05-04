@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 )
 
@@ -36,4 +37,37 @@ func FormatSeconds(seconds float64) string {
 	default:
 		return fmt.Sprintf("%d:%02d", mins, secs)
 	}
+}
+
+// Default() returns a default value if no value is set
+func Default(def string, value interface{}) string {
+	v := reflect.ValueOf(value)
+	if !v.IsValid() {
+		return def
+	}
+
+	set := false
+
+	switch v.Kind() {
+	case reflect.Bool, reflect.Struct:
+		set = true
+	case reflect.String, reflect.Array, reflect.Slice, reflect.Map:
+		set = v.Len() != 0
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		set = v.Int() != 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		set = v.Uint() != 0
+	case reflect.Float32, reflect.Float64:
+		set = v.Float() != 0
+	case reflect.Complex64, reflect.Complex128:
+		set = v.Complex() != 0
+	default:
+		set = !v.IsNil()
+	}
+
+	// Check if the value is set
+	if set {
+		return fmt.Sprint(value)
+	}
+	return def
 }

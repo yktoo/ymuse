@@ -1,6 +1,7 @@
 package player
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/fhs/gompd/v2/mpd"
 	"github.com/gotk3/gotk3/gdk"
@@ -8,6 +9,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
+	"html/template"
 	"path"
 	"strconv"
 	"strings"
@@ -66,6 +68,9 @@ type MainWindow struct {
 	// Current library path, separated by slashes
 	currentLibPath string
 
+	// Compiler template for player's track title
+	playerTitleTemplate *template.Template
+
 	// Play position manual update flag
 	playPosUpdating bool
 	// Options update flag
@@ -121,6 +126,16 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
 	}
+
+	// Initialise player title template
+	w.playerTitleTemplate = template.Must(
+		template.New("playerTitle").
+			Funcs(template.FuncMap{
+				"default":  util.Default,
+				"dirname":  path.Dir,
+				"basename": path.Base,
+			}).
+			Parse(util.GetConfig().PlayerTitleTemplate))
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
@@ -703,34 +718,16 @@ func (w *MainWindow) updatePlayer() {
 	if connected {
 		// Check for error
 		if errCheck(err, "CurrentSong() failed") {
-			statusText = fmt.Sprintf("<b>Error:</b> %v", err)
+			statusText = fmt.Sprintf("<b>MPD error:</b> %v", err)
 		} else {
-			// Try to determine track's display name. First check artist/album/title
 			log.Debugf("Current track: %+v", curSong)
-			artist, okArtist := curSong["Artist"]
-			album, okAlbum := curSong["Album"]
-			title, okTitle := curSong["Title"]
-			if okArtist || okAlbum || okTitle {
-				statusText = fmt.Sprintf(
-					"<big><b>%v</b></big>\nby <b>%v</b> from <b>%v</b>",
-					html.EscapeString(title),
-					html.EscapeString(artist),
-					html.EscapeString(album))
 
-			} else if name, ok := curSong["Name"]; ok {
-				// Next, check name
-				statusText = fmt.Sprintf("<big><b>%v</b></big>", html.EscapeString(name))
-
-			} else if file, ok := curSong["file"]; ok {
-				// Then use the file's base name
-				statusText = fmt.Sprintf(
-					"File <big><b>%v</b></big>\nfrom <b>%v</b>",
-					html.EscapeString(path.Base(file)),
-					html.EscapeString(path.Dir(file)))
-
+			// Apply track title template
+			var buffer bytes.Buffer
+			if err := w.playerTitleTemplate.Execute(&buffer, curSong); err != nil {
+				statusText = html.EscapeString(fmt.Sprintf("Template error: %v", err))
 			} else {
-				// All failed
-				statusText = "<i>(unknown)</i>"
+				statusText = buffer.String()
 			}
 		}
 
