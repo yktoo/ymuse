@@ -69,6 +69,7 @@ type MainWindow struct {
 	aQueueNowPlaying *glib.SimpleAction
 	aQueueClear      *glib.SimpleAction
 	aQueueSort       *glib.SimpleAction
+	aQueueDelete     *glib.SimpleAction
 	aPlaylistNew     *glib.SimpleAction
 	aPlaylistRename  *glib.SimpleAction
 	aPlaylistDelete  *glib.SimpleAction
@@ -234,7 +235,7 @@ func (w *MainWindow) onAbout() {
 	dlg.SetLicense(util.AppLicense)
 	dlg.SetWebsite(util.AppWebsite)
 	dlg.SetWebsiteLabel(util.AppWebsiteLabel)
-	_, _ = dlg.Connect("response", func() { dlg.Destroy() })
+	_, _ = dlg.Connect("response", dlg.Destroy)
 	dlg.Run()
 }
 
@@ -253,6 +254,7 @@ func (w *MainWindow) onMap() {
 	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
 	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.queueClear)
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
+	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
 	w.addAction("queue.sort.artist.asc", "", func() { w.queueSort("Artist", false, false) })
 	w.addAction("queue.sort.artist.desc", "", func() { w.queueSort("Artist", false, true) })
 	w.addAction("queue.sort.album.asc", "", func() { w.queueSort("Album", false, false) })
@@ -445,21 +447,13 @@ func (w *MainWindow) applyPlaylistSelection(replace bool) {
 // applyQueueSelection() starts playing from the currently selected track
 func (w *MainWindow) applyQueueSelection() {
 	// Get the tree's selection
-	sel, err := w.trvQueue.GetSelection()
-	if errCheck(err, "trvQueue.GetSelection() failed") {
-		return
+	var err error
+	if indices := w.getQueueSelectedIndices(); len(indices) > 0 {
+		// Start playback from the first selected index
+		w.connector.IfConnected(func(client *mpd.Client) {
+			err = client.Play(indices[0])
+		})
 	}
-
-	// Get selected node's index
-	indices := sel.GetSelectedRows(nil).Data().(*gtk.TreePath).GetIndices()
-	if len(indices) == 0 {
-		return
-	}
-
-	// Start playback from the given index
-	w.connector.IfConnected(func(client *mpd.Client) {
-		err = client.Play(indices[0])
-	})
 
 	// Check for error
 	w.errCheckDialog(err, "Failed to play the selected track")
@@ -474,6 +468,24 @@ func (w *MainWindow) errCheckDialog(err error, message string) bool {
 		return true
 	}
 	return false
+}
+
+// getQueueSelectedIndices() returns indices of the currently selected rows in the queue
+func (w *MainWindow) getQueueSelectedIndices() []int {
+	// Get the tree's selection
+	sel, err := w.trvQueue.GetSelection()
+	if errCheck(err, "trvQueue.GetSelection() failed") {
+		return nil
+	}
+
+	// Get selected nodes' indices
+	var indices []int
+	sel.GetSelectedRows(nil).Foreach(func(item interface{}) {
+		if ix := item.(*gtk.TreePath).GetIndices(); len(ix) > 0 {
+			indices = append(indices, ix[0])
+		}
+	})
+	return indices
 }
 
 // getSelectedPlaylistName() returns the name of the currently selected playlist, or an empty string if there's an error
@@ -624,6 +636,28 @@ func (w *MainWindow) queueClear() {
 
 	// Check for error
 	w.errCheckDialog(err, "Failed to clear the queue")
+}
+
+// queueDelete() deletes the selected tracks from MPD's play queue
+func (w *MainWindow) queueDelete() {
+	// Get selected nodes' indices
+	indices := w.getQueueSelectedIndices()
+
+	// Sort indices in descending order
+	sort.Slice(indices, func(i, j int) bool { return indices[j] < indices[i] })
+
+	// Remove the tracks from the queue (also in descending order)
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		commands := client.BeginCommandList()
+		for _, idx := range indices {
+			errCheck(commands.Delete(idx, idx+1), "commands.Delete() failed")
+		}
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to delete tracks from the queue")
 }
 
 // queueOne() adds or replaces the content of the queue with one specified URI
@@ -1070,6 +1104,7 @@ func (w *MainWindow) updateQueueActions() {
 	w.aQueueNowPlaying.SetEnabled(connected)
 	w.aQueueClear.SetEnabled(connected && w.currentQueueSize > 0)
 	w.aQueueSort.SetEnabled(connected && w.currentQueueSize > 1)
+	w.aQueueDelete.SetEnabled(connected && w.currentQueueSize > 0)
 }
 
 // updateQueueNowPlaying() scrolls the queue tree view to the currently played track

@@ -136,6 +136,20 @@
                         <property name="homogeneous">True</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnQueueDelete">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Delete selected track(s)</property>
+                        <property name="action_name">app.queue.delete</property>
+                        <property name="label" translatable="yes">Delete</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -158,10 +172,13 @@
                         <property name="vexpand">True</property>
                         <property name="model">lstQueue</property>
                         <property name="fixed_height_mode">True</property>
+                        <property name="rubber_banding">True</property>
                         <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
                         <signal name="key-press-event" handler="on_trvQueue_keyPress" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection">
+                            <property name="mode">multiple</property>
+                          </object>
                         </child>
                         <child>
                           <object class="GtkTreeViewColumn">
