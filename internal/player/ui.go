@@ -174,6 +174,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_lbxPlaylists_keyPress":        w.onPlaylistListBoxKeyPress,
 		"on_lbxPlaylists_selectionChange": w.updatePlaylistsActions,
 		"on_scPlayPosition_buttonEvent":   w.onPlayPositionButtonEvent,
+		"on_scPlayPosition_valueChanged":  w.updatePlayerSeekBar,
 	})
 
 	// Register the main window with the app
@@ -1126,35 +1127,42 @@ func (w *MainWindow) updateQueueNowPlaying() {
 
 // updatePlayerSeekBar() updates the seek bar position and status
 func (w *MainWindow) updatePlayerSeekBar() {
-	// Ignore if the user is dragging the slider manually
+	seekPos := ""
+	var trackLen, trackPos float64
+
+	// If the user is dragging the slider manually
 	if w.playPosUpdating {
-		return
+		trackLen, trackPos = w.adjPlayPosition.GetUpper(), w.adjPlayPosition.GetValue()
+
+	} else {
+		// The update comes from MPD: adjust the seek bar position if there's a connection
+		trackStart := -1.0
+		trackLen, trackPos = -1.0, -1.0
+		if w.connector.IsConnected() {
+			// Fetch current player position and track length
+			status := w.connector.Status()
+			trackLen = util.ParseFloatDef(status["duration"], -1)
+			trackPos = util.ParseFloatDef(status["elapsed"], -1)
+		}
+
+		// If not seekable, remove the slider
+		if trackPos >= 0 && trackLen >= trackPos {
+			trackStart = 0
+		}
+		w.scPlayPosition.SetSensitive(trackStart == 0)
+
+		// Enable the seek bar based on status and position it
+		w.adjPlayPosition.SetLower(trackStart)
+		w.adjPlayPosition.SetUpper(trackLen)
+		w.adjPlayPosition.SetValue(trackPos)
 	}
 
-	// Update the seek bar position if there's a connection
-	seekable := false
-	trackStart, trackLen, trackPos := -1.0, -1.0, -1.0
-	if w.connector.IsConnected() {
-		status := w.connector.Status()
-		trackLen = util.ParseFloatDef(status["duration"], -1)
-		trackPos = util.ParseFloatDef(status["elapsed"], -1)
-		seekable = trackLen >= 0 && trackPos >= 0
-
-		// Update position text
-		if seekable {
-			trackStart = 0
-			w.lblPosition.SetText(util.FormatSeconds(trackPos) + " / " + util.FormatSeconds(trackLen))
+	// Update position text
+	if trackPos >= 0 {
+		seekPos = fmt.Sprintf("<big>%s</big>", util.FormatSeconds(trackPos))
+		if trackLen >= trackPos {
+			seekPos += fmt.Sprintf(" / " + util.FormatSeconds(trackLen))
 		}
 	}
-
-	// Enable the seek bar based on status and position it
-	w.scPlayPosition.SetSensitive(seekable)
-	w.adjPlayPosition.SetLower(trackStart)
-	w.adjPlayPosition.SetUpper(trackLen)
-	w.adjPlayPosition.SetValue(trackPos)
-
-	// If not seekable, remove slider and position text
-	if !seekable {
-		w.lblPosition.SetText("")
-	}
+	w.lblPosition.SetMarkup(seekPos)
 }
