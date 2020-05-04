@@ -46,7 +46,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="halign">start</property>
-            <property name="stack">stkClient</property>
+            <property name="stack">mainStack</property>
           </object>
         </child>
         <child>
@@ -76,7 +76,7 @@
         <property name="margin_bottom">6</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkStack" id="stkClient">
+          <object class="GtkStack" id="mainStack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
@@ -100,7 +100,6 @@
                         <property name="action_name">app.queue.now-playing</property>
                         <property name="label" translatable="yes">Now playing</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">audio-card</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -115,7 +114,6 @@
                         <property name="action_name">app.queue.clear</property>
                         <property name="label" translatable="yes">Clear</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">edit-delete</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -127,10 +125,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Sort the play queue</property>
+                        <property name="is_important">True</property>
                         <property name="action_name">app.queue.sort</property>
                         <property name="label" translatable="yes">Sort</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">view-sort-descending</property>
+                        <property name="icon_name">go-down</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -389,9 +388,8 @@
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">New playlist</property>
                         <property name="action_name">app.playlist.new</property>
-                        <property name="label" translatable="yes">New playlist</property>
+                        <property name="label" translatable="yes">New</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">list-add</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -404,9 +402,8 @@
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Rename selected playlist</property>
                         <property name="action_name">app.playlist.rename</property>
-                        <property name="label" translatable="yes">Rename playlist</property>
+                        <property name="label" translatable="yes">Rename</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">gtk-edit</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -419,9 +416,8 @@
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Delete selected playlist</property>
                         <property name="action_name">app.playlist.delete</property>
-                        <property name="label" translatable="yes">Delete playlist</property>
+                        <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">list-remove</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -716,12 +712,12 @@
         <property name="margin_bottom">12</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkModelButton" id="mbtnAppAbout">
+          <object class="GtkModelButton" id="mbtnAppPrefs">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="action_name">app.about</property>
-            <property name="text" translatable="yes">_About</property>
+            <property name="action_name">app.prefs</property>
+            <property name="text" translatable="yes">_Preferences...</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -730,12 +726,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnAppPrefs">
+          <object class="GtkSeparator">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.prefs</property>
-            <property name="text" translatable="yes">_Preferences</property>
+            <property name="can_focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -744,9 +737,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSeparator">
+          <object class="GtkModelButton" id="mbtnAppAbout">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.about</property>
+            <property name="text" translatable="yes">_About...</property>
           </object>
           <packing>
             <property name="expand">False</property>

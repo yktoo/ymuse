@@ -115,6 +115,15 @@ func (b *Builder) getScale(name string) *gtk.Scale {
 	return result
 }
 
+// getStack() finds and returns a stack by its name
+func (b *Builder) getStack(name string) *gtk.Stack {
+	result, ok := b.get(name).(*gtk.Stack)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Stack", name))
+	}
+	return result
+}
+
 // getAdjustment() finds and returns an adjustment by its name
 func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
 	result, ok := b.get(name).(*gtk.Adjustment)

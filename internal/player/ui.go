@@ -39,6 +39,7 @@ type MainWindow struct {
 	// Main window
 	window *gtk.ApplicationWindow
 	// Control widgets
+	mainStack       *gtk.Stack
 	lblStatus       *gtk.Label
 	lblPosition     *gtk.Label
 	btnPlayPause    *gtk.ToolButton
@@ -48,15 +49,18 @@ type MainWindow struct {
 	scPlayPosition  *gtk.Scale
 	adjPlayPosition *gtk.Adjustment
 	// Queue widgets
+	bxQueue      *gtk.Box
 	lblQueueInfo *gtk.Label
 	trvQueue     *gtk.TreeView
 	lstQueue     *gtk.ListStore
 	pmnQueueSort *gtk.PopoverMenu
 	// Library widgets
+	bxLibrary      *gtk.Box
 	bxLibraryPath  *gtk.Box
 	lbxLibrary     *gtk.ListBox
 	lblLibraryInfo *gtk.Label
 	// Playlists widgets
+	bxPlaylists      *gtk.Box
 	lbxPlaylists     *gtk.ListBox
 	lblPlaylistsInfo *gtk.Label
 
@@ -120,6 +124,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		app: application,
 		// Find widgets
 		window:          builder.getApplicationWindow("mainWindow"),
+		mainStack:       builder.getStack("mainStack"),
 		lblStatus:       builder.getLabel("lblStatus"),
 		lblPosition:     builder.getLabel("lblPosition"),
 		btnPlayPause:    builder.getToolButton("btnPlayPause"),
@@ -129,15 +134,18 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		scPlayPosition:  builder.getScale("scPlayPosition"),
 		adjPlayPosition: builder.getAdjustment("adjPlayPosition"),
 		// Queue
+		bxQueue:      builder.getBox("bxQueue"),
 		lblQueueInfo: builder.getLabel("lblQueueInfo"),
 		trvQueue:     builder.getTreeView("trvQueue"),
 		lstQueue:     builder.getListStore("lstQueue"),
 		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
 		// Library
+		bxLibrary:      builder.getBox("bxLibrary"),
 		bxLibraryPath:  builder.getBox("bxLibraryPath"),
 		lbxLibrary:     builder.getListBox("lbxLibrary"),
 		lblLibraryInfo: builder.getLabel("lblLibraryInfo"),
 		// Playlists
+		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
 	}
@@ -237,6 +245,9 @@ func (w *MainWindow) onMap() {
 	w.addAction("about", "F1", w.onAbout)
 	w.addAction("prefs", "<Ctrl>comma", func() { util.NotImplemented(w.window) })
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
+	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
+	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
+	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
 	// Queue
 	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
 	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.connector.QueueClear)
