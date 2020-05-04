@@ -1,14 +1,30 @@
 language: go
+
+dist: bionic
+
 go:
-  - 1.14.x
+    - 1.14.x
 
 go_import_path: github.com/yktoo/ymuse
 
+addons:
+    apt:
+        packages:
+            - gtk+3.0
+            - libgtk-3-dev
+
 before_install:
-    - sudo apt-get -y install libgtk-3-dev
+    - "export GTK_VERSION=$(pkg-config --modversion gtk+-3.0 | tr . _| cut -d '_' -f 1-2)"
+    - "export Glib_VERSION=$(pkg-config --modversion glib-2.0 | tr . _| cut -d '_' -f 1-2)"
+    - "export GDK_Pixbuf_VERSION=$(pkg-config --modversion gdk-pixbuf-2.0 | tr . _| cut -d '_' -f 1-2)"
+    - "export Cairo_VERSION=$(pkg-config --modversion cairo)"
+    - "export Pango_VERSION=$(pkg-config --modversion pango)"
+    - "echo 'Versions: GTK/GDK=${GTK_VERSION}, Glib/Gio=${Glib_VERSION}, Gdk-Pixbuf=${GDK_Pixbuf_VERSION} (Cairo=${Cairo_VERSION}, Pango=${Pango_VERSION})'"
+
+install:
+    - go get -t ./...
 
 script:
-    - go install -v ./...
     # Verify no formatting issues
     - test `gofmt -l . | wc -l` = 0
     # Run tests
