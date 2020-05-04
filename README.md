@@ -1,3 +1,7 @@
+[![Latest release](https://img.shields.io/github/v/release/yktoo/ymuse.svg)](https://github.com/yktoo/ymuse/releases/latest)
+[![License](https://img.shields.io/github/license/yktoo/ymuse.svg)](COPYING)
+[![Build Status](https://travis-ci.org/yktoo/ymuse.svg?branch=master)](https://travis-ci.org/yktoo/ymuse)
+
 # Ymuse
 
 **Ymuse** is a GTK front-end (client) application for [Music Player Daemon](https://www.musicpd.org/) written in Go.
