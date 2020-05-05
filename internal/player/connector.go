@@ -89,6 +89,26 @@ func (c *Connector) Stop() {
 	close(c.chWatcherQuit)
 }
 
+// GetPlaylists() queries and returns a slice of playlist names available in MPD
+func (c *Connector) GetPlaylists() []string {
+	// Fetch the list of playlists
+	var attrs []mpd.Attrs
+	var err error
+	c.IfConnected(func(client *mpd.Client) {
+		attrs, err = client.ListPlaylists()
+	})
+	if errCheck(err, "ListPlaylists() failed") {
+		return nil
+	}
+
+	// Convert attrs to a slice of strings
+	names := make([]string, len(attrs))
+	for i, a := range attrs {
+		names[i] = a["playlist"]
+	}
+	return names
+}
+
 // IfConnected() runs MPD client code if there's a connection with MPD
 func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client)) {
 	c.mpdClientMutex.Lock()

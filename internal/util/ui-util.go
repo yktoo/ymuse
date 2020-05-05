@@ -16,6 +16,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/gotk3/gotk3/pango"
@@ -141,8 +142,9 @@ func NotImplemented(parent gtk.IWindow) {
 }
 
 // ConfirmDialog() shows a confirmation message dialog
-func ConfirmDialog(parent gtk.IWindow, text string) bool {
-	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, text)
+func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
+	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")
+	dlg.SetMarkup(fmt.Sprintf("<big><b>%v</b></big>\n\n%v", title, text))
 	defer dlg.Destroy()
 	return dlg.Run() == gtk.RESPONSE_OK
 }

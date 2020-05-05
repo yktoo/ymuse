@@ -70,7 +70,8 @@ type MainWindow struct {
 	aQueueClear      *glib.SimpleAction
 	aQueueSort       *glib.SimpleAction
 	aQueueDelete     *glib.SimpleAction
-	aPlaylistNew     *glib.SimpleAction
+	aQueueSave       *glib.SimpleAction
+	aLibraryUpdate   *glib.SimpleAction
 	aPlaylistRename  *glib.SimpleAction
 	aPlaylistDelete  *glib.SimpleAction
 	aPlayerPrevious  *glib.SimpleAction
@@ -169,6 +170,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_trvQueue_buttonPress":         w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":            w.onQueueTreeViewKeyPress,
 		"on_trvQueue_colClicked":          w.onQueueTreeViewColClicked,
+		"on_tselQueue_changed":            w.updateQueueActions,
 		"on_lbxLibrary_buttonPress":       w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":          w.onLibraryListBoxKeyPress,
 		"on_lbxPlaylists_buttonPress":     w.onPlaylistListBoxButtonPress,
@@ -210,7 +212,7 @@ func (w *MainWindow) onConnectorHeartbeat() {
 func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
-	case "database":
+	case "database", "update":
 		util.WhenIdle("updateLibrary()", w.updateLibrary, 0)
 	case "options":
 		util.WhenIdle("updateOptions()", w.updateOptions)
@@ -257,6 +259,7 @@ func (w *MainWindow) onMap() {
 	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.queueClear)
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
 	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
+	w.aQueueSave = w.addAction("queue.save", "", w.queueSave)
 	w.addAction("queue.sort.artist.asc", "", func() { w.queueSort("Artist", false, false) })
 	w.addAction("queue.sort.artist.desc", "", func() { w.queueSort("Artist", false, true) })
 	w.addAction("queue.sort.album.asc", "", func() { w.queueSort("Album", false, false) })
@@ -274,8 +277,9 @@ func (w *MainWindow) onMap() {
 	w.addAction("queue.sort.genre.asc", "", func() { w.queueSort("Genre", false, false) })
 	w.addAction("queue.sort.genre.desc", "", func() { w.queueSort("Genre", false, true) })
 	w.addAction("queue.sort.shuffle", "", w.queueShuffle)
+	// Library
+	w.addAction("library.update", "", w.libraryUpdate)
 	// Playlist
-	w.aPlaylistNew = w.addAction("playlist.new", "", w.onPlaylistNew)
 	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
 	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
 	// Player
@@ -302,7 +306,7 @@ func (w *MainWindow) onDestroy() {
 func (w *MainWindow) onPlaylistDelete() {
 	var err error
 	if name := w.getSelectedPlaylistName(); name != "" {
-		if util.ConfirmDialog(w.window, fmt.Sprintf("Are you sure you want to delete playlist \"%s\"?", name)) {
+		if util.ConfirmDialog(w.window, "Delete playlist", fmt.Sprintf("Are you sure you want to delete playlist \"%s\"?", name)) {
 			w.connector.IfConnected(func(client *mpd.Client) {
 				err = client.PlaylistRemove(name)
 			})
@@ -311,18 +315,6 @@ func (w *MainWindow) onPlaylistDelete() {
 
 	// Check for error (outside IfConnected() because it would keep the client locked)
 	w.errCheckDialog(err, "Failed to delete the playlist")
-}
-
-func (w *MainWindow) onPlaylistNew() {
-	var err error
-	if name, ok := util.EditDialog(w.window, "Create new playlist", "", "Create"); ok {
-		w.connector.IfConnected(func(client *mpd.Client) {
-			err = client.PlaylistSave(name)
-		})
-	}
-
-	// Check for error (outside IfConnected() because it would keep the client locked)
-	w.errCheckDialog(err, "Failed to create a playlist")
 }
 
 func (w *MainWindow) onPlaylistRename() {
@@ -548,6 +540,17 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 	return name
 }
 
+// libraryUpdate() updates the entire library
+func (w *MainWindow) libraryUpdate() {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		_, err = client.Update("")
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to update the library")
+}
+
 // playerPrevious() rewinds the player to the previous track
 func (w *MainWindow) playerPrevious() {
 	var err error
@@ -731,6 +734,55 @@ func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 	w.errCheckDialog(err, "Failed to add playlist to the queue")
 }
 
+// queueSave() shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
+func (w *MainWindow) queueSave() {
+	// Show the "Save queue" dialog
+	selIndices := w.getQueueSelectedIndices()
+	if ok, replace, selOnly, existing, name := RunSaveQueueDialog(w.window, len(selIndices) > 0, w.connector); ok {
+		// Dialog confirmed
+		var err error
+		w.connector.IfConnected(func(client *mpd.Client) {
+			// Fetch the queue
+			var attrs []mpd.Attrs
+			attrs, err = client.PlaylistInfo(-1, -1)
+			if err != nil {
+				return
+			}
+
+			// Begin a command list
+			commands := client.BeginCommandList()
+
+			// If replacing an existing playlist, remove it first
+			if existing && replace {
+				commands.PlaylistRemove(name)
+			}
+
+			// If adding selection only
+			if selOnly {
+				for _, idx := range selIndices {
+					commands.PlaylistAdd(name, attrs[idx]["file"])
+				}
+
+			} else if replace {
+				// Save the entire queue
+				commands.PlaylistSave(name)
+
+			} else {
+				// Append the entire queue
+				for _, a := range attrs {
+					commands.PlaylistAdd(name, a["file"])
+				}
+			}
+
+			// Execute the command list
+			err = commands.End()
+		})
+
+		// Check for error
+		w.errCheckDialog(err, "Failed to create a playlist")
+	}
+}
+
 // queueShuffle() randomises MPD's play queue
 func (w *MainWindow) queueShuffle() {
 	var err error
@@ -910,6 +962,9 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 	} else {
 		info += ", no files"
 	}
+	if _, ok := w.connector.Status()["updating_db"]; ok {
+		info += " — updating database…"
+	}
 
 	// Update info
 	w.lblLibraryInfo.SetText(info)
@@ -1021,19 +1076,9 @@ func (w *MainWindow) updatePlaylists() {
 	// Clear the playlists list
 	util.ClearChildren(w.lbxPlaylists.Container)
 
-	// Fetch the playlists list if there's a connection
-	var attrs []mpd.Attrs
-	var err error
-	w.connector.IfConnected(func(client *mpd.Client) {
-		attrs, err = client.ListPlaylists()
-	})
-	if errCheck(err, "ListPlaylists() failed") {
-		return
-	}
-
 	// Repopulate the playlists list
-	for _, a := range attrs {
-		name := a["playlist"]
+	playlists := w.connector.GetPlaylists()
+	for _, name := range playlists {
 		_, hbx, err := util.NewListBoxRow(w.lbxPlaylists, name, name, "format-justify-left")
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
@@ -1049,7 +1094,7 @@ func (w *MainWindow) updatePlaylists() {
 
 	// Compose info
 	info := "No playlists"
-	if cnt := len(attrs); cnt > 0 {
+	if cnt := len(playlists); cnt > 0 {
 		info = fmt.Sprintf("%d playlists", cnt)
 	}
 
@@ -1063,7 +1108,6 @@ func (w *MainWindow) updatePlaylists() {
 // updatePlaylistsActions() updates the widgets for playlists list
 func (w *MainWindow) updatePlaylistsActions() {
 	connected, selected := w.connector.IsConnected(), w.getSelectedPlaylistName() != ""
-	w.aPlaylistNew.SetEnabled(connected)
 	w.aPlaylistRename.SetEnabled(connected && selected)
 	w.aPlaylistDelete.SetEnabled(connected && selected)
 }
@@ -1145,10 +1189,13 @@ func (w *MainWindow) updateQueue() {
 // updateQueueActions() updates the play queue actions
 func (w *MainWindow) updateQueueActions() {
 	connected := w.connector.IsConnected()
-	w.aQueueNowPlaying.SetEnabled(connected)
-	w.aQueueClear.SetEnabled(connected && w.currentQueueSize > 0)
-	w.aQueueSort.SetEnabled(connected && w.currentQueueSize > 1)
-	w.aQueueDelete.SetEnabled(connected && w.currentQueueSize > 0)
+	notEmpty := connected && w.currentQueueSize > 0
+	selection := notEmpty && len(w.getQueueSelectedIndices()) > 0
+	w.aQueueNowPlaying.SetEnabled(notEmpty)
+	w.aQueueClear.SetEnabled(notEmpty)
+	w.aQueueSort.SetEnabled(notEmpty)
+	w.aQueueDelete.SetEnabled(selection)
+	w.aQueueSave.SetEnabled(notEmpty)
 }
 
 // updateQueueNowPlaying() scrolls the queue tree view to the currently played track

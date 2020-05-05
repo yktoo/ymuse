@@ -43,6 +43,15 @@ func (b *Builder) get(name string) glib.IObject {
 	return obj
 }
 
+// getAdjustment() finds and returns an adjustment by its name
+func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
+	result, ok := b.get(name).(*gtk.Adjustment)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Adjustment", name))
+	}
+	return result
+}
+
 // getApplicationWindow() finds and returns an application window by its name
 func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
 	result, ok := b.get(name).(*gtk.ApplicationWindow)
@@ -57,6 +66,51 @@ func (b *Builder) getBox(name string) *gtk.Box {
 	result, ok := b.get(name).(*gtk.Box)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.Box", name))
+	}
+	return result
+}
+
+// getButton() finds and returns a button by its name
+func (b *Builder) getButton(name string) *gtk.Button {
+	result, ok := b.get(name).(*gtk.Button)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Button", name))
+	}
+	return result
+}
+
+// getCheckButton() finds and returns a check button by its name
+func (b *Builder) getCheckButton(name string) *gtk.CheckButton {
+	result, ok := b.get(name).(*gtk.CheckButton)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.CheckButton", name))
+	}
+	return result
+}
+
+// getComboBoxText() finds and returns a text combo box by its name
+func (b *Builder) getComboBoxText(name string) *gtk.ComboBoxText {
+	result, ok := b.get(name).(*gtk.ComboBoxText)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ComboBoxText", name))
+	}
+	return result
+}
+
+// getDialog() finds and returns a dialog by its name
+func (b *Builder) getDialog(name string) *gtk.Dialog {
+	result, ok := b.get(name).(*gtk.Dialog)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Dialog", name))
+	}
+	return result
+}
+
+// getEntry() finds and returns an entry by its name
+func (b *Builder) getEntry(name string) *gtk.Entry {
+	result, ok := b.get(name).(*gtk.Entry)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Entry", name))
 	}
 	return result
 }
@@ -79,29 +133,20 @@ func (b *Builder) getListBox(name string) *gtk.ListBox {
 	return result
 }
 
+// getListStore() finds and returns a list store by its name
+func (b *Builder) getListStore(name string) *gtk.ListStore {
+	result, ok := b.get(name).(*gtk.ListStore)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
+	}
+	return result
+}
+
 // getPopoverMenu() finds and returns a popover menu by its name
 func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
 	result, ok := b.get(name).(*gtk.PopoverMenu)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.PopoverMenu", name))
-	}
-	return result
-}
-
-// getToolButton() finds and returns a tool button by its name
-func (b *Builder) getToolButton(name string) *gtk.ToolButton {
-	result, ok := b.get(name).(*gtk.ToolButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ToolButton", name))
-	}
-	return result
-}
-
-// getToggleToolButton() finds and returns a toggle tool button by its name
-func (b *Builder) getToggleToolButton(name string) *gtk.ToggleToolButton {
-	result, ok := b.get(name).(*gtk.ToggleToolButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ToggleToolButton", name))
 	}
 	return result
 }
@@ -124,11 +169,29 @@ func (b *Builder) getStack(name string) *gtk.Stack {
 	return result
 }
 
-// getAdjustment() finds and returns an adjustment by its name
-func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
-	result, ok := b.get(name).(*gtk.Adjustment)
+// getSwitch() finds and returns a switch by its name
+func (b *Builder) getSwitch(name string) *gtk.Switch {
+	result, ok := b.get(name).(*gtk.Switch)
 	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Adjustment", name))
+		log.Fatal(errors.Errorf("%v is not a gtk.Switch", name))
+	}
+	return result
+}
+
+// getToggleToolButton() finds and returns a toggle tool button by its name
+func (b *Builder) getToggleToolButton(name string) *gtk.ToggleToolButton {
+	result, ok := b.get(name).(*gtk.ToggleToolButton)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ToggleToolButton", name))
+	}
+	return result
+}
+
+// getToolButton() finds and returns a tool button by its name
+func (b *Builder) getToolButton(name string) *gtk.ToolButton {
+	result, ok := b.get(name).(*gtk.ToolButton)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ToolButton", name))
 	}
 	return result
 }
@@ -138,15 +201,6 @@ func (b *Builder) getTreeView(name string) *gtk.TreeView {
 	result, ok := b.get(name).(*gtk.TreeView)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.TreeView", name))
-	}
-	return result
-}
-
-// getListStore() finds and returns a list store by its name
-func (b *Builder) getListStore(name string) *gtk.ListStore {
-	result, ok := b.get(name).(*gtk.ListStore)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
 	}
 	return result
 }

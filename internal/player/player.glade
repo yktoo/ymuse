@@ -90,7 +90,7 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolbar" id="tbLibrary">
+                  <object class="GtkToolbar" id="tbQueue">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_size">2</property>
@@ -142,9 +142,24 @@
                       <object class="GtkToolButton" id="btnQueueDelete">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Delete selected track(s)</property>
+                        <property name="tooltip_text" translatable="yes">Remove selected track(s) from the queue</property>
                         <property name="action_name">app.queue.delete</property>
                         <property name="label" translatable="yes">Delete</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnQueueSave">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Save the play queue as a playlist</property>
+                        <property name="is_important">True</property>
+                        <property name="action_name">app.queue.save</property>
+                        <property name="label" translatable="yes">Save...</property>
                         <property name="use_underline">True</property>
                       </object>
                       <packing>
@@ -178,8 +193,9 @@
                         <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
                         <signal name="key-press-event" handler="on_trvQueue_keyPress" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection">
+                          <object class="GtkTreeSelection" id="tselQueue">
                             <property name="mode">multiple</property>
+                            <signal name="changed" handler="on_tselQueue_changed" swapped="no"/>
                           </object>
                         </child>
                         <child>
@@ -333,16 +349,53 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox" id="bxLibraryPath">
+                  <object class="GtkBox" id="bxLibraryTop">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_left">6</property>
-                    <property name="margin_right">6</property>
-                    <property name="margin_top">6</property>
-                    <property name="margin_bottom">6</property>
-                    <property name="spacing">6</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkToolbar" id="tbLibrary">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="icon_size">2</property>
+                        <child>
+                          <object class="GtkToolButton" id="btnLibraryUpdate">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Update the entire library</property>
+                            <property name="action_name">app.library.update</property>
+                            <property name="label" translatable="yes">Update</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="bxLibraryPath">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">6</property>
+                        <property name="margin_right">6</property>
+                        <property name="margin_top">6</property>
+                        <property name="margin_bottom">6</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -366,6 +419,7 @@
                           <object class="GtkListBox" id="lbxLibrary">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="selection_mode">browse</property>
                             <signal name="button-press-event" handler="on_lbxLibrary_buttonPress" swapped="no"/>
                             <signal name="key-press-event" handler="on_lbxLibrary_keyPress" swapped="no"/>
                           </object>
@@ -413,20 +467,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_size">2</property>
-                    <child>
-                      <object class="GtkToolButton" id="btnPlaylistsNew">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">New playlist</property>
-                        <property name="action_name">app.playlist.new</property>
-                        <property name="label" translatable="yes">New</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">True</property>
-                      </packing>
-                    </child>
                     <child>
                       <object class="GtkToolButton" id="btnPlaylistsRename">
                         <property name="visible">True</property>
@@ -477,6 +517,7 @@
                           <object class="GtkListBox" id="lbxPlaylists">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="selection_mode">browse</property>
                             <signal name="button-press-event" handler="on_lbxPlaylists_buttonPress" swapped="no"/>
                             <signal name="key-press-event" handler="on_lbxPlaylists_keyPress" swapped="no"/>
                             <signal name="selected-rows-changed" handler="on_lbxPlaylists_selectionChange" swapped="no"/>
