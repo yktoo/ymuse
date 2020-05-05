@@ -1,0 +1,26 @@
+Source: ymuse
+Maintainer: Dmitry Kann <yktooo@gmail.com>
+Section: misc
+Priority: optional
+Build-Depends:
+ debhelper-compat (= 12),
+ dh-golang,
+Build-Depends-Arch:
+ golang-any,
+ golang-github-fhs-gompd-dev,
+ golang-github-gotk3-gotk3-dev,
+ golang-github-op-go-logging-dev,
+ golang-github-pkg-errors-dev,
+Standards-Version: 4.4.0
+Homepage: https://github.com/yktoo/ymuse
+Rules-Requires-Root: no
+XS-Go-Import-Path: github.com/yktoo/ymuse
+
+Package: ymuse
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Built-Using: ${misc:Built-Using}
+Description: Minimalistic yet functional Music Player Daemon
+ client.
