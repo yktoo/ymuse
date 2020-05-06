@@ -64,6 +64,7 @@ type MainWindow struct {
 	lstQueue     *gtk.ListStore
 	pmnQueueSort *gtk.PopoverMenu
 	pmnQueueSave *gtk.PopoverMenu
+	mnQueue      *gtk.Menu
 	// Queue sort popup
 	cbxQueueSortBy *gtk.ComboBoxText
 	// Queue save popup
@@ -174,6 +175,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		lstQueue:     builder.getListStore("lstQueue"),
 		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
 		pmnQueueSave: builder.getPopoverMenu("pmnQueueSave"),
+		mnQueue:      builder.getMenu("mnQueue"),
 		// Queue sort popup
 		cbxQueueSortBy: builder.getComboBoxText("cbxQueueSortBy"),
 		// Queue save popup
@@ -232,6 +234,11 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_pmnQueueSave_validate":        w.onQueueSavePopoverValidate,
 		"on_scPlayPosition_buttonEvent":   w.onPlayPositionButtonEvent,
 		"on_scPlayPosition_valueChanged":  w.updatePlayerSeekBar,
+
+		// For some reason binding actions to menu items keeps them grayed out, so old-school signals are used here
+		"on_miQueueNowPlaying_activate": w.updateQueueNowPlaying,
+		"on_miQueueClear_activate":      w.queueClear,
+		"on_miQueueDelete_activate":     w.queueDelete,
 	})
 
 	// Register the main window with the app
@@ -426,8 +433,15 @@ func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn) {
 }
 
 func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the tree
+	switch btn := gdk.EventButtonNewFromEvent(event); btn.Type() {
+	// Mouse click
+	case gdk.EVENT_BUTTON_PRESS:
+		// Right click
+		if btn.Button() == 3 {
+			w.mnQueue.PopupAtPointer(event)
+		}
+	// Double click
+	case gdk.EVENT_DOUBLE_BUTTON_PRESS:
 		w.applyQueueSelection()
 	}
 }
@@ -788,6 +802,9 @@ func (w *MainWindow) queueClear() {
 func (w *MainWindow) queueDelete() {
 	// Get selected nodes' indices
 	indices := w.getQueueSelectedIndices()
+	if len(indices) == 0 {
+		return
+	}
 
 	// Sort indices in descending order
 	sort.Slice(indices, func(i, j int) bool { return indices[j] < indices[i] })

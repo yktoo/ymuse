@@ -28,6 +28,43 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkMenu" id="mnQueue">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="miQueueNowPlaying">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Jump to now playing</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miQueueNowPlaying_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sepQueueNowPlaying">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miQueueClear">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Clear</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miQueueClear_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miQueueDelete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete selected</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miQueueDelete_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkApplicationWindow" id="mainWindow">
     <property name="width_request">600</property>
     <property name="height_request">300</property>
@@ -41,9 +78,8 @@
       <object class="GtkHeaderBar" id="hdbMain">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="title" translatable="yes">Ymuse</property>
         <property name="show_close_button">True</property>
-        <child>
+        <child type="title">
           <object class="GtkStackSwitcher" id="stswMain">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -58,7 +94,11 @@
             <property name="receives_default">True</property>
             <property name="popover">pmnAppMenu</property>
             <child>
-              <placeholder/>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">open-menu-symbolic</property>
+              </object>
             </child>
           </object>
           <packing>
@@ -922,6 +962,7 @@
       </object>
       <packing>
         <property name="submenu">main</property>
+        <property name="position">1</property>
       </packing>
     </child>
   </object>

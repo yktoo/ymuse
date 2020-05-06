@@ -142,6 +142,15 @@ func (b *Builder) getListStore(name string) *gtk.ListStore {
 	return result
 }
 
+// getMenu() finds and returns a menu by its name
+func (b *Builder) getMenu(name string) *gtk.Menu {
+	result, ok := b.get(name).(*gtk.Menu)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.Menu", name))
+	}
+	return result
+}
+
 // getPopoverMenu() finds and returns a popover menu by its name
 func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
 	result, ok := b.get(name).(*gtk.PopoverMenu)
