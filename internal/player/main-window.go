@@ -22,6 +22,7 @@ import (
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/pkg/errors"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
 	"html/template"
@@ -31,6 +32,13 @@ import (
 	"strings"
 	"time"
 )
+
+// Description of a way to sort the play queue
+type queueSortMode struct {
+	label   string
+	attr    string
+	numeric bool
+}
 
 type MainWindow struct {
 	// Application reference
@@ -55,6 +63,14 @@ type MainWindow struct {
 	trvQueue     *gtk.TreeView
 	lstQueue     *gtk.ListStore
 	pmnQueueSort *gtk.PopoverMenu
+	pmnQueueSave *gtk.PopoverMenu
+	// Queue sort popup
+	cbxQueueSortBy *gtk.ComboBoxText
+	// Queue save popup
+	cbxQueueSavePlaylist     *gtk.ComboBoxText
+	lblQueueSavePlaylistName *gtk.Label
+	eQueueSavePlaylistName   *gtk.Entry
+	cbQueueSaveSelectedOnly  *gtk.CheckButton
 	// Library widgets
 	bxLibrary      *gtk.Box
 	bxLibraryPath  *gtk.Box
@@ -66,26 +82,33 @@ type MainWindow struct {
 	lblPlaylistsInfo *gtk.Label
 
 	// Actions
-	aQueueNowPlaying *glib.SimpleAction
-	aQueueClear      *glib.SimpleAction
-	aQueueSort       *glib.SimpleAction
-	aQueueDelete     *glib.SimpleAction
-	aQueueSave       *glib.SimpleAction
-	aLibraryUpdate   *glib.SimpleAction
-	aPlaylistRename  *glib.SimpleAction
-	aPlaylistDelete  *glib.SimpleAction
-	aPlayerPrevious  *glib.SimpleAction
-	aPlayerStop      *glib.SimpleAction
-	aPlayerPlayPause *glib.SimpleAction
-	aPlayerNext      *glib.SimpleAction
-	aPlayerRandom    *glib.SimpleAction
-	aPlayerRepeat    *glib.SimpleAction
-	aPlayerConsume   *glib.SimpleAction
+	aQueueNowPlaying  *glib.SimpleAction
+	aQueueClear       *glib.SimpleAction
+	aQueueSort        *glib.SimpleAction
+	aQueueSortAsc     *glib.SimpleAction
+	aQueueSortDesc    *glib.SimpleAction
+	aQueueSortShuffle *glib.SimpleAction
+	aQueueDelete      *glib.SimpleAction
+	aQueueSave        *glib.SimpleAction
+	aQueueSaveReplace *glib.SimpleAction
+	aQueueSaveAppend  *glib.SimpleAction
+	aLibraryUpdate    *glib.SimpleAction
+	aPlaylistRename   *glib.SimpleAction
+	aPlaylistDelete   *glib.SimpleAction
+	aPlayerPrevious   *glib.SimpleAction
+	aPlayerStop       *glib.SimpleAction
+	aPlayerPlayPause  *glib.SimpleAction
+	aPlayerNext       *glib.SimpleAction
+	aPlayerRandom     *glib.SimpleAction
+	aPlayerRepeat     *glib.SimpleAction
+	aPlayerConsume    *glib.SimpleAction
 
 	// Number of items in the play queue
 	currentQueueSize int
 	// Queue's track index (last) marked as current
 	currentQueueIndex int
+	// Queue sort modes
+	queueSortModes []queueSortMode
 
 	// Current library path, separated by slashes
 	currentLibPath string
@@ -117,6 +140,9 @@ const (
 	FontWeightBold        = 700
 	BackgroundColorNormal = "#ffffff"
 	BackgroundColorActive = "#ffffe0"
+
+	queueSaveNewPlaylistId = "\u0001new"
+	queueSortDefaultMode   = "5" // Dir and file name
 )
 
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
@@ -142,6 +168,14 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		trvQueue:     builder.getTreeView("trvQueue"),
 		lstQueue:     builder.getListStore("lstQueue"),
 		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
+		pmnQueueSave: builder.getPopoverMenu("pmnQueueSave"),
+		// Queue sort popup
+		cbxQueueSortBy: builder.getComboBoxText("cbxQueueSortBy"),
+		// Queue save popup
+		cbxQueueSavePlaylist:     builder.getComboBoxText("cbxQueueSavePlaylist"),
+		lblQueueSavePlaylistName: builder.getLabel("lblQueueSavePlaylistName"),
+		eQueueSavePlaylistName:   builder.getEntry("eQueueSavePlaylistName"),
+		cbQueueSaveSelectedOnly:  builder.getCheckButton("cbQueueSaveSelectedOnly"),
 		// Library
 		bxLibrary:      builder.getBox("bxLibrary"),
 		bxLibraryPath:  builder.getBox("bxLibraryPath"),
@@ -151,6 +185,18 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
+
+		// Other
+		queueSortModes: []queueSortMode{
+			{"Artist", "Artist", false},
+			{"Album", "Album", false},
+			{"Track title", "Title", false},
+			{"Track number", "Track", true},
+			{"Track length", "duration", true},
+			{"Directory and file name", "file", false},
+			{"Year", "Date", true},
+			{"Genre", "Genre", false},
+		},
 	}
 
 	// Initialise player title template
@@ -176,6 +222,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_lbxPlaylists_buttonPress":     w.onPlaylistListBoxButtonPress,
 		"on_lbxPlaylists_keyPress":        w.onPlaylistListBoxKeyPress,
 		"on_lbxPlaylists_selectionChange": w.updatePlaylistsActions,
+		"on_pmnQueueSave_validate":        w.onQueueSavePopoverValidate,
 		"on_scPlayPosition_buttonEvent":   w.onPlayPositionButtonEvent,
 		"on_scPlayPosition_valueChanged":  w.updatePlayerSeekBar,
 	})
@@ -258,25 +305,13 @@ func (w *MainWindow) onMap() {
 	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
 	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.queueClear)
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
+	w.aQueueSortAsc = w.addAction("queue.sort.asc", "", func() { w.queueSortApply(false) })
+	w.aQueueSortDesc = w.addAction("queue.sort.desc", "", func() { w.queueSortApply(true) })
+	w.aQueueSortShuffle = w.addAction("queue.sort.shuffle", "", w.queueShuffle)
 	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
 	w.aQueueSave = w.addAction("queue.save", "", w.queueSave)
-	w.addAction("queue.sort.artist.asc", "", func() { w.queueSort("Artist", false, false) })
-	w.addAction("queue.sort.artist.desc", "", func() { w.queueSort("Artist", false, true) })
-	w.addAction("queue.sort.album.asc", "", func() { w.queueSort("Album", false, false) })
-	w.addAction("queue.sort.album.desc", "", func() { w.queueSort("Album", false, true) })
-	w.addAction("queue.sort.title.asc", "", func() { w.queueSort("Title", false, false) })
-	w.addAction("queue.sort.title.desc", "", func() { w.queueSort("Title", false, true) })
-	w.addAction("queue.sort.number.asc", "", func() { w.queueSort("Track", true, false) })
-	w.addAction("queue.sort.number.desc", "", func() { w.queueSort("Track", true, true) })
-	w.addAction("queue.sort.length.asc", "", func() { w.queueSort("duration", true, false) })
-	w.addAction("queue.sort.length.desc", "", func() { w.queueSort("duration", true, true) })
-	w.addAction("queue.sort.fullpath.asc", "", func() { w.queueSort("file", false, false) })
-	w.addAction("queue.sort.fullpath.desc", "", func() { w.queueSort("file", false, true) })
-	w.addAction("queue.sort.year.asc", "", func() { w.queueSort("Date", true, false) })
-	w.addAction("queue.sort.year.desc", "", func() { w.queueSort("Date", true, true) })
-	w.addAction("queue.sort.genre.asc", "", func() { w.queueSort("Genre", false, false) })
-	w.addAction("queue.sort.genre.desc", "", func() { w.queueSort("Genre", false, true) })
-	w.addAction("queue.sort.shuffle", "", w.queueShuffle)
+	w.aQueueSaveReplace = w.addAction("queue.save.replace", "", func() { w.queueSaveApply(true) })
+	w.aQueueSaveAppend = w.addAction("queue.save.append", "", func() { w.queueSaveApply(false) })
 	// Library
 	w.addAction("library.update", "", w.libraryUpdate)
 	// Playlist
@@ -291,6 +326,12 @@ func (w *MainWindow) onMap() {
 	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
 	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
+
+	// Populate Queue sort by combo box
+	for i, mode := range w.queueSortModes {
+		w.cbxQueueSortBy.Append(strconv.Itoa(i), mode.label)
+	}
+	w.cbxQueueSortBy.SetActiveID(queueSortDefaultMode)
 
 	// Start connecting
 	w.connector.Start()
@@ -440,6 +481,19 @@ func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) 
 	}
 }
 
+func (w *MainWindow) onQueueSavePopoverValidate() {
+	// Only show new playlist widgets if (new playlist) is selected in the combo box
+	selectedId := w.cbxQueueSavePlaylist.GetActiveID()
+	isNew := selectedId == queueSaveNewPlaylistId
+	w.lblQueueSavePlaylistName.SetVisible(isNew)
+	w.eQueueSavePlaylistName.SetVisible(isNew)
+
+	// Validate the actions
+	valid := (!isNew && selectedId != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
+	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
+	w.aQueueSaveAppend.SetEnabled(valid)
+}
+
 // applyLibrarySelection() navigates into the folder or adds or replaces the content of the queue with the currently
 // selected items in the library
 func (w *MainWindow) applyLibrarySelection(replace bool) {
@@ -504,6 +558,15 @@ func (w *MainWindow) errCheckDialog(err error, message string) bool {
 		return true
 	}
 	return false
+}
+
+// getQueueSaveNewPlaylistName() returns the text entered in the New playlist name entry, or an empty string if there's an error
+func (w *MainWindow) getQueueSaveNewPlaylistName() string {
+	s, err := w.eQueueSavePlaylistName.GetText()
+	if errCheck(err, "eQueueSavePlaylistName.GetText() failed") {
+		return ""
+	}
+	return s
 }
 
 // getQueueSelectedIndices() returns indices of the currently selected rows in the queue
@@ -736,51 +799,75 @@ func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 
 // queueSave() shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
 func (w *MainWindow) queueSave() {
-	// Show the "Save queue" dialog
-	selIndices := w.getQueueSelectedIndices()
-	if ok, replace, selOnly, existing, name := RunSaveQueueDialog(w.window, len(selIndices) > 0, w.connector); ok {
-		// Dialog confirmed
-		var err error
-		w.connector.IfConnected(func(client *mpd.Client) {
-			// Fetch the queue
-			var attrs []mpd.Attrs
-			attrs, err = client.PlaylistInfo(-1, -1)
-			if err != nil {
-				return
-			}
+	// Tweak widgets
+	selection := len(w.getQueueSelectedIndices()) > 0
+	w.cbQueueSaveSelectedOnly.SetVisible(selection)
+	w.cbQueueSaveSelectedOnly.SetActive(selection)
+	w.eQueueSavePlaylistName.SetText("")
 
-			// Begin a command list
-			commands := client.BeginCommandList()
-
-			// If replacing an existing playlist, remove it first
-			if existing && replace {
-				commands.PlaylistRemove(name)
-			}
-
-			// If adding selection only
-			if selOnly {
-				for _, idx := range selIndices {
-					commands.PlaylistAdd(name, attrs[idx]["file"])
-				}
-
-			} else if replace {
-				// Save the entire queue
-				commands.PlaylistSave(name)
-
-			} else {
-				// Append the entire queue
-				for _, a := range attrs {
-					commands.PlaylistAdd(name, a["file"])
-				}
-			}
-
-			// Execute the command list
-			err = commands.End()
-		})
-
-		// Check for error
-		w.errCheckDialog(err, "Failed to create a playlist")
+	// Populate the playlists combo box
+	w.cbxQueueSavePlaylist.RemoveAll()
+	w.cbxQueueSavePlaylist.Append(queueSaveNewPlaylistId, "(new playlist)")
+	for _, name := range w.connector.GetPlaylists() {
+		w.cbxQueueSavePlaylist.Append(name, name)
 	}
+	w.cbxQueueSavePlaylist.SetActiveID(queueSaveNewPlaylistId)
+
+	// Show the popover
+	w.pmnQueueSave.Popup()
+}
+
+// queueSaveApply() performs queue saving into a playlist
+func (w *MainWindow) queueSaveApply(replace bool) {
+	// Collect current values from the UI
+	selIndices := w.getQueueSelectedIndices()
+	selOnly := len(selIndices) > 0 && w.cbQueueSaveSelectedOnly.GetActive()
+	name := w.cbxQueueSavePlaylist.GetActiveID()
+	isNew := name == queueSaveNewPlaylistId
+	if isNew {
+		name = w.getQueueSaveNewPlaylistName()
+	}
+
+	err := errors.New("Not connected to MPD")
+	w.connector.IfConnected(func(client *mpd.Client) {
+		// Fetch the queue
+		var attrs []mpd.Attrs
+		attrs, err = client.PlaylistInfo(-1, -1)
+		if err != nil {
+			return
+		}
+
+		// Begin a command list
+		commands := client.BeginCommandList()
+
+		// If replacing an existing playlist, remove it first
+		if !isNew && replace {
+			commands.PlaylistRemove(name)
+		}
+
+		// If adding selection only
+		if selOnly {
+			for _, idx := range selIndices {
+				commands.PlaylistAdd(name, attrs[idx]["file"])
+			}
+
+		} else if replace {
+			// Save the entire queue
+			commands.PlaylistSave(name)
+
+		} else {
+			// Append the entire queue
+			for _, a := range attrs {
+				commands.PlaylistAdd(name, a["file"])
+			}
+		}
+
+		// Execute the command list
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to create a playlist")
 }
 
 // queueShuffle() randomises MPD's play queue
@@ -834,6 +921,17 @@ func (w *MainWindow) queueSort(attrName string, numeric, descending bool) {
 
 	// Check for error
 	w.errCheckDialog(err, "Failed to sort the queue")
+
+}
+
+// queueSortApply() performs MPD's play queue ordering based on the currently selected in popover mode
+func (w *MainWindow) queueSortApply(descending bool) {
+	// Fetch the index of the currently selected item in the Sort by combo box
+	if idx := util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1); idx >= 0 {
+		// Perform sorting
+		mode := w.queueSortModes[idx]
+		w.queueSort(mode.attr, mode.numeric, descending)
+	}
 }
 
 // Show() shows the window and all its child widgets
@@ -1194,6 +1292,9 @@ func (w *MainWindow) updateQueueActions() {
 	w.aQueueNowPlaying.SetEnabled(notEmpty)
 	w.aQueueClear.SetEnabled(notEmpty)
 	w.aQueueSort.SetEnabled(notEmpty)
+	w.aQueueSortAsc.SetEnabled(notEmpty)
+	w.aQueueSortDesc.SetEnabled(notEmpty)
+	w.aQueueSortShuffle.SetEnabled(notEmpty)
 	w.aQueueDelete.SetEnabled(selection)
 	w.aQueueSave.SetEnabled(notEmpty)
 }
