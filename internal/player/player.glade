@@ -360,10 +360,9 @@
                           <object class="GtkToolButton" id="btnLibraryUpdate">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Update the entire library</property>
+                            <property name="tooltip_text" translatable="yes">Update the music library</property>
                             <property name="action_name">app.library.update</property>
-                            <property name="label" translatable="yes">Update</property>
-                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">Update ▾</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -421,6 +420,7 @@
                             <property name="selection_mode">browse</property>
                             <signal name="button-press-event" handler="on_lbxLibrary_buttonPress" swapped="no"/>
                             <signal name="key-press-event" handler="on_lbxLibrary_keyPress" swapped="no"/>
+                            <signal name="selected-rows-changed" handler="on_lbxLibrary_selectionChange" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -844,6 +844,84 @@
       <packing>
         <property name="submenu">main</property>
         <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkPopoverMenu" id="pmnLibraryUpdate">
+    <property name="can_focus">False</property>
+    <property name="relative_to">btnLibraryUpdate</property>
+    <child>
+      <object class="GtkBox" id="bxLibraryUpdate">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="margin_left">12</property>
+        <property name="margin_right">12</property>
+        <property name="margin_top">12</property>
+        <property name="margin_bottom">12</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryUpdateAll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the entire music database</property>
+            <property name="action_name">app.library.update.all</property>
+            <property name="text" translatable="yes">Update entire library</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryUpdateSelected">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
+            <property name="action_name">app.library.update.selected</property>
+            <property name="text" translatable="yes">Update selected item</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryRescanAll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the entire music database, including unmodified files</property>
+            <property name="action_name">app.library.rescan.all</property>
+            <property name="text" translatable="yes">Rescan all files</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryRescanSelected">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the selected item, including unmodified files</property>
+            <property name="action_name">app.library.rescan.selected</property>
+            <property name="text" translatable="yes">Rescan selected item</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
       </packing>
     </child>
   </object>

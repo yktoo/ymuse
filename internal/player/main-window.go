@@ -72,10 +72,11 @@ type MainWindow struct {
 	eQueueSavePlaylistName   *gtk.Entry
 	cbQueueSaveSelectedOnly  *gtk.CheckButton
 	// Library widgets
-	bxLibrary      *gtk.Box
-	bxLibraryPath  *gtk.Box
-	lbxLibrary     *gtk.ListBox
-	lblLibraryInfo *gtk.Label
+	pmnLibraryUpdate *gtk.PopoverMenu
+	bxLibrary        *gtk.Box
+	bxLibraryPath    *gtk.Box
+	lbxLibrary       *gtk.ListBox
+	lblLibraryInfo   *gtk.Label
 	// Playlists widgets
 	bxPlaylists      *gtk.Box
 	lbxPlaylists     *gtk.ListBox
@@ -93,6 +94,10 @@ type MainWindow struct {
 	aQueueSaveReplace *glib.SimpleAction
 	aQueueSaveAppend  *glib.SimpleAction
 	aLibraryUpdate    *glib.SimpleAction
+	aLibraryUpdateAll *glib.SimpleAction
+	aLibraryUpdateSel *glib.SimpleAction
+	aLibraryRescanAll *glib.SimpleAction
+	aLibraryRescanSel *glib.SimpleAction
 	aPlaylistRename   *glib.SimpleAction
 	aPlaylistDelete   *glib.SimpleAction
 	aPlayerPrevious   *glib.SimpleAction
@@ -177,10 +182,11 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		eQueueSavePlaylistName:   builder.getEntry("eQueueSavePlaylistName"),
 		cbQueueSaveSelectedOnly:  builder.getCheckButton("cbQueueSaveSelectedOnly"),
 		// Library
-		bxLibrary:      builder.getBox("bxLibrary"),
-		bxLibraryPath:  builder.getBox("bxLibraryPath"),
-		lbxLibrary:     builder.getListBox("lbxLibrary"),
-		lblLibraryInfo: builder.getLabel("lblLibraryInfo"),
+		pmnLibraryUpdate: builder.getPopoverMenu("pmnLibraryUpdate"),
+		bxLibrary:        builder.getBox("bxLibrary"),
+		bxLibraryPath:    builder.getBox("bxLibraryPath"),
+		lbxLibrary:       builder.getListBox("lbxLibrary"),
+		lblLibraryInfo:   builder.getLabel("lblLibraryInfo"),
 		// Playlists
 		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
@@ -219,6 +225,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_tselQueue_changed":            w.updateQueueActions,
 		"on_lbxLibrary_buttonPress":       w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":          w.onLibraryListBoxKeyPress,
+		"on_lbxLibrary_selectionChange":   w.updateLibraryActions,
 		"on_lbxPlaylists_buttonPress":     w.onPlaylistListBoxButtonPress,
 		"on_lbxPlaylists_keyPress":        w.onPlaylistListBoxKeyPress,
 		"on_lbxPlaylists_selectionChange": w.updatePlaylistsActions,
@@ -313,7 +320,11 @@ func (w *MainWindow) onMap() {
 	w.aQueueSaveReplace = w.addAction("queue.save.replace", "", func() { w.queueSaveApply(true) })
 	w.aQueueSaveAppend = w.addAction("queue.save.append", "", func() { w.queueSaveApply(false) })
 	// Library
-	w.addAction("library.update", "", w.libraryUpdate)
+	w.aLibraryUpdate = w.addAction("library.update", "", w.pmnLibraryUpdate.Popup)
+	w.aLibraryUpdateAll = w.addAction("library.update.all", "", func() { w.libraryUpdate(false, false) })
+	w.aLibraryUpdateSel = w.addAction("library.update.selected", "", func() { w.libraryUpdate(false, true) })
+	w.aLibraryRescanAll = w.addAction("library.rescan.all", "", func() { w.libraryUpdate(true, false) })
+	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
 	// Playlist
 	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
 	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
@@ -497,32 +508,17 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 // applyLibrarySelection() navigates into the folder or adds or replaces the content of the queue with the currently
 // selected items in the library
 func (w *MainWindow) applyLibrarySelection(replace bool) {
-	// If there's selection
-	row := w.lbxLibrary.GetSelectedRow()
-	if row == nil {
+	// Get selected path
+	libPath, isDir := w.getSelectedLibraryPath()
+	if libPath == "" {
 		return
 	}
 
-	// Extract path, which is stored in the row's name
-	s, err := row.GetName()
-	if errCheck(err, "row.GetName() failed") {
-		return
-	}
-
-	// Calculate final path
-	libPath := w.currentLibPath
-	if len(libPath) > 0 {
-		libPath += "/"
-	}
-	libPath += s[2:]
-
-	switch {
 	// Directory - navigate inside it
-	case strings.HasPrefix(s, "d:"):
+	if isDir {
 		w.setLibraryPath(libPath)
-
-	// File - append/replace the queue
-	case strings.HasPrefix(s, "f:"):
+	} else {
+		// File - append/replace the queue
 		w.queueOne(replace, libPath)
 	}
 }
@@ -587,6 +583,32 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 	return indices
 }
 
+// getSelectedLibraryPath() returns the full path of the currently selected library item and whether it's a directory,
+// or an empty string if there's an error
+func (w *MainWindow) getSelectedLibraryPath() (string, bool) {
+	// If there's selection
+	row := w.lbxLibrary.GetSelectedRow()
+	if row == nil {
+		return "", false
+	}
+
+	// Extract path, which is stored in the row's name
+	name, err := row.GetName()
+	if errCheck(err, "getSelectedLibraryPath(): row.GetName() failed") {
+		return "", false
+	}
+
+	// Calculate final path
+	libPath := w.currentLibPath
+	if len(libPath) > 0 {
+		libPath += "/"
+	}
+	libPath += name[2:]
+
+	// The name prefix defines whether it's a file ("f:") or a directory ("d:")
+	return libPath, strings.HasPrefix(name, "d:")
+}
+
 // getSelectedPlaylistName() returns the name of the currently selected playlist, or an empty string if there's an error
 func (w *MainWindow) getSelectedPlaylistName() string {
 	// If there's selection
@@ -603,11 +625,25 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 	return name
 }
 
-// libraryUpdate() updates the entire library
-func (w *MainWindow) libraryUpdate() {
+// libraryUpdate() updates or rescans the library
+func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
+	// Determine the update path
+	libPath := ""
+	if selectedOnly {
+		if libPath, _ = w.getSelectedLibraryPath(); libPath == "" {
+			return
+		}
+	}
+
+	// Run the update
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
-		_, err = client.Update("")
+		if rescan {
+			// TODO implement once gompd provides support for it, see https://github.com/fhs/gompd/issues/54
+			err = errors.New("Rescan is not implemented yet")
+		} else {
+			_, err = client.Update(libPath)
+		}
 	})
 
 	// Check for error
@@ -972,7 +1008,9 @@ func (w *MainWindow) updateAll() {
 	w.updateQueue()
 	w.updateLibraryPath()
 	w.updateLibrary(0)
+	w.updateLibraryActions()
 	w.updatePlaylists()
+	w.updatePlaylistsActions()
 	w.updateOptions()
 	w.updatePlayer()
 }
@@ -1066,6 +1104,16 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 
 	// Update info
 	w.lblLibraryInfo.SetText(info)
+}
+
+// updateLibraryActions() updates the widgets for library list
+func (w *MainWindow) updateLibraryActions() {
+	connected, selected := w.connector.IsConnected(), w.lbxLibrary.GetSelectedRow() != nil
+	w.aLibraryUpdate.SetEnabled(connected)
+	w.aLibraryUpdateAll.SetEnabled(connected)
+	w.aLibraryUpdateSel.SetEnabled(connected && selected)
+	w.aLibraryRescanAll.SetEnabled(connected)
+	w.aLibraryRescanSel.SetEnabled(connected && selected)
 }
 
 // updateLibraryPath() updates the current library path selector
@@ -1198,9 +1246,6 @@ func (w *MainWindow) updatePlaylists() {
 
 	// Update info
 	w.lblPlaylistsInfo.SetText(info)
-
-	// Update actions
-	w.updatePlaylistsActions()
 }
 
 // updatePlaylistsActions() updates the widgets for playlists list
