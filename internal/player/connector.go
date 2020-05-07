@@ -17,7 +17,6 @@ package player
 
 import (
 	"github.com/fhs/gompd/v2/mpd"
-	"github.com/yktoo/ymuse/internal/util"
 	"sync"
 	"time"
 )
@@ -159,8 +158,8 @@ func (c *Connector) connect() {
 				nil,
 				func() {
 					// Try to connect to MPD
-					cfg := util.GetConfig()
-					client, err := mpd.DialAuthenticated("tcp", cfg.MpdAddress, cfg.MpdPassword)
+					cfg := GetConfig()
+					client, err := mpd.DialAuthenticated("tcp", cfg.MpdAddress(), cfg.MpdPassword)
 					if errCheck(err, "Dial() failed") {
 						return
 					}
@@ -250,8 +249,8 @@ func (c *Connector) watch() {
 
 			// If no watcher yet
 			if c.mpdWatcher == nil {
-				cfg := util.GetConfig()
-				watcher, err := mpd.NewWatcher("tcp", cfg.MpdAddress, cfg.MpdPassword)
+				cfg := GetConfig()
+				watcher, err := mpd.NewWatcher("tcp", cfg.MpdAddress(), cfg.MpdPassword)
 				// Failed to connect
 				if err != nil {
 					log.Warning("Failed to watch MPD", err)

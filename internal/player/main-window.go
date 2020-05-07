@@ -33,13 +33,6 @@ import (
 	"time"
 )
 
-// Description of a way to sort the play queue
-type queueSortMode struct {
-	label   string
-	attr    string
-	numeric bool
-}
-
 type MainWindow struct {
 	// Application reference
 	app *gtk.Application
@@ -61,7 +54,6 @@ type MainWindow struct {
 	bxQueue      *gtk.Box
 	lblQueueInfo *gtk.Label
 	trvQueue     *gtk.TreeView
-	lstQueue     *gtk.ListStore
 	pmnQueueSort *gtk.PopoverMenu
 	pmnQueueSave *gtk.PopoverMenu
 	mnQueue      *gtk.Menu
@@ -109,12 +101,12 @@ type MainWindow struct {
 	aPlayerRepeat     *glib.SimpleAction
 	aPlayerConsume    *glib.SimpleAction
 
+	// Queue list store
+	queueListStore *gtk.ListStore
 	// Number of items in the play queue
 	currentQueueSize int
 	// Queue's track index (last) marked as current
 	currentQueueIndex int
-	// Queue sort modes
-	queueSortModes []queueSortMode
 
 	// Current library path, separated by slashes
 	currentLibPath string
@@ -129,16 +121,10 @@ type MainWindow struct {
 }
 
 //noinspection GoSnakeCaseUsage
-const (
-	// Queue tree view column indices
-	ColQueue_Artist int = iota
-	ColQueue_Year
-	ColQueue_Album
-	ColQueue_Number
-	ColQueue_Track
-	ColQueue_Length
-	ColQueue_FontWeight
-	ColQueue_BgColor
+var (
+	// Indices of "artificial" queue list store columns used for rendering
+	queueColNum_FontWeight int
+	queueColNum_BgColor    int
 )
 
 const (
@@ -148,7 +134,6 @@ const (
 	BackgroundColorActive = "#ffffe0"
 
 	queueSaveNewPlaylistId = "\u0001new"
-	queueSortDefaultMode   = "5" // Dir and file name
 )
 
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
@@ -172,7 +157,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		bxQueue:      builder.getBox("bxQueue"),
 		lblQueueInfo: builder.getLabel("lblQueueInfo"),
 		trvQueue:     builder.getTreeView("trvQueue"),
-		lstQueue:     builder.getListStore("lstQueue"),
 		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
 		pmnQueueSave: builder.getPopoverMenu("pmnQueueSave"),
 		mnQueue:      builder.getMenu("mnQueue"),
@@ -194,18 +178,12 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
 
-		// Other
-		queueSortModes: []queueSortMode{
-			{"Artist", "Artist", false},
-			{"Album", "Album", false},
-			{"Track title", "Title", false},
-			{"Track number", "Track", true},
-			{"Track length", "duration", true},
-			{"Directory and file name", "file", false},
-			{"Year", "Date", true},
-			{"Genre", "Genre", false},
-		},
+		// Other stuff
+		queueListStore: createQueueListStore(),
 	}
+
+	// Bind the list store to the queue tree view
+	w.trvQueue.SetModel(w.queueListStore)
 
 	// Initialise player title template
 	w.playerTitleTemplate = template.Must(
@@ -215,7 +193,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 				"dirname":  path.Dir,
 				"basename": path.Base,
 			}).
-			Parse(util.GetConfig().PlayerTitleTemplate))
+			Parse(GetConfig().PlayerTitleTemplate))
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
@@ -223,7 +201,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_mainWindow_map":               w.onMap,
 		"on_trvQueue_buttonPress":         w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":            w.onQueueTreeViewKeyPress,
-		"on_trvQueue_colClicked":          w.onQueueTreeViewColClicked,
 		"on_tselQueue_changed":            w.updateQueueActions,
 		"on_lbxLibrary_buttonPress":       w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":          w.onLibraryListBoxKeyPress,
@@ -247,6 +224,29 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Instantiate a connector
 	w.connector = NewConnector(w.onConnectorConnected, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
 	return w, nil
+}
+
+// createQueueListStore() initialises the queue list store object
+func createQueueListStore() *gtk.ListStore {
+	// Collect column types from MPD attributes
+	countAttrs := len(MpdTrackAttributeIds)
+	types := make([]glib.Type, countAttrs+2)
+	for i := range MpdTrackAttributeIds {
+		types[i] = glib.TYPE_STRING
+	}
+
+	// Last 2 columns are font weight and background color
+	queueColNum_FontWeight = countAttrs
+	queueColNum_BgColor = countAttrs + 1
+	types[queueColNum_FontWeight] = glib.TYPE_INT
+	types[queueColNum_BgColor] = glib.TYPE_STRING
+
+	// Create a list store instance
+	store, err := gtk.ListStoreNew(types...)
+	if err != nil {
+		log.Fatal("Failed to create queue tree view list store", err)
+	}
+	return store
 }
 
 // addAction() add a new application action, with an optional keyboard shortcut
@@ -295,22 +295,23 @@ func (w *MainWindow) onAbout() {
 		return
 	}
 	dlg.SetLogoIconName("dialog-information")
-	dlg.SetProgramName(util.AppName)
+	dlg.SetProgramName(AppName)
 	dlg.SetCopyright("Written by Dmitry Kann")
-	dlg.SetLicense(util.AppLicense)
-	dlg.SetWebsite(util.AppWebsite)
-	dlg.SetWebsiteLabel(util.AppWebsiteLabel)
-	_, _ = dlg.Connect("response", dlg.Destroy)
+	dlg.SetLicense(AppLicense)
+	dlg.SetWebsite(AppWebsite)
+	dlg.SetWebsiteLabel(AppWebsiteLabel)
+	_, err = dlg.Connect("response", dlg.Destroy)
+	errCheck(err, "dlg.Connect(response) failed")
 	dlg.Run()
 }
 
 func (w *MainWindow) onMap() {
-	log.Debug("onMap()")
+	log.Debug("MainWindow.onMap()")
 
 	// Create actions
 	// Application
 	w.addAction("about", "F1", w.onAbout)
-	w.addAction("prefs", "<Ctrl>comma", func() { util.NotImplemented(w.window) })
+	w.addAction("prefs", "<Ctrl>comma", func() { PreferencesDialog(w.window, w.updateQueueColumns) })
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
@@ -346,17 +347,20 @@ func (w *MainWindow) onMap() {
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
 
 	// Populate Queue sort by combo box
-	for i, mode := range w.queueSortModes {
-		w.cbxQueueSortBy.Append(strconv.Itoa(i), mode.label)
+	for _, id := range MpdTrackAttributeIds {
+		w.cbxQueueSortBy.Append(strconv.Itoa(id), MpdTrackAttributes[id].longName)
 	}
-	w.cbxQueueSortBy.SetActiveID(queueSortDefaultMode)
+	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(GetConfig().DefaultSortAttrId))
+
+	// Update Queue tree view columns
+	w.updateQueueColumns()
 
 	// Start connecting
 	w.connector.Start()
 }
 
 func (w *MainWindow) onDestroy() {
-	log.Debug("onDestroy()")
+	log.Debug("MainWindow.onDestroy()")
 
 	// Shut the connector down
 	w.connector.Stop()
@@ -390,7 +394,9 @@ func (w *MainWindow) onPlaylistRename() {
 	w.errCheckDialog(err, "Failed to rename the playlist")
 }
 
-func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn) {
+func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index int, attr *MpdTrackAttribute) {
+	log.Debugf("onQueueTreeViewColClicked(col, %v, %v)", index, *attr)
+
 	// Determine the sort order: on first click on a column ascending, on next descending
 	descending := col.GetSortIndicator() && col.GetSortOrder() == gtk.SORT_ASCENDING
 	sortType := gtk.SORT_ASCENDING
@@ -398,38 +404,22 @@ func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn) {
 		sortType = gtk.SORT_DESCENDING
 	}
 
-	// Determine the index of the clicked column
-	i, colIndex := 0, -1
-	title := col.GetTitle()
+	// Update sort indicators on all columns
+	i := 0
 	for c := w.trvQueue.GetColumns(); c != nil; c = c.Next() {
-		// Need to resort to comparison by title for no better alternative is available
 		item := c.Data().(*gtk.TreeViewColumn)
-		thisCol := item.GetTitle() == title
+		thisCol := i == index
+		// Set sort direction on the clicked column
 		if thisCol {
-			colIndex = i
-			// Set sort direction
 			item.SetSortOrder(sortType)
 		}
-		// Update the column's sort indicator
+		// Update every column's sort indicator
 		item.SetSortIndicator(thisCol)
 		i++
 	}
 
 	// Sort the queue
-	switch colIndex {
-	case ColQueue_Artist:
-		w.queueSort("Artist", false, descending)
-	case ColQueue_Year:
-		w.queueSort("Date", true, descending)
-	case ColQueue_Album:
-		w.queueSort("Album", false, descending)
-	case ColQueue_Number:
-		w.queueSort("Track", true, descending)
-	case ColQueue_Track:
-		w.queueSort("Title", false, descending)
-	case ColQueue_Length:
-		w.queueSort("duration", true, descending)
-	}
+	w.queueSort(attr, descending)
 }
 
 func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Event) {
@@ -456,7 +446,7 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyLibrarySelection(util.GetConfig().TrackDefaultReplace)
+		w.applyLibrarySelection(GetConfig().TrackDefaultReplace)
 	}
 }
 
@@ -465,7 +455,7 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 	switch ek.KeyVal() {
 	// Enter: we need to go deeper
 	case gdk.KEY_Return:
-		w.applyLibrarySelection(util.GetConfig().TrackDefaultReplace)
+		w.applyLibrarySelection(GetConfig().TrackDefaultReplace)
 
 	// Backspace: go level up
 	case gdk.KEY_BackSpace:
@@ -481,14 +471,14 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyPlaylistSelection(util.GetConfig().PlaylistDefaultReplace)
+		w.applyPlaylistSelection(GetConfig().PlaylistDefaultReplace)
 	}
 }
 
 func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
 	ek := gdk.EventKeyNewFromEvent(event)
 	if ek.KeyVal() == gdk.KEY_Return {
-		w.applyPlaylistSelection(util.GetConfig().PlaylistDefaultReplace)
+		w.applyPlaylistSelection(GetConfig().PlaylistDefaultReplace)
 	}
 }
 
@@ -935,7 +925,7 @@ func (w *MainWindow) queueShuffle() {
 }
 
 // queueSort() orders MPD's play queue on the provided attribute
-func (w *MainWindow) queueSort(attrName string, numeric, descending bool) {
+func (w *MainWindow) queueSort(attr *MpdTrackAttribute, descending bool) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		// Fetch the current playlist
@@ -946,8 +936,8 @@ func (w *MainWindow) queueSort(attrName string, numeric, descending bool) {
 
 		// Sort the list
 		sort.SliceStable(attrs, func(i, j int) bool {
-			a, b := attrs[i][attrName], attrs[j][attrName]
-			if numeric {
+			a, b := attrs[i][attr.attrName], attrs[j][attr.attrName]
+			if attr.numeric {
 				an, bn := util.ParseFloatDef(a, 0), util.ParseFloatDef(b, 0)
 				if descending {
 					return bn < an
@@ -979,11 +969,9 @@ func (w *MainWindow) queueSort(attrName string, numeric, descending bool) {
 
 // queueSortApply() performs MPD's play queue ordering based on the currently selected in popover mode
 func (w *MainWindow) queueSortApply(descending bool) {
-	// Fetch the index of the currently selected item in the Sort by combo box
-	if idx := util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1); idx >= 0 {
-		// Perform sorting
-		mode := w.queueSortModes[idx]
-		w.queueSort(mode.attr, mode.numeric, descending)
+	// Fetch the ID of the currently selected item in the Sort by combo box, and the corresponding attribute
+	if attr, ok := MpdTrackAttributes[util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1)]; ok {
+		w.queueSort(&attr, descending)
 	}
 }
 
@@ -1003,7 +991,7 @@ func (w *MainWindow) setLibraryPath(path string) {
 // setQueueHighlight() selects or deselects an item in the Queue tree view at the given index
 func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	if index >= 0 {
-		if iter, err := w.lstQueue.GetIterFromString(strconv.Itoa(index)); err == nil {
+		if iter, err := w.queueListStore.GetIterFromString(strconv.Itoa(index)); err == nil {
 			weight := FontWeightNormal
 			bgColor := BackgroundColorNormal
 			if selected {
@@ -1011,9 +999,9 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 				bgColor = BackgroundColorActive
 			}
 			errCheck(
-				w.lstQueue.SetCols(iter, map[int]interface{}{
-					ColQueue_FontWeight: weight,
-					ColQueue_BgColor:    bgColor,
+				w.queueListStore.SetCols(iter, map[int]interface{}{
+					queueColNum_FontWeight: weight,
+					queueColNum_BgColor:    bgColor,
 				}),
 				"lstQueue.SetValue() failed")
 		}
@@ -1274,8 +1262,8 @@ func (w *MainWindow) updatePlaylistsActions() {
 
 // updateQueue() updates the current play queue contents
 func (w *MainWindow) updateQueue() {
-	// Clear the queue
-	w.lstQueue.Clear()
+	// Clear the queue list store
+	w.queueListStore.Clear()
 	w.currentQueueIndex = -1
 	w.currentQueueSize = 0
 
@@ -1289,34 +1277,35 @@ func (w *MainWindow) updateQueue() {
 		return
 	}
 
-	// Repopulate the queue tree view
+	// Repopulate the queue list store
 	totalSecs := 0.0
 	for _, a := range attrs {
-		secs := util.ParseFloatDef(a["duration"], 0)
+		rowData := make(map[int]interface{})
+		for id, mpdAttr := range MpdTrackAttributes {
+			// Fetch the raw attribute value, if any
+			value, ok := a[mpdAttr.attrName]
+			if !ok {
+				continue
+			}
 
-		// Prepare row values
-		rowData := map[int]interface{}{
-			ColQueue_Artist:     a["Artist"],
-			ColQueue_Year:       a["Date"],
-			ColQueue_Album:      a["Album"],
-			ColQueue_Number:     a["Track"],
-			ColQueue_Track:      a["Title"],
-			ColQueue_FontWeight: FontWeightNormal,
-			ColQueue_BgColor:    BackgroundColorNormal,
+			// Format the value if needed
+			if mpdAttr.formatter != nil {
+				value = mpdAttr.formatter(value)
+			}
+			rowData[id] = value
+
+			// Add the "artificial" column values
+			rowData[queueColNum_FontWeight] = FontWeightNormal
+			rowData[queueColNum_BgColor] = BackgroundColorNormal
 		}
 
-		// Add duration, if any
-		if secs > 0 {
-			rowData[ColQueue_Length] = util.FormatSeconds(secs)
-		}
-
-		// Add a row to the tree view
+		// Add a row to the list store
 		errCheck(
-			w.lstQueue.SetCols(w.lstQueue.Append(), rowData),
+			w.queueListStore.SetCols(w.queueListStore.Append(), rowData),
 			"lstQueue.SetCols() failed")
 
 		// Accumulate counters
-		totalSecs += secs
+		totalSecs += util.ParseFloatDef(a["duration"], 0)
 		w.currentQueueSize++
 	}
 
@@ -1344,6 +1333,53 @@ func (w *MainWindow) updateQueue() {
 
 	// Update queue actions
 	w.updateQueueActions()
+}
+
+// updateQueueColumns() updates the columns in the play queue tree view
+func (w *MainWindow) updateQueueColumns() {
+	// Remove all columns
+	w.trvQueue.GetColumns().Foreach(func(item interface{}) {
+		w.trvQueue.RemoveColumn(item.(*gtk.TreeViewColumn))
+	})
+
+	// Add selected columns
+	for index, id := range GetConfig().QueueColumnIds {
+		// Fetch the attribute by its ID
+		attr, ok := MpdTrackAttributes[id]
+		if !ok {
+			log.Errorf("Invalid column ID: %d", id)
+			continue
+		}
+
+		// Add a text renderer
+		renderer, err := gtk.CellRendererTextNew()
+		if errCheck(err, "CellRendererTextNew() failed") {
+			continue
+		}
+
+		// Add a new tree column
+		col, err := gtk.TreeViewColumnNewWithAttribute(attr.name, renderer, "text", id)
+		if errCheck(err, "TreeViewColumnNewWithAttribute() failed") {
+			continue
+		}
+		col.SetSizing(gtk.TREE_VIEW_COLUMN_FIXED)
+		col.SetFixedWidth(attr.width)
+		col.SetClickable(true)
+		col.SetResizable(true)
+		col.AddAttribute(renderer, "background", queueColNum_BgColor)
+		col.AddAttribute(renderer, "weight", queueColNum_FontWeight)
+
+		// Bind the clicked signal
+		localIndex := index // Make an in-loop copy of index for the closure below
+		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, localIndex, &attr) })
+		errCheck(err, "col.Connect(clicked) failed")
+
+		// Add the column to the tree view
+		w.trvQueue.AppendColumn(col)
+	}
+
+	// Make all columns visible
+	w.trvQueue.ShowAll()
 }
 
 // updateQueueActions() updates the play queue actions

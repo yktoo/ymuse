@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-package util
+package player
 
 import (
 	"flag"
+	"fmt"
 	"github.com/op/go-logging"
 	"os"
 	"strings"
@@ -42,8 +43,11 @@ limitations under the License.
 
 type Config struct {
 	LogLevel               logging.Level // The logging level
-	MpdAddress             string        // MPD's IP address or hostname and port number
+	MpdHost                string        // MPD's IP address or hostname
+	MpdPort                int           // MPD's port number
 	MpdPassword            string        // MPD's password (optional)
+	QueueColumnIds         []int         // Displayed queue columns
+	DefaultSortAttrId      int           // ID of MPD attribute used as a default for queue sorting
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
 	PlayerTitleTemplate    string        // Track's title formatting template for the player
@@ -52,8 +56,11 @@ type Config struct {
 // Config singleton with all the defaults
 var config = &Config{
 	LogLevel:               logging.WARNING,
-	MpdAddress:             ":6600",
+	MpdHost:                "",
+	MpdPort:                6600,
 	MpdPassword:            "",
+	QueueColumnIds:         []int{MTA_Artist, MTA_Year, MTA_Album, MTA_Disc, MTA_Number, MTA_Track, MTA_Length, MTA_Genre},
+	DefaultSortAttrId:      MTA_Path,
 	TrackDefaultReplace:    false,
 	PlaylistDefaultReplace: true,
 	PlayerTitleTemplate: `{{- if or .Title .Album | or .Artist -}}
@@ -94,4 +101,9 @@ func GetConfig() *Config {
 		}
 	})
 	return config
+}
+
+// MpdAddress() returns the MPD address string constructed from host and port
+func (c *Config) MpdAddress() string {
+	return fmt.Sprintf("%s:%d", c.MpdHost, c.MpdPort)
 }

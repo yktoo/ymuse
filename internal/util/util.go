@@ -54,6 +54,14 @@ func FormatSeconds(seconds float64) string {
 	}
 }
 
+// FormatSecondsStr() formats a number seconds as a string given string input
+func FormatSecondsStr(seconds string) string {
+	if f := ParseFloatDef(seconds, -1); f >= 0 {
+		return FormatSeconds(f)
+	}
+	return ""
+}
+
 // Default() returns a default value if no value is set
 func Default(def string, value interface{}) string {
 	v := reflect.ValueOf(value)

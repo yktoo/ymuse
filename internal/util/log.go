@@ -22,13 +22,7 @@ import (
 )
 
 // Package-wide Logger instance
-var log *logging.Logger
-
-func init() {
-	// Init logging
-	log = logging.MustGetLogger("util")
-	logging.SetLevel(GetConfig().LogLevel, "util")
-}
+var log = logging.MustGetLogger("util")
 
 // errCheck() logs a warning if the error is not nil.
 func errCheck(err error, message string) bool {

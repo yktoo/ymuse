@@ -133,15 +133,6 @@ func (b *Builder) getListBox(name string) *gtk.ListBox {
 	return result
 }
 
-// getListStore() finds and returns a list store by its name
-func (b *Builder) getListStore(name string) *gtk.ListStore {
-	result, ok := b.get(name).(*gtk.ListStore)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
-	}
-	return result
-}
-
 // getMenu() finds and returns a menu by its name
 func (b *Builder) getMenu(name string) *gtk.Menu {
 	result, ok := b.get(name).(*gtk.Menu)
@@ -156,6 +147,15 @@ func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
 	result, ok := b.get(name).(*gtk.PopoverMenu)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.PopoverMenu", name))
+	}
+	return result
+}
+
+// getRadioButton() finds and returns a radio button by its name
+func (b *Builder) getRadioButton(name string) *gtk.RadioButton {
+	result, ok := b.get(name).(*gtk.RadioButton)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.RadioButton", name))
 	}
 	return result
 }
@@ -183,6 +183,15 @@ func (b *Builder) getSwitch(name string) *gtk.Switch {
 	result, ok := b.get(name).(*gtk.Switch)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.Switch", name))
+	}
+	return result
+}
+
+// getTextBuffer() finds and returns a text buffer by its name
+func (b *Builder) getTextBuffer(name string) *gtk.TextBuffer {
+	result, ok := b.get(name).(*gtk.TextBuffer)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.TextBuffer", name))
 	}
 	return result
 }
