@@ -16,10 +16,14 @@
 package player
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/op/go-logging"
+	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 	"sync"
 )
@@ -40,9 +44,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 `
+const ConfigDirectory = "ymuse"
+const ConfigFileName = "config.json"
+
+type Dimensions struct {
+	X, Y, Width, Height int
+}
 
 type Config struct {
-	LogLevel               logging.Level // The logging level
+	LogLevel               logging.Level `json:"-"` // The logging level
 	MpdHost                string        // MPD's IP address or hostname
 	MpdPort                int           // MPD's port number
 	MpdPassword            string        // MPD's password (optional)
@@ -53,6 +63,7 @@ type Config struct {
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
 	PlayerTitleTemplate    string        // Track's title formatting template for the player
+	MainWindowDimensions   Dimensions    // Main window dimensions
 }
 
 // Config singleton with all the defaults
@@ -78,6 +89,7 @@ from <b>{{ .file | dirname }}</b>
 {{- else -}}
 <i>(no track)</i>
 {{- end -}}`,
+	MainWindowDimensions: Dimensions{-1, -1, -1, -1},
 }
 var once sync.Once
 
@@ -90,6 +102,9 @@ func GetConfig() *Config {
 				return
 			}
 		}
+
+		// Load the config from the file
+		config.Load()
 
 		// Process command line
 		verbInfo := flag.Bool("v", false, "verbose logging")
@@ -107,7 +122,53 @@ func GetConfig() *Config {
 	return config
 }
 
+// Load() reads the config from the default file
+func (c *Config) Load() {
+	// Try to read the file
+	file := c.getConfigFile()
+	data, err := ioutil.ReadFile(file)
+	if errCheck(err, "Couldn't read file") {
+		return
+	}
+
+	// Unmarshal the config
+	if errCheck(json.Unmarshal(data, &c), "json.Unmarshal() failed") {
+		return
+	}
+	log.Debugf("Loaded configuration from %s", file)
+}
+
 // MpdAddress() returns the MPD address string constructed from host and port
 func (c *Config) MpdAddress() string {
 	return fmt.Sprintf("%s:%d", c.MpdHost, c.MpdPort)
+}
+
+// Save() writes out the config to the default file
+func (c *Config) Save() {
+	// Create the config directory if it doesn't exist
+	if errCheck(os.MkdirAll(c.getConfigDir(), 0755), "Mkdir() failed") {
+		return
+	}
+
+	// Serialise the config
+	data, err := json.MarshalIndent(c, "", "    ")
+	if errCheck(err, "json.MarshalIndent() failed") {
+		return
+	}
+
+	// Save the config
+	file := c.getConfigFile()
+	if !errCheck(ioutil.WriteFile(file, data, 0600), "WriteFile() failed") {
+		log.Debugf("Saved configuration to %s", file)
+	}
+}
+
+// getConfigDir() returns the full path to the config directory
+func (c *Config) getConfigDir() string {
+	return path.Join(glib.GetUserConfigDir(), ConfigDirectory)
+}
+
+// getConfigFile() returns the full path of the config file
+func (c *Config) getConfigFile() string {
+	return path.Join(c.getConfigDir(), ConfigFileName)
 }

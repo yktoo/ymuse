@@ -52,7 +52,7 @@
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="icon">ymuse-48.png</property>
-    <signal name="destroy" handler="on_mainWindow_destroy" swapped="no"/>
+    <signal name="delete-event" handler="on_mainWindow_delete" swapped="no"/>
     <signal name="map" handler="on_mainWindow_map" swapped="no"/>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="hdbMain">

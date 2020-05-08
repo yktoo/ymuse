@@ -190,7 +190,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_mainWindow_destroy":           w.onDestroy,
+		"on_mainWindow_delete":            w.onDelete,
 		"on_mainWindow_map":               w.onMap,
 		"on_trvQueue_buttonPress":         w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":            w.onQueueTreeViewKeyPress,
@@ -213,6 +213,15 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 
 	// Register the main window with the app
 	application.AddWindow(w.window)
+
+	// Restore window dimensions
+	dim := GetConfig().MainWindowDimensions
+	if dim.Width > 0 && dim.Height > 0 {
+		w.window.Resize(dim.Width, dim.Height)
+	}
+	if dim.X >= 0 && dim.Y >= 0 {
+		w.window.Move(dim.X, dim.Y)
+	}
 
 	// Instantiate a connector
 	w.connector = NewConnector(w.onConnectorStatusChange, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
@@ -357,11 +366,20 @@ func (w *MainWindow) onMap() {
 	}
 }
 
-func (w *MainWindow) onDestroy() {
-	log.Debug("MainWindow.onDestroy()")
+func (w *MainWindow) onDelete() {
+	log.Debug("MainWindow.onDelete()")
 
 	// Disconnect from MPD
 	w.disconnect()
+
+	// Save the current window dimensions in the config
+	cfg := GetConfig()
+	x, y := w.window.GetPosition()
+	width, height := w.window.GetSize()
+	cfg.MainWindowDimensions = Dimensions{x, y, width, height}
+
+	// Write out the config
+	cfg.Save()
 }
 
 func (w *MainWindow) onPlaylistDelete() {

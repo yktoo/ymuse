@@ -157,6 +157,8 @@ func (d *PrefsDialog) onSettingChange() {
 	if s, err := d.eMpdPassword.GetText(); !errCheck(err, "eMpdPassword.GetText() failed") {
 		cfg.MpdPassword = s
 	}
+	cfg.MpdAutoConnect = d.cbMpdAutoConnect.GetActive()
+	cfg.MpdAutoReconnect = d.cbMpdAutoReconnect.GetActive()
 	// Interface page
 	cfg.TrackDefaultReplace = d.rbLibraryDefaultReplace.GetActive()
 	cfg.PlaylistDefaultReplace = d.rbPlaylistsDefaultReplace.GetActive()
