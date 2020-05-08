@@ -17,11 +17,14 @@ package player
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/yktoo/ymuse/internal/util"
 	"strconv"
 )
 
 type PrefsDialog struct {
 	dialog *gtk.Dialog
+	// Whether the dialog is initialised
+	initialised bool
 	// General page widgets
 	eMpdHost     *gtk.Entry
 	adjMpdPort   *gtk.Adjustment
@@ -37,10 +40,11 @@ type PrefsDialog struct {
 	// Queue column checkboxes
 	queueColumnCheckboxes []*gtk.CheckButton
 	// Callbacks
-	onQueueColumnsChanged func()
+	onQueueColumnsChanged        func()
+	onPlayerTitleTemplateChanged func()
 }
 
-func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged func()) {
+func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
 	// Load the dialog layout
 	builder := NewBuilder("internal/player/prefs.glade")
 
@@ -60,7 +64,8 @@ func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged func()) {
 		// Columns page widgets
 		lbxColumns: builder.getListBox("lbxColumns"),
 		// Callbacks
-		onQueueColumnsChanged: onQueueColumnsChanged,
+		onQueueColumnsChanged:        onQueueColumnsChanged,
+		onPlayerTitleTemplateChanged: onPlayerTitleTemplateChanged,
 	}
 	defer d.dialog.Destroy()
 
@@ -70,6 +75,7 @@ func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged func()) {
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
 		"on_prefsDialog_map": d.onMap,
+		"on_setting_change":  d.onSettingChange,
 	})
 
 	// Run the dialog
@@ -93,6 +99,7 @@ func (d *PrefsDialog) onMap() {
 	d.txbPlayerTitleTemplate.SetText(cfg.PlayerTitleTemplate)
 	// Columns page
 	d.populateColumns()
+	d.initialised = true
 }
 
 // addColumn() adds a row with a check box to the Columns list box
@@ -123,6 +130,26 @@ func (d *PrefsDialog) addColumn(attrId int, checked bool) {
 
 	// Save the checkbox in the dialog for future column updates
 	d.queueColumnCheckboxes = append(d.queueColumnCheckboxes, cb)
+}
+
+// onSettingChange() is a signal handler for a change of a simple setting widget
+func (d *PrefsDialog) onSettingChange() {
+	log.Debug("onSettingChange()")
+	// Ignore if the dialog is not initialised yet
+	if !d.initialised {
+		return
+	}
+
+	// Collect settings
+	cfg := GetConfig()
+	cfg.TrackDefaultReplace = d.rbLibraryDefaultReplace.GetActive()
+	cfg.PlaylistDefaultReplace = d.rbPlaylistsDefaultReplace.GetActive()
+	if s, err := util.GetTextBufferText(d.txbPlayerTitleTemplate); !errCheck(err, "util.GetTextBufferText() failed") {
+		if s != cfg.PlayerTitleTemplate {
+			cfg.PlayerTitleTemplate = s
+			d.onPlayerTitleTemplateChanged()
+		}
+	}
 }
 
 // populateColumns() fills in the Columns list box

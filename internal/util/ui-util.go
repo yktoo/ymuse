@@ -148,11 +148,10 @@ func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
 	return dlg.Run() == gtk.RESPONSE_OK
 }
 
-// ErrorDialog() shows an error message dialog
-func ErrorDialog(parent gtk.IWindow, text string) {
-	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text)
-	defer dlg.Destroy()
-	dlg.Run()
+// GetTextBufferText() returns the entire text stored in a text buffer
+func GetTextBufferText(buf *gtk.TextBuffer) (string, error) {
+	start, end := buf.GetBounds()
+	return buf.GetText(start, end, true)
 }
 
 // EditDialog() show a dialog with a single text entry
@@ -214,4 +213,11 @@ func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool
 		return value, true
 	}
 	return "", false
+}
+
+// ErrorDialog() shows an error message dialog
+func ErrorDialog(parent gtk.IWindow, text string) {
+	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text)
+	defer dlg.Destroy()
+	dlg.Run()
 }

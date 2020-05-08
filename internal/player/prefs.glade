@@ -9,7 +9,9 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkTextBuffer" id="txbPlayerTitleTemplate"/>
+  <object class="GtkTextBuffer" id="txbPlayerTitleTemplate">
+    <signal name="changed" handler="on_setting_change" swapped="no"/>
+  </object>
   <object class="GtkDialog" id="prefsDialog">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Preferences</property>
@@ -240,6 +242,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -255,6 +258,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbLibraryDefaultReplace</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -321,6 +325,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -336,6 +341,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">rbPlaylistsDefaultReplace</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>

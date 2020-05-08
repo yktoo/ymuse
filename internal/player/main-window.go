@@ -111,7 +111,7 @@ type MainWindow struct {
 	// Current library path, separated by slashes
 	currentLibPath string
 
-	// Compiler template for player's track title
+	// Compiled template for player's track title
 	playerTitleTemplate *template.Template
 
 	// Play position manual update flag
@@ -186,14 +186,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	w.trvQueue.SetModel(w.queueListStore)
 
 	// Initialise player title template
-	w.playerTitleTemplate = template.Must(
-		template.New("playerTitle").
-			Funcs(template.FuncMap{
-				"default":  util.Default,
-				"dirname":  path.Dir,
-				"basename": path.Base,
-			}).
-			Parse(GetConfig().PlayerTitleTemplate))
+	w.updatePlayerTitleTemplate()
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
@@ -311,7 +304,7 @@ func (w *MainWindow) onMap() {
 	// Create actions
 	// Application
 	w.addAction("about", "F1", w.onAbout)
-	w.addAction("prefs", "<Ctrl>comma", func() { PreferencesDialog(w.window, w.updateQueueColumns) })
+	w.addAction("prefs", "<Ctrl>comma", func() { PreferencesDialog(w.window, w.updateQueueColumns, w.updatePlayerTitleTemplate) })
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
@@ -1461,4 +1454,26 @@ func (w *MainWindow) updatePlayerSeekBar() {
 		}
 	}
 	w.lblPosition.SetMarkup(seekPos)
+}
+
+// updatePlayerTitleTemplate() compiles the player title template
+func (w *MainWindow) updatePlayerTitleTemplate() {
+	tmpl, err := template.New("playerTitle").
+		Funcs(template.FuncMap{
+			"default":  util.Default,
+			"dirname":  path.Dir,
+			"basename": path.Base,
+		}).
+		Parse(GetConfig().PlayerTitleTemplate)
+	if errCheck(err, "Template parse error") {
+		w.playerTitleTemplate = template.Must(
+			template.New("error").Parse("<span foreground=\"red\">[Player title template error, check log]</span>"))
+	} else {
+		w.playerTitleTemplate = tmpl
+	}
+
+	// Update the displayed title if the connector is initialised
+	if w.connector != nil {
+		w.updatePlayer()
+	}
 }

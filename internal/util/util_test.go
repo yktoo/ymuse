@@ -72,6 +72,36 @@ func TestFormatSeconds(t *testing.T) {
 	}
 }
 
+func TestFormatSecondsStr(t *testing.T) {
+	type args struct {
+		seconds string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"empty value", args{""}, ""},
+		{"invalid value", args{"boo"}, ""},
+		{"zero seconds", args{"0"}, "0:00"},
+		{"some seconds", args{"42"}, "0:42"},
+		{"fractional seconds", args{"4.2234514"}, "0:04"},
+		{"minute with seconds", args{"218"}, "3:38"},
+		{"many minutes", args{"2722.7"}, "45:22"},
+		{"an hour with minutes", args{"3795"}, "1:03:15"},
+		{"almost a day", args{"86399"}, "23:59:59"},
+		{"one day", args{"90527"}, "one day 1:08:47"},
+		{"many days", args{"5757153"}, "66 days 15:12:33"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FormatSecondsStr(tt.args.seconds); got != tt.want {
+				t.Errorf("FormatSecondsStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestParseFloatDef(t *testing.T) {
 	type args struct {
 		s   string
@@ -110,7 +140,7 @@ func TestDefault(t *testing.T) {
 		{"nil is no value", args{"Foo", nil}, "Foo"},
 		{"empty string is no value", args{"Foo", ""}, "Foo"},
 		{"non-empty string is value", args{"Foo", "barr"}, "barr"},
-		{"false is value", args{"Foo", false}, "false"},
+		{"false is no value", args{"Foo", false}, "Foo"},
 		{"true is value", args{"Foo", true}, "true"},
 		{"struct is value", args{"Foo", struct{}{}}, "{}"},
 		{"int 0 is no value", args{"Foo", 0}, "Foo"},
