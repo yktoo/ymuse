@@ -16,13 +16,22 @@
 package player
 
 import (
+	"fmt"
 	"github.com/fhs/gompd/v2/mpd"
+	"github.com/pkg/errors"
 	"sync"
 	"time"
 )
 
 // Connector encapsulates functionality for connecting to MPD and watch for its changes
 type Connector struct {
+	// MPD address
+	mpdAddress string
+	// MPD password
+	mpdPassword string
+	// Whether a connection is supposed to be kept alive
+	stayConnected bool
+
 	// MPD client instance
 	mpdClient      *mpd.Client
 	mpdClientMutex sync.Mutex
@@ -44,28 +53,35 @@ type Connector struct {
 	mpdWatcher *mpd.Watcher
 
 	// Callback for connection status change notifications
-	onConnected func()
+	onStatusChange func()
 	// Callback for periodic message notifications
 	onHeartbeat func()
 	// Callback for subsystem change notifications
 	onSubsystemChange func(subsystem string)
 }
 
-func NewConnector(onConnected func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
+func NewConnector(onStatusChange func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
 	return &Connector{
-		mpdStatus:          mpd.Attrs{},
-		chConnectorConnect: make(chan int),
-		chConnectorQuit:    make(chan int),
-		chWatcherStart:     make(chan int),
-		chWatcherQuit:      make(chan int),
-		onConnected:        onConnected,
-		onHeartbeat:        onHeartbeat,
-		onSubsystemChange:  onSubsystemChange,
+		mpdStatus:         mpd.Attrs{},
+		onStatusChange:    onStatusChange,
+		onHeartbeat:       onHeartbeat,
+		onSubsystemChange: onSubsystemChange,
 	}
 }
 
 // Start() initialises the connector
-func (c *Connector) Start() {
+// stayConnected: whether the connection must be automatically re-established when lost
+func (c *Connector) Start(mpdAddress, mpdPassword string, stayConnected bool) {
+	c.mpdAddress = mpdAddress
+	c.mpdPassword = mpdPassword
+	c.stayConnected = stayConnected
+
+	// Allocate signals
+	c.chConnectorConnect = make(chan int)
+	c.chConnectorQuit = make(chan int)
+	c.chWatcherStart = make(chan int)
+	c.chWatcherQuit = make(chan int)
+
 	// Start the connect goroutine
 	go c.connect()
 
@@ -84,8 +100,27 @@ func (c *Connector) Status() mpd.Attrs {
 
 // Stop() signals the connector to shut down
 func (c *Connector) Stop() {
-	close(c.chConnectorQuit)
-	close(c.chWatcherQuit)
+	if c.chConnectorQuit != nil {
+		close(c.chConnectorQuit)
+		c.chConnectorQuit = nil
+	}
+	if c.chWatcherQuit != nil {
+		close(c.chWatcherQuit)
+		c.chWatcherQuit = nil
+	}
+
+	// Close the connection to MPD, if any
+	c.IfConnected(func(client *mpd.Client) {
+		log.Debug("Stop connector")
+		errCheck(client.Close(), "Close() failed")
+		c.mpdClient = nil
+	})
+
+	// Reset the status
+	c.resetStatus()
+
+	// Notify the callback
+	c.onStatusChange()
 }
 
 // GetPlaylists() queries and returns a slice of playlist names available in MPD
@@ -138,6 +173,18 @@ func (c *Connector) IsConnected() bool {
 	return c.mpdClient != nil
 }
 
+// resetStatus() clears the current MPD status, thread-safely
+func (c *Connector) resetStatus() {
+	c.setStatus(&mpd.Attrs{})
+}
+
+// setStatus() sets the current MPD status, thread-safely
+func (c *Connector) setStatus(attrs *mpd.Attrs) {
+	c.mpdStatusMutex.Lock()
+	defer c.mpdStatusMutex.Unlock()
+	c.mpdStatus = *attrs
+}
+
 // startConnecting() signals the connector to initiate connection process
 func (c *Connector) startConnecting() {
 	go func() { c.chConnectorConnect <- 1 }()
@@ -153,36 +200,51 @@ func (c *Connector) connect() {
 		case <-c.chConnectorConnect:
 			log.Debug("Start connector")
 
+			var wasntConnected, connected bool
+			var status mpd.Attrs
+			var err error
 			// If disconnected
 			c.IfConnectedElse(
 				nil,
 				func() {
+					wasntConnected = true
+
 					// Try to connect to MPD
-					cfg := GetConfig()
-					client, err := mpd.DialAuthenticated("tcp", cfg.MpdAddress(), cfg.MpdPassword)
-					if errCheck(err, "Dial() failed") {
+					var client *mpd.Client
+					if client, err = mpd.DialAuthenticated("tcp", c.mpdAddress, c.mpdPassword); err != nil {
+						err = errors.Errorf("Dial() failed", err)
+						return
+					}
+
+					// Actualise the status
+					if status, err = client.Status(); err != nil {
+						err = errors.Errorf("connect(): Status() failed", err)
+						// Disconnect since we're not "fully connected"
+						errCheck(client.Close(), "connect(): Close() failed")
 						return
 					}
 
 					// Connection succeeded
 					c.mpdClient = client
+					connected = true
 
 					// Start the watcher
 					go func() { c.chWatcherStart <- 1 }()
 
-					// Actualise the status
-					status, err := client.Status()
-					c.mpdStatusMutex.Lock()
-					if errCheck(err, "connect(): Status() failed") {
-						c.mpdStatus = mpd.Attrs{}
-					} else {
-						c.mpdStatus = status
-					}
-					c.mpdStatusMutex.Unlock()
-
-					// Notify the callback
-					c.onConnected()
 				})
+
+			// Update the status
+			if wasntConnected {
+				if err != nil {
+					status = mpd.Attrs{"error": fmt.Sprint(err)}
+				}
+				c.setStatus(&status)
+
+				// If connected, notify the callback
+				if connected {
+					c.onStatusChange()
+				}
+			}
 
 		// Heartbeat tick
 		case <-heartbeatTicker.C:
@@ -191,26 +253,30 @@ func (c *Connector) connect() {
 					// Connection lost
 					status, err := client.Status()
 					if errCheck(err, "Status() failed: connection to MPD lost") {
+						// Remove client connection
 						c.mpdClient = nil
+
 						// Clear the status
-						c.mpdStatusMutex.Lock()
-						c.mpdStatus = mpd.Attrs{}
-						c.mpdStatusMutex.Unlock()
-						// Restart the connector goroutine
-						c.startConnecting()
+						c.resetStatus()
+
+						// Re-attempt the connection if needed
+						if c.stayConnected {
+							c.startConnecting()
+						}
 
 					} else {
 						// Connection is okay, store the status
-						c.mpdStatusMutex.Lock()
-						c.mpdStatus = status
-						c.mpdStatusMutex.Unlock()
+						c.setStatus(&status)
 					}
 				},
 				func() {
-					c.mpdStatusMutex.Lock()
-					c.mpdStatus = mpd.Attrs{}
-					c.mpdStatusMutex.Unlock()
-					c.startConnecting()
+					// Clear the status
+					c.resetStatus()
+
+					// Re-attempt the connection if needed
+					if c.stayConnected {
+						c.startConnecting()
+					}
 				})
 
 			// Notify the callback
@@ -220,13 +286,6 @@ func (c *Connector) connect() {
 		case <-c.chConnectorQuit:
 			// Kill the heartbeat timer
 			heartbeatTicker.Stop()
-
-			// Close the connection to MPD, if any
-			c.IfConnected(func(client *mpd.Client) {
-				log.Debug("Stop connector")
-				errCheck(client.Close(), "Close() failed")
-				c.mpdClient = nil
-			})
 			return
 		}
 	}
@@ -249,8 +308,7 @@ func (c *Connector) watch() {
 
 			// If no watcher yet
 			if c.mpdWatcher == nil {
-				cfg := GetConfig()
-				watcher, err := mpd.NewWatcher("tcp", cfg.MpdAddress(), cfg.MpdPassword)
+				watcher, err := mpd.NewWatcher("tcp", c.mpdAddress, c.mpdPassword)
 				// Failed to connect
 				if err != nil {
 					log.Warning("Failed to watch MPD", err)
@@ -282,9 +340,7 @@ func (c *Connector) watch() {
 			})
 
 			// Update the MPD's status
-			c.mpdStatusMutex.Lock()
-			c.mpdStatus = status
-			c.mpdStatusMutex.Unlock()
+			c.setStatus(&status)
 
 			// Notify the callback
 			c.onSubsystemChange(subsystem)

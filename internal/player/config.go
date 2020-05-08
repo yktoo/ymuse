@@ -46,6 +46,8 @@ type Config struct {
 	MpdHost                string        // MPD's IP address or hostname
 	MpdPort                int           // MPD's port number
 	MpdPassword            string        // MPD's password (optional)
+	MpdAutoConnect         bool          // Whether to automatically connect to MPD on startup
+	MpdAutoReconnect       bool          // Whether to automatically reconnect to MPD after connection is lost
 	QueueColumnIds         []int         // Displayed queue columns
 	DefaultSortAttrId      int           // ID of MPD attribute used as a default for queue sorting
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
@@ -59,6 +61,8 @@ var config = &Config{
 	MpdHost:                "",
 	MpdPort:                6600,
 	MpdPassword:            "",
+	MpdAutoConnect:         true,
+	MpdAutoReconnect:       true,
 	QueueColumnIds:         []int{MTA_Artist, MTA_Year, MTA_Album, MTA_Disc, MTA_Number, MTA_Track, MTA_Length, MTA_Genre},
 	DefaultSortAttrId:      MTA_Path,
 	TrackDefaultReplace:    false,

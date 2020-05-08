@@ -26,9 +26,11 @@ type PrefsDialog struct {
 	// Whether the dialog is initialised
 	initialised bool
 	// General page widgets
-	eMpdHost     *gtk.Entry
-	adjMpdPort   *gtk.Adjustment
-	eMpdPassword *gtk.Entry
+	eMpdHost           *gtk.Entry
+	adjMpdPort         *gtk.Adjustment
+	eMpdPassword       *gtk.Entry
+	cbMpdAutoConnect   *gtk.CheckButton
+	cbMpdAutoReconnect *gtk.CheckButton
 	// Interface page widgets
 	rbLibraryDefaultReplace   *gtk.RadioButton
 	rbLibraryDefaultAppend    *gtk.RadioButton
@@ -44,7 +46,7 @@ type PrefsDialog struct {
 	onPlayerTitleTemplateChanged func()
 }
 
-func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
+func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
 	// Load the dialog layout
 	builder := NewBuilder("internal/player/prefs.glade")
 
@@ -52,9 +54,11 @@ func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged, onPlayerTitleT
 	d := &PrefsDialog{
 		dialog: builder.getDialog("prefsDialog"),
 		// General page widgets
-		eMpdHost:     builder.getEntry("eMpdHost"),
-		adjMpdPort:   builder.getAdjustment("adjMpdPort"),
-		eMpdPassword: builder.getEntry("eMpdPassword"),
+		eMpdHost:           builder.getEntry("eMpdHost"),
+		adjMpdPort:         builder.getAdjustment("adjMpdPort"),
+		eMpdPassword:       builder.getEntry("eMpdPassword"),
+		cbMpdAutoConnect:   builder.getCheckButton("cbMpdAutoConnect"),
+		cbMpdAutoReconnect: builder.getCheckButton("cbMpdAutoReconnect"),
 		// Interface page widgets
 		rbLibraryDefaultReplace:   builder.getRadioButton("rbLibraryDefaultReplace"),
 		rbLibraryDefaultAppend:    builder.getRadioButton("rbLibraryDefaultAppend"),
@@ -76,6 +80,7 @@ func PreferencesDialog(parent gtk.IWindow, onQueueColumnsChanged, onPlayerTitleT
 	builder.ConnectSignals(map[string]interface{}{
 		"on_prefsDialog_map": d.onMap,
 		"on_setting_change":  d.onSettingChange,
+		"on_MpdReconnect":    onMpdReconnect,
 	})
 
 	// Run the dialog
@@ -91,6 +96,8 @@ func (d *PrefsDialog) onMap() {
 	d.eMpdHost.SetText(cfg.MpdHost)
 	d.adjMpdPort.SetValue(float64(cfg.MpdPort))
 	d.eMpdPassword.SetText(cfg.MpdPassword)
+	d.cbMpdAutoConnect.SetActive(cfg.MpdAutoConnect)
+	d.cbMpdAutoReconnect.SetActive(cfg.MpdAutoReconnect)
 	// Interface page
 	d.rbLibraryDefaultReplace.SetActive(cfg.TrackDefaultReplace)
 	d.rbLibraryDefaultAppend.SetActive(!cfg.TrackDefaultReplace)
@@ -134,14 +141,23 @@ func (d *PrefsDialog) addColumn(attrId int, checked bool) {
 
 // onSettingChange() is a signal handler for a change of a simple setting widget
 func (d *PrefsDialog) onSettingChange() {
-	log.Debug("onSettingChange()")
 	// Ignore if the dialog is not initialised yet
 	if !d.initialised {
 		return
 	}
+	log.Debug("onSettingChange()")
 
 	// Collect settings
 	cfg := GetConfig()
+	// General page
+	if s, err := d.eMpdHost.GetText(); !errCheck(err, "eMpdHost.GetText() failed") {
+		cfg.MpdHost = s
+	}
+	cfg.MpdPort = int(d.adjMpdPort.GetValue())
+	if s, err := d.eMpdPassword.GetText(); !errCheck(err, "eMpdPassword.GetText() failed") {
+		cfg.MpdPassword = s
+	}
+	// Interface page
 	cfg.TrackDefaultReplace = d.rbLibraryDefaultReplace.GetActive()
 	cfg.PlaylistDefaultReplace = d.rbPlaylistsDefaultReplace.GetActive()
 	if s, err := util.GetTextBufferText(d.txbPlayerTitleTemplate); !errCheck(err, "util.GetTextBufferText() failed") {

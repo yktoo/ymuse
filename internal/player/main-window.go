@@ -215,7 +215,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	application.AddWindow(w.window)
 
 	// Instantiate a connector
-	w.connector = NewConnector(w.onConnectorConnected, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
+	w.connector = NewConnector(w.onConnectorStatusChange, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
 	return w, nil
 }
 
@@ -255,8 +255,8 @@ func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *g
 	return action
 }
 
-func (w *MainWindow) onConnectorConnected() {
-	util.WhenIdle("onConnectorConnected()", w.updateAll)
+func (w *MainWindow) onConnectorStatusChange() {
+	util.WhenIdle("onConnectorStatusChange()", w.updateAll)
 }
 
 func (w *MainWindow) onConnectorHeartbeat() {
@@ -300,11 +300,14 @@ func (w *MainWindow) onAbout() {
 
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
+	config := GetConfig()
 
 	// Create actions
 	// Application
+	w.addAction("mpd.connect", "", w.connect)
+	w.addAction("mpd.disconnect", "", w.disconnect)
+	w.addAction("prefs", "<Ctrl>comma", w.preferences)
 	w.addAction("about", "F1", w.onAbout)
-	w.addAction("prefs", "<Ctrl>comma", func() { PreferencesDialog(w.window, w.updateQueueColumns, w.updatePlayerTitleTemplate) })
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
@@ -343,20 +346,22 @@ func (w *MainWindow) onMap() {
 	for _, id := range MpdTrackAttributeIds {
 		w.cbxQueueSortBy.Append(strconv.Itoa(id), MpdTrackAttributes[id].longName)
 	}
-	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(GetConfig().DefaultSortAttrId))
+	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(config.DefaultSortAttrId))
 
 	// Update Queue tree view columns
 	w.updateQueueColumns()
 
-	// Start connecting
-	w.connector.Start()
+	// Start connecting if needed
+	if config.MpdAutoConnect {
+		w.connect()
+	}
 }
 
 func (w *MainWindow) onDestroy() {
 	log.Debug("MainWindow.onDestroy()")
 
-	// Shut the connector down
-	w.connector.Stop()
+	// Disconnect from MPD
+	w.disconnect()
 }
 
 func (w *MainWindow) onPlaylistDelete() {
@@ -542,6 +547,22 @@ func (w *MainWindow) applyQueueSelection() {
 	w.errCheckDialog(err, "Failed to play the selected track")
 }
 
+// connect() starts connecting to MPD
+func (w *MainWindow) connect() {
+	// First disconnect, if connected
+	if w.connector.IsConnected() {
+		w.disconnect()
+	}
+
+	// Start connecting
+	w.connector.Start(config.MpdAddress(), config.MpdPassword, config.MpdAutoReconnect)
+}
+
+// disconnect() starts disconnecting from MPD
+func (w *MainWindow) disconnect() {
+	w.connector.Stop()
+}
+
 // errCheckDialog() checks for error, and if it isn't nil, shows an error dialog ti the given text and the error info
 func (w *MainWindow) errCheckDialog(err error, message string) bool {
 	if err != nil {
@@ -698,6 +719,22 @@ func (w *MainWindow) playerNext() {
 	w.errCheckDialog(err, "Failed to skip to next track")
 }
 
+// playerToggleConsume() toggles player's consume mode
+func (w *MainWindow) playerToggleConsume() {
+	// Ignore if the state of the button is being updated programmatically
+	if w.optionsUpdating {
+		return
+	}
+
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.Consume(w.connector.Status()["consume"] == "0")
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to toggle consume mode")
+}
+
 // playerToggleRandom() toggles player's random mode
 func (w *MainWindow) playerToggleRandom() {
 	// Ignore if the state of the button is being updated programmatically
@@ -730,20 +767,9 @@ func (w *MainWindow) playerToggleRepeat() {
 	w.errCheckDialog(err, "Failed to toggle repeat mode")
 }
 
-// playerToggleConsume() toggles player's consume mode
-func (w *MainWindow) playerToggleConsume() {
-	// Ignore if the state of the button is being updated programmatically
-	if w.optionsUpdating {
-		return
-	}
-
-	var err error
-	w.connector.IfConnected(func(client *mpd.Client) {
-		err = client.Consume(w.connector.Status()["consume"] == "0")
-	})
-
-	// Check for error
-	w.errCheckDialog(err, "Failed to toggle consume mode")
+// preferences() shows the preferences dialog
+func (w *MainWindow) preferences() {
+	PreferencesDialog(w.window, w.connect, w.updateQueueColumns, w.updatePlayerTitleTemplate)
 }
 
 // queue() adds or replaces the content of the queue with the specified URIs
@@ -1001,7 +1027,7 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	}
 }
 
-// updateAll() updates all player's widgets and lists
+// updateAll() updates all window's widgets and lists
 func (w *MainWindow) updateAll() {
 	w.updateQueue()
 	w.updateLibraryPath()
@@ -1198,6 +1224,10 @@ func (w *MainWindow) updatePlayer() {
 		default:
 			w.btnPlayPause.SetIconName("media-playback-start")
 		}
+
+	} else if err := w.connector.Status()["error"]; err != "" {
+		// If not connected and there's an error
+		statusText = fmt.Sprintf("<span foreground=\"red\">%s</span>", err)
 	}
 
 	// Update status text
@@ -1217,6 +1247,70 @@ func (w *MainWindow) updatePlayer() {
 
 	// Update the seek bar
 	w.updatePlayerSeekBar()
+}
+
+// updatePlayerSeekBar() updates the seek bar position and status
+func (w *MainWindow) updatePlayerSeekBar() {
+	seekPos := ""
+	var trackLen, trackPos float64
+
+	// If the user is dragging the slider manually
+	if w.playPosUpdating {
+		trackLen, trackPos = w.adjPlayPosition.GetUpper(), w.adjPlayPosition.GetValue()
+
+	} else {
+		// The update comes from MPD: adjust the seek bar position if there's a connection
+		trackStart := -1.0
+		trackLen, trackPos = -1.0, -1.0
+		if w.connector.IsConnected() {
+			// Fetch current player position and track length
+			status := w.connector.Status()
+			trackLen = util.ParseFloatDef(status["duration"], -1)
+			trackPos = util.ParseFloatDef(status["elapsed"], -1)
+		}
+
+		// If not seekable, remove the slider
+		if trackPos >= 0 && trackLen >= trackPos {
+			trackStart = 0
+		}
+		w.scPlayPosition.SetSensitive(trackStart == 0)
+
+		// Enable the seek bar based on status and position it
+		w.adjPlayPosition.SetLower(trackStart)
+		w.adjPlayPosition.SetUpper(trackLen)
+		w.adjPlayPosition.SetValue(trackPos)
+	}
+
+	// Update position text
+	if trackPos >= 0 {
+		seekPos = fmt.Sprintf("<big>%s</big>", util.FormatSeconds(trackPos))
+		if trackLen >= trackPos {
+			seekPos += fmt.Sprintf(" / " + util.FormatSeconds(trackLen))
+		}
+	}
+	w.lblPosition.SetMarkup(seekPos)
+}
+
+// updatePlayerTitleTemplate() compiles the player title template
+func (w *MainWindow) updatePlayerTitleTemplate() {
+	tmpl, err := template.New("playerTitle").
+		Funcs(template.FuncMap{
+			"default":  util.Default,
+			"dirname":  path.Dir,
+			"basename": path.Base,
+		}).
+		Parse(GetConfig().PlayerTitleTemplate)
+	if errCheck(err, "Template parse error") {
+		w.playerTitleTemplate = template.Must(
+			template.New("error").Parse("<span foreground=\"red\">[Player title template error, check log]</span>"))
+	} else {
+		w.playerTitleTemplate = tmpl
+	}
+
+	// Update the displayed title if the connector is initialised
+	if w.connector != nil {
+		w.updatePlayer()
+	}
 }
 
 // updatePlaylists() updates the current playlists list contents
@@ -1411,69 +1505,5 @@ func (w *MainWindow) updateQueueNowPlaying() {
 		if treePath, err := gtk.TreePathNewFromString(strconv.Itoa(w.currentQueueIndex)); err == nil {
 			w.trvQueue.ScrollToCell(treePath, nil, true, 0.5, 0)
 		}
-	}
-}
-
-// updatePlayerSeekBar() updates the seek bar position and status
-func (w *MainWindow) updatePlayerSeekBar() {
-	seekPos := ""
-	var trackLen, trackPos float64
-
-	// If the user is dragging the slider manually
-	if w.playPosUpdating {
-		trackLen, trackPos = w.adjPlayPosition.GetUpper(), w.adjPlayPosition.GetValue()
-
-	} else {
-		// The update comes from MPD: adjust the seek bar position if there's a connection
-		trackStart := -1.0
-		trackLen, trackPos = -1.0, -1.0
-		if w.connector.IsConnected() {
-			// Fetch current player position and track length
-			status := w.connector.Status()
-			trackLen = util.ParseFloatDef(status["duration"], -1)
-			trackPos = util.ParseFloatDef(status["elapsed"], -1)
-		}
-
-		// If not seekable, remove the slider
-		if trackPos >= 0 && trackLen >= trackPos {
-			trackStart = 0
-		}
-		w.scPlayPosition.SetSensitive(trackStart == 0)
-
-		// Enable the seek bar based on status and position it
-		w.adjPlayPosition.SetLower(trackStart)
-		w.adjPlayPosition.SetUpper(trackLen)
-		w.adjPlayPosition.SetValue(trackPos)
-	}
-
-	// Update position text
-	if trackPos >= 0 {
-		seekPos = fmt.Sprintf("<big>%s</big>", util.FormatSeconds(trackPos))
-		if trackLen >= trackPos {
-			seekPos += fmt.Sprintf(" / " + util.FormatSeconds(trackLen))
-		}
-	}
-	w.lblPosition.SetMarkup(seekPos)
-}
-
-// updatePlayerTitleTemplate() compiles the player title template
-func (w *MainWindow) updatePlayerTitleTemplate() {
-	tmpl, err := template.New("playerTitle").
-		Funcs(template.FuncMap{
-			"default":  util.Default,
-			"dirname":  path.Dir,
-			"basename": path.Base,
-		}).
-		Parse(GetConfig().PlayerTitleTemplate)
-	if errCheck(err, "Template parse error") {
-		w.playerTitleTemplate = template.Must(
-			template.New("error").Parse("<span foreground=\"red\">[Player title template error, check log]</span>"))
-	} else {
-		w.playerTitleTemplate = tmpl
-	}
-
-	// Update the displayed title if the connector is initialised
-	if w.connector != nil {
-		w.updatePlayer()
 	}
 }
