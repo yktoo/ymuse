@@ -212,13 +212,13 @@ func (c *Connector) connect() {
 					// Try to connect to MPD
 					var client *mpd.Client
 					if client, err = mpd.DialAuthenticated("tcp", c.mpdAddress, c.mpdPassword); err != nil {
-						err = errors.Errorf("Dial() failed", err)
+						err = errors.Errorf("Dial() failed: %v", err)
 						return
 					}
 
 					// Actualise the status
 					if status, err = client.Status(); err != nil {
-						err = errors.Errorf("connect(): Status() failed", err)
+						err = errors.Errorf("connect(): Status() failed: %v", err)
 						// Disconnect since we're not "fully connected"
 						errCheck(client.Close(), "connect(): Close() failed")
 						return
