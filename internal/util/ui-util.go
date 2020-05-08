@@ -95,7 +95,8 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 // label: text for the row
 // name: name of the row
 // icon: optional icon name for the row
-func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBoxRow, *gtk.Box, error) {
+// widgets: extra widgets to insert into the beggining of the row
+func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string, widgets ...gtk.IWidget) (*gtk.ListBoxRow, *gtk.Box, error) {
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
 	if err != nil {
@@ -111,6 +112,11 @@ func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBox
 	hbx.SetMarginStart(6)
 	hbx.SetMarginEnd(6)
 	row.Add(hbx)
+
+	// Add extra widgets, if any
+	for _, w := range widgets {
+		hbx.PackStart(w, false, false, 0)
+	}
 
 	// Insert icon, if needed
 	if icon != "" {
@@ -132,13 +138,6 @@ func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string) (*gtk.ListBox
 	// Add the row to the list box
 	listBox.Add(row)
 	return row, hbx, nil
-}
-
-// NotImplemented() shows a "function not implemented" message dialog
-func NotImplemented(parent gtk.IWindow) {
-	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Function not implemented.")
-	defer dlg.Destroy()
-	dlg.Run()
 }
 
 // ConfirmDialog() shows a confirmation message dialog

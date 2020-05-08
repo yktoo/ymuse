@@ -1061,17 +1061,21 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 
 		// Add a new list box row
 		name := strings.TrimPrefix(uri, pathPrefix)
-		row, hbx, err := util.NewListBoxRow(w.lbxLibrary, name, prefix+name, iconName)
+		row, hbx, err := util.NewListBoxRow(
+			w.lbxLibrary,
+			name,
+			prefix+name,
+			iconName,
+			// Add replace/append buttons
+			util.NewButton("", "Append to the queue", "", "list-add", func() { w.queueOne(false, uri) }),
+			util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queueOne(true, uri) }))
+
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
 		if indexToSelect == idxRow {
 			rowToSelect = row
 		}
-
-		// Add replace/append buttons
-		hbx.PackEnd(util.NewButton("", "Append to the queue", "", "list-add", func() { w.queueOne(false, uri) }), false, false, 0)
-		hbx.PackEnd(util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queueOne(true, uri) }), false, false, 0)
 
 		// Add a label with track length, if any
 		if secs := util.ParseFloatDef(a["duration"], 0); secs > 0 {
@@ -1230,14 +1234,17 @@ func (w *MainWindow) updatePlaylists() {
 	// Repopulate the playlists list
 	playlists := w.connector.GetPlaylists()
 	for _, name := range playlists {
-		_, hbx, err := util.NewListBoxRow(w.lbxPlaylists, name, name, "format-justify-left")
+		_, _, err := util.NewListBoxRow(
+			w.lbxPlaylists,
+			name,
+			name,
+			"format-justify-left",
+			// Add replace/append buttons
+			util.NewButton("", "Append to the queue", "", "list-add", func() { w.queuePlaylist(false, name) }),
+			util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queuePlaylist(true, name) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
-
-		// Add replace/append buttons
-		hbx.PackEnd(util.NewButton("", "Append to the queue", "", "list-add", func() { w.queuePlaylist(false, name) }), false, false, 0)
-		hbx.PackEnd(util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queuePlaylist(true, name) }), false, false, 0)
 	}
 
 	// Show all rows
