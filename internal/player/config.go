@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
-	"github.com/op/go-logging"
 	"io/ioutil"
 	"os"
 	"path"
@@ -50,23 +49,21 @@ type Dimensions struct {
 }
 
 type Config struct {
-	LogLevel               logging.Level `json:"-"` // The logging level
-	MpdHost                string        // MPD's IP address or hostname
-	MpdPort                int           // MPD's port number
-	MpdPassword            string        // MPD's password (optional)
-	MpdAutoConnect         bool          // Whether to automatically connect to MPD on startup
-	MpdAutoReconnect       bool          // Whether to automatically reconnect to MPD after connection is lost
-	QueueColumnIds         []int         // Displayed queue columns
-	DefaultSortAttrId      int           // ID of MPD attribute used as a default for queue sorting
-	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
-	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
-	PlayerTitleTemplate    string        // Track's title formatting template for the player
-	MainWindowDimensions   Dimensions    // Main window dimensions
+	MpdHost                string     // MPD's IP address or hostname
+	MpdPort                int        // MPD's port number
+	MpdPassword            string     // MPD's password (optional)
+	MpdAutoConnect         bool       // Whether to automatically connect to MPD on startup
+	MpdAutoReconnect       bool       // Whether to automatically reconnect to MPD after connection is lost
+	QueueColumnIds         []int      // Displayed queue columns
+	DefaultSortAttrId      int        // ID of MPD attribute used as a default for queue sorting
+	TrackDefaultReplace    bool       // Whether the default action for double-clicking a track is replace rather than append
+	PlaylistDefaultReplace bool       // Whether the default action for double-clicking a playlist is replace rather than append
+	PlayerTitleTemplate    string     // Track's title formatting template for the player
+	MainWindowDimensions   Dimensions // Main window dimensions
 }
 
 // Config singleton with all the defaults
 var config = &Config{
-	LogLevel:               logging.WARNING,
 	MpdHost:                "",
 	MpdPort:                6600,
 	MpdPassword:            "",
