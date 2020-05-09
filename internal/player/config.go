@@ -17,14 +17,12 @@ package player
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/op/go-logging"
 	"io/ioutil"
 	"os"
 	"path"
-	"strings"
 	"sync"
 )
 
@@ -95,30 +93,8 @@ var once sync.Once
 
 // GetConfig() returns a global Config instance
 func GetConfig() *Config {
-	once.Do(func() {
-		// Ignore if we're testing
-		for _, arg := range os.Args {
-			if strings.Contains(arg, "-test.") {
-				return
-			}
-		}
-
-		// Load the config from the file
-		config.Load()
-
-		// Process command line
-		verbInfo := flag.Bool("v", false, "verbose logging")
-		verbDebug := flag.Bool("vv", false, "more verbose logging")
-		flag.Parse()
-
-		// Update Config
-		switch {
-		case *verbDebug:
-			config.LogLevel = logging.DEBUG
-		case *verbInfo:
-			config.LogLevel = logging.INFO
-		}
-	})
+	// Load the config from the file
+	once.Do(config.Load)
 	return config
 }
 

@@ -16,6 +16,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/op/go-logging"
@@ -23,14 +24,24 @@ import (
 	"os"
 )
 
-var log *logging.Logger
+var log = logging.MustGetLogger("main")
 
 func main() {
-	// Init logging
-	logging.SetFormatter(logging.MustStringFormatter(`%{time:15:04:05.000} %{level:-5s} %{module} %{message}`))
-	logging.SetLevel(player.GetConfig().LogLevel, "")
+	// Process command line
+	verbInfo := flag.Bool("v", false, "verbose logging")
+	verbDebug := flag.Bool("vv", false, "more verbose logging")
+	flag.Parse()
 
-	log = logging.MustGetLogger("main")
+	// Init logging
+	logLevel := logging.WARNING
+	switch {
+	case *verbDebug:
+		logLevel = logging.DEBUG
+	case *verbInfo:
+		logLevel = logging.INFO
+	}
+	logging.SetFormatter(logging.MustStringFormatter(`%{time:15:04:05.000} %{level:-5s} %{module} %{message}`))
+	logging.SetLevel(logLevel, "")
 
 	// Start the app
 	log.Info("Ymuse version", player.AppVersion)

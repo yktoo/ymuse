@@ -17,6 +17,7 @@ package player
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"strconv"
 )
@@ -48,7 +49,7 @@ type PrefsDialog struct {
 
 func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
 	// Load the dialog layout
-	builder := NewBuilder("internal/player/prefs.glade")
+	builder := NewBuilder(generated.GetPrefsGlade())
 
 	// Create the dialog and map the widgets
 	d := &PrefsDialog{

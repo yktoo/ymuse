@@ -1,0 +1,12 @@
+[Desktop Entry]
+Categories=AudioVideo;
+Comment=Music Player Daemon client application for GTK.
+Exec=ymuse
+Hidden=False
+Icon=ymuse
+Name=Ymuse
+StartupNotify=true
+Terminal=false
+Type=Application
+Keywords=sound;audio;MPD;GTK;Gnome;
+X-GNOME-Autostart-enabled=true

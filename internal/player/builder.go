@@ -26,10 +26,13 @@ type Builder struct {
 	*gtk.Builder
 }
 
-func NewBuilder(fileName string) *Builder {
-	builder, err := gtk.BuilderNewFromFile(fileName)
+func NewBuilder(content string) *Builder {
+	builder, err := gtk.BuilderNew()
 	if err != nil {
-		log.Fatal(errors.Errorf("Failed to instantiate a gtk.Builder"))
+		panic(errors.Errorf("gtk.BuilderNew() failed"))
+	}
+	if err := builder.AddFromString(content); err != nil {
+		panic(errors.Errorf("builder.AddFromString() failed"))
 	}
 	return &Builder{Builder: builder}
 }

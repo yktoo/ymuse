@@ -3,3 +3,6 @@
 /ymuse
 *~
 \#*.glade#
+
+# Generated content
+/internal/generated/

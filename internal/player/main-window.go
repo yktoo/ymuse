@@ -23,6 +23,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
+	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
 	"html/template"
@@ -138,7 +139,7 @@ const (
 
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
-	builder := NewBuilder("internal/player/player.glade")
+	builder := NewBuilder(generated.GetPlayerGlade())
 
 	w := &MainWindow{
 		app: application,
