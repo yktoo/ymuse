@@ -22,7 +22,8 @@ before_install:
     - 'echo "Versions: GTK/GDK=${GTK_VERSION}, Glib/Gio=${Glib_VERSION}, Gdk-Pixbuf=${GDK_Pixbuf_VERSION} (Cairo=${Cairo_VERSION}, Pango=${Pango_VERSION})"'
 
 install:
-    - go get -t ./...
+    - go get github.com/magefile/mage
+    - mage build
 
 script:
     # Verify no formatting issues
