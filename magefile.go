@@ -77,7 +77,7 @@ func Resources() error {
 
 	// Collect all functions into a string
 	resourceContent := "package generated\n\n" +
-		"// Generated with 'mage resources'\n\n"
+		"// Generated with 'mage resources'\n"
 	for _, filename := range files {
 		log.Println("Processing resource file", filename)
 		function, err := fileToFunction(filename)
@@ -114,10 +114,10 @@ func fileToFunction(filename string) (string, error) {
 
 	// Make a function out of the contents
 	return fmt.Sprintf(
-			"// %[1]s returns the contents stored in the file %[2]s\n"+
+			"\n// %[1]s returns the contents stored in the file %[2]s\n"+
 				"func %[1]s() string {\n"+
 				"\treturn `%[3]s`\n"+
-				"}\n\n",
+				"}\n",
 			funcName, filename, string(contents)),
 		nil
 }
