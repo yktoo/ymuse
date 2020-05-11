@@ -50,10 +50,13 @@ func Build() error {
 
 // Downloads all project dependencies
 func Deps() error {
-	if err := sh.Run("go", "mod", "download"); err != nil {
-		return err
-	}
-	return nil
+	return sh.Run("go", "mod", "download")
+}
+
+// Packages the application
+func Package() error {
+	mg.Deps(Resources)
+	return sh.Run("goreleaser", "--snapshot", "--skip-publish", "--rm-dist")
 }
 
 // Generates .go files from required resources (for now only .glade files are processed)

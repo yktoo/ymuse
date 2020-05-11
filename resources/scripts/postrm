@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+# Update icon caches
+if which update-icon-caches >/dev/null 2>&1 ; then
+	update-icon-caches /usr/share/icons/*
+fi

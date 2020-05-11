@@ -1,0 +1,71 @@
+project_name: ymuse
+
+before:
+    hooks:
+        - go mod download
+
+builds:
+    - id: ymuse
+      binary: ymuse
+      env:
+        - CGO_ENABLED=1
+      goos:
+        - linux
+      goarch:
+        - amd64
+
+archives:
+    - id: ymuse-binary
+      builds:
+          - ymuse
+      wrap_in_directory: true
+      files:
+          - COPYING
+          - README.md
+          - resources/icons/**/*.png
+          - resources/ymuse.desktop
+
+checksum:
+    name_template: 'checksums.txt'
+
+snapshot:
+    name_template: "{{ .Tag }}-next"
+
+changelog:
+    sort: asc
+    filters:
+        exclude:
+            - '^docs:'
+            - '^test:'
+
+release:
+    github:
+        owner: yktoo
+        name: ymuse
+
+nfpms:
+  - id: ymuse
+    package_name: ymuse
+
+    vendor: Dmitry Kann
+    homepage: https://yktoo.com/
+    maintainer: Dmitry Kann <yktooo@gmail.com>
+    description: Easy, functional, and snappy GTK client for Music Player Daemon (MPD).
+    license: Apache 2.0
+    formats:
+        - deb
+        - rpm
+    dependencies:
+        - libc6
+        - libgtk-3-0
+    recommends:
+        - mpd
+    suggests:
+    conflicts:
+    bindir: /usr/bin
+    files:
+        "resources/icons/**/*": "/usr/share/icons"
+        "resources/*.desktop": "/usr/share/applications/"
+    scripts:
+        postinstall: "resources/scripts/postinst"
+        postremove:  "resources/scripts/postrm"

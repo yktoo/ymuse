@@ -20,11 +20,18 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/op/go-logging"
+	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/player"
 	"os"
 )
 
 var log = logging.MustGetLogger("main")
+
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
 	// Process command line
@@ -43,11 +50,16 @@ func main() {
 	logging.SetFormatter(logging.MustStringFormatter(`%{time:15:04:05.000} %{level:-5s} %{module} %{message}`))
 	logging.SetLevel(logLevel, "")
 
+	// Init application metadata
+	config.AppMetadata.Version = version
+	config.AppMetadata.Commit = commit
+	config.AppMetadata.BuildDate = date
+
 	// Start the app
-	log.Info("Ymuse version", player.AppVersion)
+	log.Info("Ymuse version", version)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
-	application, err := gtk.ApplicationNew(player.AppID, glib.APPLICATION_FLAGS_NONE)
+	application, err := gtk.ApplicationNew(config.AppMetadata.Id, glib.APPLICATION_FLAGS_NONE)
 	if err != nil {
 		log.Fatal("Could not create application", err)
 	}

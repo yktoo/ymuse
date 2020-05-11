@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package player
+package config
 
 import (
 	"encoding/json"
@@ -25,24 +25,35 @@ import (
 	"sync"
 )
 
-const AppVersion = "0.01"
-const AppName = "Ymuse"
-const AppWebsite = "https://yktoo.com"
-const AppWebsiteLabel = "yktoo.com"
-const AppID = "com.yktoo.ymuse"
-const AppLicense = `Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-`
-const ConfigDirectory = "ymuse"
-const ConfigFileName = "config.json"
+var AppMetadata = &struct {
+	Version   string
+	Commit    string
+	BuildDate string
+	Name      string
+	Icon      string
+	Copyright string
+	URL       string
+	URLLabel  string
+	Id        string
+	License   string
+}{
+	Name:      "Ymuse",
+	Icon:      "ymuse",
+	Copyright: "Written by Dmitry Kann",
+	URL:       "https://yktoo.com",
+	URLLabel:  "yktoo.com",
+	Id:        "com.yktoo.ymuse",
+	License: "Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
+		"you may not use this file except in compliance with the License.\n" +
+		"You may obtain a copy of the License at\n" +
+		"    http://www.apache.org/licenses/LICENSE-2.0\n" +
+		"\n" +
+		"Unless required by applicable law or agreed to in writing, software\n" +
+		"distributed under the License is distributed on an \"AS IS\" BASIS,\n" +
+		"WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
+		"See the License for the specific language governing permissions and\n" +
+		"limitations under the License.\n",
+}
 
 type Dimensions struct {
 	X, Y, Width, Height int
@@ -119,7 +130,7 @@ func (c *Config) MpdAddress() string {
 // Save() writes out the config to the default file
 func (c *Config) Save() {
 	// Create the config directory if it doesn't exist
-	if errCheck(os.MkdirAll(c.getConfigDir(), 0755), "Mkdir() failed") {
+	if errCheck(os.MkdirAll(c.getConfigDir(), 0755), "MkdirAll() failed") {
 		return
 	}
 
@@ -138,10 +149,10 @@ func (c *Config) Save() {
 
 // getConfigDir() returns the full path to the config directory
 func (c *Config) getConfigDir() string {
-	return path.Join(glib.GetUserConfigDir(), ConfigDirectory)
+	return path.Join(glib.GetUserConfigDir(), "ymuse")
 }
 
 // getConfigFile() returns the full path of the config file
 func (c *Config) getConfigFile() string {
-	return path.Join(c.getConfigDir(), ConfigFileName)
+	return path.Join(c.getConfigDir(), "config.json")
 }

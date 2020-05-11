@@ -10,7 +10,6 @@ go_import_path: github.com/yktoo/ymuse
 addons:
     apt:
         packages:
-            - gtk+3.0
             - libgtk-3-dev
 
 before_install:
@@ -28,5 +27,9 @@ install:
 script:
     # Verify no formatting issues
     - test `gofmt -l . | wc -l` = 0
+
     # Run tests
     - go test -v ./...
+
+    # Verify goreleaser config
+    - curl -sfL https://git.io/goreleaser | bash -- check

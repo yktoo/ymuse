@@ -23,6 +23,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
+	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
@@ -216,7 +217,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	application.AddWindow(w.window)
 
 	// Restore window dimensions
-	dim := GetConfig().MainWindowDimensions
+	dim := config.GetConfig().MainWindowDimensions
 	if dim.Width > 0 && dim.Height > 0 {
 		w.window.Resize(dim.Width, dim.Height)
 	}
@@ -232,9 +233,9 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 // createQueueListStore() initialises the queue list store object
 func createQueueListStore() *gtk.ListStore {
 	// Collect column types from MPD attributes
-	countAttrs := len(MpdTrackAttributeIds)
+	countAttrs := len(config.MpdTrackAttributeIds)
 	types := make([]glib.Type, countAttrs+2)
-	for i := range MpdTrackAttributeIds {
+	for i := range config.MpdTrackAttributeIds {
 		types[i] = glib.TYPE_STRING
 	}
 
@@ -297,12 +298,12 @@ func (w *MainWindow) onAbout() {
 	if errCheck(err, "AboutDialogNew() failed") {
 		return
 	}
-	dlg.SetLogoIconName("dialog-information")
-	dlg.SetProgramName(AppName)
-	dlg.SetCopyright("Written by Dmitry Kann")
-	dlg.SetLicense(AppLicense)
-	dlg.SetWebsite(AppWebsite)
-	dlg.SetWebsiteLabel(AppWebsiteLabel)
+	dlg.SetLogoIconName(config.AppMetadata.Icon)
+	dlg.SetProgramName(config.AppMetadata.Name)
+	dlg.SetCopyright(config.AppMetadata.Copyright)
+	dlg.SetLicense(config.AppMetadata.License)
+	dlg.SetWebsite(config.AppMetadata.URL)
+	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
 	_, err = dlg.Connect("response", dlg.Destroy)
 	errCheck(err, "dlg.Connect(response) failed")
 	dlg.Run()
@@ -310,7 +311,7 @@ func (w *MainWindow) onAbout() {
 
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
-	config := GetConfig()
+	cfg := config.GetConfig()
 
 	// Create actions
 	// Application
@@ -353,16 +354,16 @@ func (w *MainWindow) onMap() {
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
 
 	// Populate Queue sort by combo box
-	for _, id := range MpdTrackAttributeIds {
-		w.cbxQueueSortBy.Append(strconv.Itoa(id), MpdTrackAttributes[id].longName)
+	for _, id := range config.MpdTrackAttributeIds {
+		w.cbxQueueSortBy.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
 	}
-	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(config.DefaultSortAttrId))
+	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(cfg.DefaultSortAttrId))
 
 	// Update Queue tree view columns
 	w.updateQueueColumns()
 
 	// Start connecting if needed
-	if config.MpdAutoConnect {
+	if cfg.MpdAutoConnect {
 		w.connect()
 	}
 }
@@ -374,10 +375,10 @@ func (w *MainWindow) onDelete() {
 	w.disconnect()
 
 	// Save the current window dimensions in the config
-	cfg := GetConfig()
+	cfg := config.GetConfig()
 	x, y := w.window.GetPosition()
 	width, height := w.window.GetSize()
-	cfg.MainWindowDimensions = Dimensions{x, y, width, height}
+	cfg.MainWindowDimensions = config.Dimensions{X: x, Y: y, Width: width, Height: height}
 
 	// Write out the config
 	cfg.Save()
@@ -411,7 +412,7 @@ func (w *MainWindow) onPlaylistRename() {
 	w.errCheckDialog(err, "Failed to rename the playlist")
 }
 
-func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index int, attr *MpdTrackAttribute) {
+func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index int, attr *config.MpdTrackAttribute) {
 	log.Debugf("onQueueTreeViewColClicked(col, %v, %v)", index, *attr)
 
 	// Determine the sort order: on first click on a column ascending, on next descending
@@ -463,7 +464,7 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyLibrarySelection(GetConfig().TrackDefaultReplace)
+		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
 	}
 }
 
@@ -472,7 +473,7 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 	switch ek.KeyVal() {
 	// Enter: we need to go deeper
 	case gdk.KEY_Return:
-		w.applyLibrarySelection(GetConfig().TrackDefaultReplace)
+		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
 
 	// Backspace: go level up
 	case gdk.KEY_BackSpace:
@@ -488,14 +489,14 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyPlaylistSelection(GetConfig().PlaylistDefaultReplace)
+		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
 	}
 }
 
 func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
 	ek := gdk.EventKeyNewFromEvent(event)
 	if ek.KeyVal() == gdk.KEY_Return {
-		w.applyPlaylistSelection(GetConfig().PlaylistDefaultReplace)
+		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
 	}
 }
 
@@ -574,7 +575,8 @@ func (w *MainWindow) connect() {
 	}
 
 	// Start connecting
-	w.connector.Start(config.MpdAddress(), config.MpdPassword, config.MpdAutoReconnect)
+	cfg := config.GetConfig()
+	w.connector.Start(cfg.MpdAddress(), cfg.MpdPassword, cfg.MpdAutoReconnect)
 }
 
 // disconnect() starts disconnecting from MPD
@@ -963,7 +965,7 @@ func (w *MainWindow) queueShuffle() {
 }
 
 // queueSort() orders MPD's play queue on the provided attribute
-func (w *MainWindow) queueSort(attr *MpdTrackAttribute, descending bool) {
+func (w *MainWindow) queueSort(attr *config.MpdTrackAttribute, descending bool) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		// Fetch the current playlist
@@ -974,8 +976,8 @@ func (w *MainWindow) queueSort(attr *MpdTrackAttribute, descending bool) {
 
 		// Sort the list
 		sort.SliceStable(attrs, func(i, j int) bool {
-			a, b := attrs[i][attr.attrName], attrs[j][attr.attrName]
-			if attr.numeric {
+			a, b := attrs[i][attr.AttrName], attrs[j][attr.AttrName]
+			if attr.Numeric {
 				an, bn := util.ParseFloatDef(a, 0), util.ParseFloatDef(b, 0)
 				if descending {
 					return bn < an
@@ -1008,7 +1010,7 @@ func (w *MainWindow) queueSort(attr *MpdTrackAttribute, descending bool) {
 // queueSortApply() performs MPD's play queue ordering based on the currently selected in popover mode
 func (w *MainWindow) queueSortApply(descending bool) {
 	// Fetch the ID of the currently selected item in the Sort by combo box, and the corresponding attribute
-	if attr, ok := MpdTrackAttributes[util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1)]; ok {
+	if attr, ok := config.MpdTrackAttributes[util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1)]; ok {
 		w.queueSort(&attr, descending)
 	}
 }
@@ -1318,7 +1320,7 @@ func (w *MainWindow) updatePlayerTitleTemplate() {
 			"dirname":  path.Dir,
 			"basename": path.Base,
 		}).
-		Parse(GetConfig().PlayerTitleTemplate)
+		Parse(config.GetConfig().PlayerTitleTemplate)
 	if errCheck(err, "Template parse error") {
 		w.playerTitleTemplate = template.Must(
 			template.New("error").Parse("<span foreground=\"red\">[Player title template error, check log]</span>"))
@@ -1394,16 +1396,16 @@ func (w *MainWindow) updateQueue() {
 	totalSecs := 0.0
 	for _, a := range attrs {
 		rowData := make(map[int]interface{})
-		for id, mpdAttr := range MpdTrackAttributes {
+		for id, mpdAttr := range config.MpdTrackAttributes {
 			// Fetch the raw attribute value, if any
-			value, ok := a[mpdAttr.attrName]
+			value, ok := a[mpdAttr.AttrName]
 			if !ok {
 				continue
 			}
 
 			// Format the value if needed
-			if mpdAttr.formatter != nil {
-				value = mpdAttr.formatter(value)
+			if mpdAttr.Formatter != nil {
+				value = mpdAttr.Formatter(value)
 			}
 			rowData[id] = value
 
@@ -1456,9 +1458,9 @@ func (w *MainWindow) updateQueueColumns() {
 	})
 
 	// Add selected columns
-	for index, id := range GetConfig().QueueColumnIds {
+	for index, id := range config.GetConfig().QueueColumnIds {
 		// Fetch the attribute by its ID
-		attr, ok := MpdTrackAttributes[id]
+		attr, ok := config.MpdTrackAttributes[id]
 		if !ok {
 			log.Errorf("Invalid column ID: %d", id)
 			continue
@@ -1471,12 +1473,12 @@ func (w *MainWindow) updateQueueColumns() {
 		}
 
 		// Add a new tree column
-		col, err := gtk.TreeViewColumnNewWithAttribute(attr.name, renderer, "text", id)
+		col, err := gtk.TreeViewColumnNewWithAttribute(attr.Name, renderer, "text", id)
 		if errCheck(err, "TreeViewColumnNewWithAttribute() failed") {
 			continue
 		}
 		col.SetSizing(gtk.TREE_VIEW_COLUMN_FIXED)
-		col.SetFixedWidth(attr.width)
+		col.SetFixedWidth(attr.Width)
 		col.SetClickable(true)
 		col.SetResizable(true)
 		col.AddAttribute(renderer, "background", queueColNum_BgColor)

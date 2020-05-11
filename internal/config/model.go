@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package player
+package config
 
 import (
 	"github.com/yktoo/ymuse/internal/util"
@@ -49,12 +49,12 @@ const (
 )
 
 type MpdTrackAttribute struct {
-	name      string                // Short display label for the attribute
-	longName  string                // Display label for the attribute
-	attrName  string                // Internal name of the corresponding MPD attribute
-	numeric   bool                  // Whether the attribute's value is numeric
-	width     int                   // Default width of the column displaying this attribute
-	formatter func(v string) string // Optional function for formatting the value
+	Name      string                // Short display label for the attribute
+	LongName  string                // Display label for the attribute
+	AttrName  string                // Internal name of the corresponding MPD attribute
+	Numeric   bool                  // Whether the attribute's value is numeric
+	Width     int                   // Default width of the column displaying this attribute
+	Formatter func(v string) string // Optional function for formatting the value
 }
 
 // Known MPD attributes

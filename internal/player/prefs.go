@@ -17,6 +17,7 @@ package player
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"strconv"
@@ -92,7 +93,7 @@ func (d *PrefsDialog) onMap() {
 	log.Debug("PrefsDialog.onMap()")
 
 	// Initialise widgets
-	cfg := GetConfig()
+	cfg := config.GetConfig()
 	// General page
 	d.eMpdHost.SetText(cfg.MpdHost)
 	d.adjMpdPort.SetValue(float64(cfg.MpdPort))
@@ -112,7 +113,7 @@ func (d *PrefsDialog) onMap() {
 
 // addColumn() adds a row with a check box to the Columns list box
 func (d *PrefsDialog) addColumn(attrId int, checked bool) {
-	attr := MpdTrackAttributes[attrId]
+	attr := config.MpdTrackAttributes[attrId]
 
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
@@ -122,7 +123,7 @@ func (d *PrefsDialog) addColumn(attrId int, checked bool) {
 	d.lbxColumns.Add(row)
 
 	// Add a checkbox
-	cb, err := gtk.CheckButtonNewWithLabel(attr.longName)
+	cb, err := gtk.CheckButtonNewWithLabel(attr.LongName)
 	if errCheck(err, "CheckButtonNewWithLabel() failed") {
 		return
 	}
@@ -149,7 +150,7 @@ func (d *PrefsDialog) onSettingChange() {
 	log.Debug("onSettingChange()")
 
 	// Collect settings
-	cfg := GetConfig()
+	cfg := config.GetConfig()
 	// General page
 	if s, err := d.eMpdHost.GetText(); !errCheck(err, "eMpdHost.GetText() failed") {
 		cfg.MpdHost = s
@@ -174,13 +175,13 @@ func (d *PrefsDialog) onSettingChange() {
 // populateColumns() fills in the Columns list box
 func (d *PrefsDialog) populateColumns() {
 	// First add selected columns
-	selIds := GetConfig().QueueColumnIds
+	selIds := config.GetConfig().QueueColumnIds
 	for _, id := range selIds {
 		d.addColumn(id, true)
 	}
 
 	// Add all unselected columns
-	for _, id := range MpdTrackAttributeIds {
+	for _, id := range config.MpdTrackAttributeIds {
 		// Check if the ID is already in the list of selected IDs
 		isSelected := false
 		for _, selId := range selIds {
@@ -218,7 +219,7 @@ func (d *PrefsDialog) updateColumnsFromListBox() {
 	}
 
 	// Save the IDs in the config
-	GetConfig().QueueColumnIds = ids
+	config.GetConfig().QueueColumnIds = ids
 
 	// Notify the callback
 	d.onQueueColumnsChanged()
