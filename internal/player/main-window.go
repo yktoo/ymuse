@@ -532,6 +532,7 @@ func (w *MainWindow) about() {
 	dlg.SetLicense(config.AppMetadata.License)
 	dlg.SetWebsite(config.AppMetadata.URL)
 	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
+	dlg.SetTransientFor(w.window)
 	_, err = dlg.Connect("response", dlg.Destroy)
 	errCheck(err, "dlg.Connect(response) failed")
 	dlg.Run()
