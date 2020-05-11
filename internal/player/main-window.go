@@ -886,6 +886,7 @@ func (w *MainWindow) queueOne(replace bool, uri string) {
 
 // queuePlaylist() adds or replaces the content of the queue with the specified playlist
 func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
+	log.Debugf("queuePlaylist(%v, %v)", replace, playlistName)
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
@@ -1379,6 +1380,7 @@ func (w *MainWindow) updatePlaylists() {
 	// Repopulate the playlists list
 	playlists := w.connector.GetPlaylists()
 	for _, name := range playlists {
+		name := name // Make an in-loop copy of the var
 		_, _, err := util.NewListBoxRow(
 			w.lbxPlaylists,
 			name,
