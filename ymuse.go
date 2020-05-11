@@ -30,9 +30,9 @@ import (
 var log = logging.MustGetLogger("main")
 
 var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
+	version = "(dev)"
+	commit  = "(?)"
+	date    = "(?)"
 )
 
 func main() {
@@ -54,11 +54,10 @@ func main() {
 
 	// Init application metadata
 	config.AppMetadata.Version = version
-	config.AppMetadata.Commit = commit
 	config.AppMetadata.BuildDate = date
 
 	// Start the app
-	log.Info("Ymuse version", version)
+	log.Infof("Ymuse version %s; %s; released %s", version, commit, date)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
 	application, err := gtk.ApplicationNew(config.AppMetadata.Id, glib.APPLICATION_FLAGS_NONE)

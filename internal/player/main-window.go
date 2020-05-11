@@ -527,7 +527,8 @@ func (w *MainWindow) about() {
 		return
 	}
 	dlg.SetLogoIconName(config.AppMetadata.Icon)
-	dlg.SetProgramName(config.AppMetadata.Name)
+	dlg.SetProgramName(fmt.Sprintf("%s %s", config.AppMetadata.Name, config.AppMetadata.Version))
+	dlg.SetComments(fmt.Sprintf("Release date: %s", config.AppMetadata.BuildDate))
 	dlg.SetCopyright(config.AppMetadata.Copyright)
 	dlg.SetLicense(config.AppMetadata.License)
 	dlg.SetWebsite(config.AppMetadata.URL)

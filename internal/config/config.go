@@ -27,7 +27,6 @@ import (
 
 var AppMetadata = &struct {
 	Version   string
-	Commit    string
 	BuildDate string
 	Name      string
 	Icon      string
