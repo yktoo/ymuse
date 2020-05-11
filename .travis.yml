@@ -13,8 +13,7 @@ addons:
             - libgtk-3-dev
 
 install:
-    - go get github.com/magefile/mage
-    - mage build
+    - go mod download
 
 script:
     # Verify no formatting issues
@@ -25,3 +24,7 @@ script:
 
     # Verify goreleaser config
     - curl -sfL https://git.io/goreleaser | bash -s -- check
+
+after_success:
+    # Run goreleaser without deploying
+    - curl -sfL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish --snapshot

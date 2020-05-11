@@ -2,6 +2,7 @@ project_name: ymuse
 
 before:
     hooks:
+        - go generate
         - go mod download
 
 builds:

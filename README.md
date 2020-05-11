@@ -15,11 +15,11 @@
 ### Getting started
 
 1. [Install Go](https://golang.org/doc/install)
-2. [Install Mage](https://magefile.org/)
 3. Clone the source and compile
 ```bash
 git clone https://github.com/yktoo/ymuse.git
-mage build
+go generate
+go build
 ```
 
 This will create the application executable `ymuse` in the project root directory, which you can run straight away.
@@ -33,4 +33,5 @@ See [COPYING](COPYING)
 * [gotk3](https://github.com/gotk3/gotk3)
 * [gompd](https://github.com/fhs/gompd) by Fazlul Shahriar
 * [go-logging](https://github.com/op/go-logging) by Örjan Fors
+* [goreleaser](https://goreleaser.com/) by Carlos Alexandro Becker et al.
 

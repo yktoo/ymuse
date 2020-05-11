@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+//go:generate resources/scripts/generate-resources
+
 package main
 
 import (
