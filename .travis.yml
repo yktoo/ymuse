@@ -12,14 +12,6 @@ addons:
         packages:
             - libgtk-3-dev
 
-before_install:
-    - "export GTK_VERSION=$(pkg-config --modversion gtk+-3.0 | tr . _| cut -d '_' -f 1-2)"
-    - "export Glib_VERSION=$(pkg-config --modversion glib-2.0 | tr . _| cut -d '_' -f 1-2)"
-    - "export GDK_Pixbuf_VERSION=$(pkg-config --modversion gdk-pixbuf-2.0 | tr . _| cut -d '_' -f 1-2)"
-    - "export Cairo_VERSION=$(pkg-config --modversion cairo)"
-    - "export Pango_VERSION=$(pkg-config --modversion pango)"
-    - 'echo "Versions: GTK/GDK=${GTK_VERSION}, Glib/Gio=${Glib_VERSION}, Gdk-Pixbuf=${GDK_Pixbuf_VERSION} (Cairo=${Cairo_VERSION}, Pango=${Pango_VERSION})"'
-
 install:
     - go get github.com/magefile/mage
     - mage build
