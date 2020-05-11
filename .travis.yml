@@ -13,6 +13,7 @@ addons:
             - libgtk-3-dev
 
 install:
+    - go generate
     - go mod download
 
 script:
