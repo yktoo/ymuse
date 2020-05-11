@@ -32,4 +32,4 @@ script:
     - go test -v ./...
 
     # Verify goreleaser config
-    - curl -sfL https://git.io/goreleaser | bash -- check
+    - curl -sfL https://git.io/goreleaser | bash -s -- check
