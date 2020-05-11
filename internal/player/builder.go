@@ -172,6 +172,15 @@ func (b *Builder) getScale(name string) *gtk.Scale {
 	return result
 }
 
+// getShortcutsWindow() finds and returns a shortcuts window by its name
+func (b *Builder) getShortcutsWindow(name string) *gtk.ShortcutsWindow {
+	result, ok := b.get(name).(*gtk.ShortcutsWindow)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ShortcutsWindow", name))
+	}
+	return result
+}
+
 // getStack() finds and returns a stack by its name
 func (b *Builder) getStack(name string) *gtk.Stack {
 	result, ok := b.get(name).(*gtk.Stack)

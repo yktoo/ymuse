@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.22"/>
+  <object class="GtkShortcutsWindow" id="shortcutsWindow">
+    <property name="modal">1</property>
+    <property name="title">Ymuse shortcuts</property>
+    <property name="resizable">1</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="section-name">app</property>
+    <child>
+      <object class="GtkShortcutsSection">
+        <property name="section-name">app</property>
+        <property name="title" translatable="yes">Application shortcuts</property>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">General</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">(Re)connect to MPD</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;c</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Disconnect from MPD</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;d</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Preferences</property>
+                <property name="accelerator">&lt;ctrl&gt;comma</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Quit</property>
+                <property name="accelerator">&lt;ctrl&gt;q</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">About</property>
+                <property name="accelerator">F1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Keyboard Shortcuts</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;question</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Switch to Queue tab</property>
+                <property name="accelerator">&lt;ctrl&gt;1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Switch to Library tab</property>
+                <property name="accelerator">&lt;ctrl&gt;2</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Switch to Playlists tab</property>
+                <property name="accelerator">&lt;ctrl&gt;3</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Queue</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Play selection</property>
+                <property name="accelerator">Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle play/pause</property>
+                <property name="accelerator">space</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Delete selected</property>
+                <property name="accelerator">Delete</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Go to Now playing</property>
+                <property name="accelerator">&lt;ctrl&gt;J</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Player</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Previous track</property>
+                <property name="accelerator">&lt;ctrl&gt;Left</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Next track</property>
+                <property name="accelerator">&lt;ctrl&gt;Right</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Stop</property>
+                <property name="accelerator">&lt;ctrl&gt;S</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle play/pause</property>
+                <property name="accelerator">&lt;ctrl&gt;P</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle random mode</property>
+                <property name="accelerator">&lt;ctrl&gt;U</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle repeat mode</property>
+                <property name="accelerator">&lt;ctrl&gt;R</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle consume mode</property>
+                <property name="accelerator">&lt;ctrl&gt;N</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

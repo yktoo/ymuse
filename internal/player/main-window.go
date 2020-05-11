@@ -253,19 +253,6 @@ func createQueueListStore() *gtk.ListStore {
 	return store
 }
 
-// addAction() add a new application action, with an optional keyboard shortcut
-func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *glib.SimpleAction {
-	action := glib.SimpleActionNew(name, nil)
-	if _, err := action.Connect("activate", onActivate); err != nil {
-		log.Fatalf("Failed to connect activate signal of action '%v': %v", name, err)
-	}
-	w.app.AddAction(action)
-	if shortcut != "" {
-		w.app.SetAccelsForAction("app."+name, []string{shortcut})
-	}
-	return action
-}
-
 func (w *MainWindow) onConnectorStatusChange() {
 	util.WhenIdle("onConnectorStatusChange()", w.updateAll)
 }
@@ -293,39 +280,24 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	}
 }
 
-func (w *MainWindow) onAbout() {
-	dlg, err := gtk.AboutDialogNew()
-	if errCheck(err, "AboutDialogNew() failed") {
-		return
-	}
-	dlg.SetLogoIconName(config.AppMetadata.Icon)
-	dlg.SetProgramName(config.AppMetadata.Name)
-	dlg.SetCopyright(config.AppMetadata.Copyright)
-	dlg.SetLicense(config.AppMetadata.License)
-	dlg.SetWebsite(config.AppMetadata.URL)
-	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
-	_, err = dlg.Connect("response", dlg.Destroy)
-	errCheck(err, "dlg.Connect(response) failed")
-	dlg.Run()
-}
-
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
 	cfg := config.GetConfig()
 
 	// Create actions
 	// Application
-	w.addAction("mpd.connect", "", w.connect)
-	w.addAction("mpd.disconnect", "", w.disconnect)
+	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
+	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
 	w.addAction("prefs", "<Ctrl>comma", w.preferences)
-	w.addAction("about", "F1", w.onAbout)
+	w.addAction("about", "F1", w.about)
+	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
 	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
 	// Queue
 	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
-	w.aQueueClear = w.addAction("queue.clear", "<Ctrl>Delete", w.queueClear)
+	w.aQueueClear = w.addAction("queue.clear", "", w.queueClear)
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
 	w.aQueueSortAsc = w.addAction("queue.sort.asc", "", func() { w.queueSortApply(false) })
 	w.aQueueSortDesc = w.addAction("queue.sort.desc", "", func() { w.queueSortApply(true) })
@@ -455,9 +427,30 @@ func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Even
 }
 
 func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) {
-	if gdk.EventKeyNewFromEvent(event).KeyVal() == gdk.KEY_Return {
-		// Enter key in the tree
-		w.applyQueueSelection()
+	evt := gdk.EventKeyNewFromEvent(event)
+	mask := gtk.AcceleratorGetDefaultModMask()
+	state := gdk.ModifierType(evt.State())
+	switch evt.KeyVal() {
+	// Enter
+	case gdk.KEY_Return:
+		if state&mask == 0 {
+			w.applyQueueSelection()
+		}
+	// Delete
+	case gdk.KEY_Delete:
+		switch state & mask {
+		// Delete: delete selection
+		case 0:
+			w.queueDelete()
+		// Ctrl+Delete: clear queue
+		case gdk.GDK_CONTROL_MASK:
+			w.queueClear()
+		}
+	// Space
+	case gdk.KEY_space:
+		if state&mask == 0 {
+			w.playerPlayPause()
+		}
 	}
 }
 
@@ -525,6 +518,36 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 	valid := (!isNew && selectedId != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
 	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
 	w.aQueueSaveAppend.SetEnabled(valid)
+}
+
+// about() shows the application's about dialog
+func (w *MainWindow) about() {
+	dlg, err := gtk.AboutDialogNew()
+	if errCheck(err, "AboutDialogNew() failed") {
+		return
+	}
+	dlg.SetLogoIconName(config.AppMetadata.Icon)
+	dlg.SetProgramName(config.AppMetadata.Name)
+	dlg.SetCopyright(config.AppMetadata.Copyright)
+	dlg.SetLicense(config.AppMetadata.License)
+	dlg.SetWebsite(config.AppMetadata.URL)
+	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
+	_, err = dlg.Connect("response", dlg.Destroy)
+	errCheck(err, "dlg.Connect(response) failed")
+	dlg.Run()
+}
+
+// addAction() add a new application action, with an optional keyboard shortcut
+func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *glib.SimpleAction {
+	action := glib.SimpleActionNew(name, nil)
+	if _, err := action.Connect("activate", onActivate); err != nil {
+		log.Fatalf("Failed to connect activate signal of action '%v': %v", name, err)
+	}
+	w.app.AddAction(action)
+	if shortcut != "" {
+		w.app.SetAccelsForAction("app."+name, []string{shortcut})
+	}
+	return action
 }
 
 // applyLibrarySelection() navigates into the folder or adds or replaces the content of the queue with the currently
@@ -1013,6 +1036,17 @@ func (w *MainWindow) queueSortApply(descending bool) {
 	if attr, ok := config.MpdTrackAttributes[util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1)]; ok {
 		w.queueSort(&attr, descending)
 	}
+}
+
+// shortcutInfo() displays a shortcut info window
+func (w *MainWindow) shortcutInfo() {
+	// TODO update ShortcutsWindow usage once it's properly implemented in gotk3
+	builder := NewBuilder(generated.GetShortcutsGlade())
+	sw := builder.getShortcutsWindow("shortcutsWindow")
+	sw.SetTransientFor(w.window)
+	sw.ShowAll()
+	_, err := sw.Connect("unmap", sw.Destroy)
+	errCheck(err, "Failed to connect unmap signal")
 }
 
 // Show() shows the window and all its child widgets
