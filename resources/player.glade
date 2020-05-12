@@ -290,10 +290,12 @@
                         <property name="margin_right">6</property>
                         <property name="margin_top">6</property>
                         <property name="margin_bottom">6</property>
-                        <property name="spacing">6</property>
                         <child>
                           <placeholder/>
                         </child>
+                        <style>
+                          <class name="linked"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -502,7 +504,6 @@
             <property name="margin_bottom">6</property>
             <property name="hexpand">True</property>
             <property name="vexpand">False</property>
-            <property name="border_width">1</property>
             <property name="spacing">12</property>
             <child>
               <object class="GtkToolbar" id="tbBottom">

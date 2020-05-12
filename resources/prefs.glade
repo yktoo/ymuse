@@ -197,6 +197,9 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_MpdReconnect" swapped="no"/>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
