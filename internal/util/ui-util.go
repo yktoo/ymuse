@@ -95,7 +95,7 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 // label: text for the row
 // name: name of the row
 // icon: optional icon name for the row
-// widgets: extra widgets to insert into the beggining of the row
+// widgets: extra widgets to insert into the beginning of the row
 func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string, widgets ...gtk.IWidget) (*gtk.ListBoxRow, *gtk.Box, error) {
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()

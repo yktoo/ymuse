@@ -1104,7 +1104,6 @@ func (w *MainWindow) updateAll() {
 func (w *MainWindow) updateLibrary(indexToSelect int) {
 	// Clear the library list
 	util.ClearChildren(w.lbxLibrary.Container)
-	info := "(not connected)"
 
 	// Update the library list if there's a connection
 	var attrs []mpd.Attrs
@@ -1177,10 +1176,9 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 	}
 
 	// Compose info
+	info := "No folders"
 	if countDirs > 0 {
 		info = fmt.Sprintf("%d folders", countDirs)
-	} else {
-		info = "No folders"
 	}
 	if countFiles > 0 {
 		info += fmt.Sprintf(", %d files", countFiles)
