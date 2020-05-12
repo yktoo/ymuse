@@ -291,7 +291,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_bottom">6</property>
-                                <property name="label" translatable="yes">On double click on a track:</property>
+                                <property name="label" translatable="yes">On double click / Enter on a track:</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
@@ -374,7 +374,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="margin_bottom">6</property>
-                                <property name="label" translatable="yes">On double click on a playlist:</property>
+                                <property name="label" translatable="yes">On double click / Enter on a playlist:</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
@@ -525,22 +525,98 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="swColumns">
+              <object class="GtkBox" id="bxColumns">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="shadow_type">in</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">12</property>
+                <property name="margin_right">12</property>
+                <property name="margin_top">12</property>
+                <property name="margin_bottom">12</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkViewport" id="vwpColumns">
+                  <object class="GtkLabel" id="lblColumnsTop">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_bottom">6</property>
+                    <property name="label" translatable="yes">Select columns to display in the play queue, and their order.</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="swColumns">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkListBox" id="lbxColumns">
+                      <object class="GtkViewport" id="vwpColumns">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="selection_mode">browse</property>
+                        <child>
+                          <object class="GtkListBox" id="lbxColumns">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="selection_mode">browse</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolbar" id="tbColumns">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="toolbar_style">icons</property>
+                    <property name="icon_size">2</property>
+                    <child>
+                      <object class="GtkToolButton" id="btnColumnMoveUp">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Move the selected column up</property>
+                        <property name="label" translatable="yes">Move up</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">go-up</property>
+                        <signal name="clicked" handler="on_btnColumnMoveUp_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnColumnMoveDown">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Move the selected column down</property>
+                        <property name="label" translatable="yes">Move down</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">go-down</property>
+                        <signal name="clicked" handler="on_btnColumnMoveDown_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <style>
+                      <class name="inline-toolbar"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
                 </child>
               </object>
               <packing>

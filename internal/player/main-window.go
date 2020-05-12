@@ -1497,11 +1497,14 @@ func (w *MainWindow) updateQueueColumns() {
 	})
 
 	// Add selected columns
-	for index, id := range config.GetConfig().QueueColumnIds {
+	queueColumns := config.GetConfig().QueueColumns
+	for index, colSpec := range *queueColumns {
+		index := index // Make an in-loop copy of index for the closures below
+
 		// Fetch the attribute by its ID
-		attr, ok := config.MpdTrackAttributes[id]
+		attr, ok := config.MpdTrackAttributes[colSpec.ID]
 		if !ok {
-			log.Errorf("Invalid column ID: %d", id)
+			log.Errorf("Invalid column ID: %d", colSpec.ID)
 			continue
 		}
 
@@ -1512,21 +1515,28 @@ func (w *MainWindow) updateQueueColumns() {
 		}
 
 		// Add a new tree column
-		col, err := gtk.TreeViewColumnNewWithAttribute(attr.Name, renderer, "text", id)
+		col, err := gtk.TreeViewColumnNewWithAttribute(attr.Name, renderer, "text", colSpec.ID)
 		if errCheck(err, "TreeViewColumnNewWithAttribute() failed") {
 			continue
 		}
 		col.SetSizing(gtk.TREE_VIEW_COLUMN_FIXED)
-		col.SetFixedWidth(attr.Width)
+		width := colSpec.Width
+		if width == 0 {
+			width = attr.Width
+		}
+		col.SetFixedWidth(width)
 		col.SetClickable(true)
 		col.SetResizable(true)
 		col.AddAttribute(renderer, "background", queueColNumBgColor)
 		col.AddAttribute(renderer, "weight", queueColNumFontWeight)
 
 		// Bind the clicked signal
-		localIndex := index // Make an in-loop copy of index for the closure below
-		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, localIndex, &attr) })
+		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, index, &attr) })
 		errCheck(err, "col.Connect(clicked) failed")
+
+		// Bind the width property change signal: update QueueColumns on each change
+		_, err = col.Connect("notify::fixed-width", func() { (*queueColumns)[index].Width = col.GetFixedWidth() })
+		errCheck(err, "col.Connect(notify::fixed-width) failed")
 
 		// Add the column to the tree view
 		w.trvQueue.AppendColumn(col)

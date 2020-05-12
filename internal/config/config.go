@@ -60,29 +60,44 @@ type Dimensions struct {
 	X, Y, Width, Height int
 }
 
+// ColumnSpec describes settings for a queue column
+type ColumnSpec struct {
+	ID    int // Column ID
+	Width int // Column width, if differs from the default, otherwise 0
+}
+
 // Config represents (storable) application configuration
 type Config struct {
-	MpdHost                string     // MPD's IP address or hostname
-	MpdPort                int        // MPD's port number
-	MpdPassword            string     // MPD's password (optional)
-	MpdAutoConnect         bool       // Whether to automatically connect to MPD on startup
-	MpdAutoReconnect       bool       // Whether to automatically reconnect to MPD after connection is lost
-	QueueColumnIds         []int      // Displayed queue columns
-	DefaultSortAttrID      int        // ID of MPD attribute used as a default for queue sorting
-	TrackDefaultReplace    bool       // Whether the default action for double-clicking a track is replace rather than append
-	PlaylistDefaultReplace bool       // Whether the default action for double-clicking a playlist is replace rather than append
-	PlayerTitleTemplate    string     // Track's title formatting template for the player
-	MainWindowDimensions   Dimensions // Main window dimensions
+	MpdHost                string        // MPD's IP address or hostname
+	MpdPort                int           // MPD's port number
+	MpdPassword            string        // MPD's password (optional)
+	MpdAutoConnect         bool          // Whether to automatically connect to MPD on startup
+	MpdAutoReconnect       bool          // Whether to automatically reconnect to MPD after connection is lost
+	QueueColumns           *[]ColumnSpec // Displayed queue columns
+	DefaultSortAttrID      int           // ID of MPD attribute used as a default for queue sorting
+	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
+	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
+	PlayerTitleTemplate    string        // Track's title formatting template for the player
+	MainWindowDimensions   Dimensions    // Main window dimensions
 }
 
 // Config singleton with all the defaults
 var config = &Config{
-	MpdHost:                "",
-	MpdPort:                6600,
-	MpdPassword:            "",
-	MpdAutoConnect:         true,
-	MpdAutoReconnect:       true,
-	QueueColumnIds:         []int{MTAttrArtist, MTAttrYear, MTAttrAlbum, MTAttrDisc, MTAttrNumber, MTAttrTrack, MTAttrLength, MTAttrGenre},
+	MpdHost:          "",
+	MpdPort:          6600,
+	MpdPassword:      "",
+	MpdAutoConnect:   true,
+	MpdAutoReconnect: true,
+	QueueColumns: &[]ColumnSpec{
+		{ID: MTAttrArtist},
+		{ID: MTAttrYear},
+		{ID: MTAttrAlbum},
+		{ID: MTAttrDisc},
+		{ID: MTAttrNumber},
+		{ID: MTAttrTrack},
+		{ID: MTAttrLength},
+		{ID: MTAttrGenre},
+	},
 	DefaultSortAttrID:      MTAttrPath,
 	TrackDefaultReplace:    false,
 	PlaylistDefaultReplace: true,

@@ -20,8 +20,13 @@ import (
 	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
-	"strconv"
 )
+
+type queueCol struct {
+	selected bool
+	id       int
+	width    int
+}
 
 // PrefsDialog represents the preferences dialog
 type PrefsDialog struct {
@@ -41,9 +46,8 @@ type PrefsDialog struct {
 	rbPlaylistsDefaultAppend  *gtk.RadioButton
 	txbPlayerTitleTemplate    *gtk.TextBuffer
 	// Columns page widgets
-	lbxColumns *gtk.ListBox
-	// Queue column checkboxes
-	queueColumnCheckboxes []*gtk.CheckButton
+	lbxColumns   *gtk.ListBox
+	queueColumns []queueCol
 	// Callbacks
 	onQueueColumnsChanged        func()
 	onPlayerTitleTemplateChanged func()
@@ -80,11 +84,18 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 	// Set the dialog up
 	d.dialog.SetTransientFor(parent)
 
+	// Remove the 2-pixel "aura" around the notebook
+	if box, err := d.dialog.GetContentArea(); err == nil {
+		box.SetBorderWidth(0)
+	}
+
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_prefsDialog_map": d.onMap,
-		"on_setting_change":  d.onSettingChange,
-		"on_MpdReconnect":    onMpdReconnect,
+		"on_prefsDialog_map":           d.onMap,
+		"on_setting_change":            d.onSettingChange,
+		"on_MpdReconnect":              onMpdReconnect,
+		"on_btnColumnMoveUp_clicked":   d.onColumnMoveUp,
+		"on_btnColumnMoveDown_clicked": d.onColumnMoveDown,
 	})
 
 	// Run the dialog
@@ -113,9 +124,10 @@ func (d *PrefsDialog) onMap() {
 	d.initialised = true
 }
 
-// addColumn adds a row with a check box to the Columns list box
-func (d *PrefsDialog) addColumn(attrID int, checked bool) {
-	attr := config.MpdTrackAttributes[attrID]
+// addQueueColumn adds a row with a check box to the Columns list box, and also registers a new item in d.queueColumns
+func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
+	// Add an entry to queue columns slice
+	d.queueColumns = append(d.queueColumns, queueCol{selected: selected, id: attrID, width: width})
 
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
@@ -124,23 +136,110 @@ func (d *PrefsDialog) addColumn(attrID int, checked bool) {
 	}
 	d.lbxColumns.Add(row)
 
+	// Add a container box
+	hbx, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 6)
+	if errCheck(err, "BoxNew() failed") {
+		return
+	}
+	row.Add(hbx)
+
 	// Add a checkbox
-	cb, err := gtk.CheckButtonNewWithLabel(attr.LongName)
+	cb, err := gtk.CheckButtonNewWithLabel(config.MpdTrackAttributes[attrID].LongName)
 	if errCheck(err, "CheckButtonNewWithLabel() failed") {
 		return
 	}
-	cb.SetActive(checked)
-	_, err = cb.Connect("toggled", d.updateColumnsFromListBox)
+	cb.SetActive(selected)
+	_, err = cb.Connect("toggled", func() { d.columnCheckboxToggled(attrID, cb.GetActive(), row) })
 	if errCheck(err, "cb.Connect(toggled) failed") {
 		return
 	}
-	row.Add(cb)
+	hbx.PackStart(cb, false, false, 0)
+}
 
-	// Save the ID into the checkbox's name
-	cb.SetName(strconv.Itoa(attrID))
+// columnCheckboxToggled is a handler of the toggled signal for queue column checkboxes
+func (d *PrefsDialog) columnCheckboxToggled(id int, selected bool, row *gtk.ListBoxRow) {
+	// Find and toggle the column for the attribute
+	if i := d.indexOfColumnWithAttrID(id); i >= 0 {
+		d.queueColumns[i].selected = selected
 
-	// Save the checkbox in the dialog for future column updates
-	d.queueColumnCheckboxes = append(d.queueColumnCheckboxes, cb)
+		// Select the row
+		d.lbxColumns.SelectRow(row)
+
+		// Update the queue columns
+		d.notifyColumnsChanged()
+	}
+}
+
+// indexOfColumnWithAttrID returns the index of the queue column with given attribute ID, or -1 if not found
+func (d *PrefsDialog) indexOfColumnWithAttrID(id int) int {
+	for i := range d.queueColumns {
+		if id == d.queueColumns[i].id {
+			return i
+		}
+	}
+	return -1
+}
+
+// moveSelectedColumnRow moves the row selected in the Columns listbox up or down
+func (d *PrefsDialog) moveSelectedColumnRow(up bool) {
+	// Get and check the selection
+	row := d.lbxColumns.GetSelectedRow()
+	if row == nil {
+		return
+	}
+
+	// Get the row's index in the list
+	index := row.GetIndex()
+	if index < 0 || (up && index == 0) || (!up && index >= len(d.queueColumns)-1) {
+		return
+	}
+
+	// Reorder the elements in the queue columns slice
+	prevIndex := index
+	if up {
+		index--
+	} else {
+		index++
+	}
+	d.queueColumns[index], d.queueColumns[prevIndex] = d.queueColumns[prevIndex], d.queueColumns[index]
+
+	// Remove and re-insert the row
+	d.lbxColumns.Remove(row)
+	d.lbxColumns.Insert(row, index)
+
+	// Re-select the row. NB: need to deselect all first, otherwise it wouldn't get selected
+	d.lbxColumns.SelectRow(nil)
+	d.lbxColumns.SelectRow(d.lbxColumns.GetRowAtIndex(index))
+
+	// Update the queue's columns
+	d.notifyColumnsChanged()
+}
+
+// notifyColumnsChanged updates queue tree view columns from the currently selected ones in the Columns list box
+func (d *PrefsDialog) notifyColumnsChanged() {
+	// Collect IDs of selected attributes
+	var colSpecs []config.ColumnSpec
+	for _, col := range d.queueColumns {
+		if col.selected {
+			colSpecs = append(colSpecs, config.ColumnSpec{ID: col.id, Width: col.width})
+		}
+	}
+
+	// Save the IDs in the config
+	config.GetConfig().QueueColumns = &colSpecs
+
+	// Notify the callback
+	d.onQueueColumnsChanged()
+}
+
+// onColumnMoveUp is a signal handler for the Move up button click
+func (d *PrefsDialog) onColumnMoveUp() {
+	d.moveSelectedColumnRow(true)
+}
+
+// onColumnMoveDown is a signal handler for the Move down button click
+func (d *PrefsDialog) onColumnMoveDown() {
+	d.moveSelectedColumnRow(false)
 }
 
 // onSettingChange is a signal handler for a change of a simple setting widget
@@ -177,17 +276,17 @@ func (d *PrefsDialog) onSettingChange() {
 // populateColumns fills in the Columns list box
 func (d *PrefsDialog) populateColumns() {
 	// First add selected columns
-	selIds := config.GetConfig().QueueColumnIds
-	for _, id := range selIds {
-		d.addColumn(id, true)
+	selColSpecs := config.GetConfig().QueueColumns
+	for _, colSpec := range *selColSpecs {
+		d.addQueueColumn(colSpec.ID, colSpec.Width, true)
 	}
 
 	// Add all unselected columns
 	for _, id := range config.MpdTrackAttributeIds {
 		// Check if the ID is already in the list of selected IDs
 		isSelected := false
-		for _, selID := range selIds {
-			if id == selID {
+		for _, selSpec := range *selColSpecs {
+			if id == selSpec.ID {
 				isSelected = true
 				break
 			}
@@ -195,34 +294,8 @@ func (d *PrefsDialog) populateColumns() {
 
 		// If not, add it
 		if !isSelected {
-			d.addColumn(id, false)
+			d.addQueueColumn(id, 0, false)
 		}
 	}
 	d.lbxColumns.ShowAll()
-}
-
-// updateColumnsFromListBox updates queue tree view columns from the currently selected ones in the Columns list box
-func (d *PrefsDialog) updateColumnsFromListBox() {
-	// Collect IDs of checked attributes
-	var ids []int
-	for _, cb := range d.queueColumnCheckboxes {
-		if cb.GetActive() {
-			// Extract check box name
-			name, err := cb.GetName()
-			if errCheck(err, "cb.GetName() failed") {
-				return
-			}
-
-			// Extract attribute ID from the checkbox's name
-			if id, err := strconv.Atoi(name); err == nil {
-				ids = append(ids, id)
-			}
-		}
-	}
-
-	// Save the IDs in the config
-	config.GetConfig().QueueColumnIds = ids
-
-	// Notify the callback
-	d.onQueueColumnsChanged()
 }

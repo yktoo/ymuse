@@ -296,8 +296,8 @@ func (c *Connector) connect() {
 func (c *Connector) watch() {
 	log.Debug("watch()")
 	var rewatchTimer *time.Timer
-	var eventChannel chan string = nil
-	var errorChannel chan error = nil
+	var eventChannel chan string
+	var errorChannel chan error
 	for {
 		select {
 		// Request to watch
