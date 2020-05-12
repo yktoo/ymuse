@@ -4,7 +4,13 @@
 
 # Ymuse
 
-**Ymuse** is a GTK front-end (client) application for [Music Player Daemon](https://www.musicpd.org/) written in Go.
+**Ymuse** is an easy, functional, and snappy GTK front-end (client) for [Music Player Daemon](https://www.musicpd.org/) written in Go.
+
+[![Ymuse screenshot](resources/screenshot.png)](resources/screenshot.png)
+
+## Installing
+
+You can use one of the binary packages from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
 ## Building from the source
 
@@ -15,7 +21,7 @@
 ### Getting started
 
 1. [Install Go](https://golang.org/doc/install)
-3. Clone the source and compile
+2. Clone the source and compile
 ```bash
 git clone https://github.com/yktoo/ymuse.git
 go generate
@@ -26,7 +32,7 @@ This will create the application executable `ymuse` in the project root director
 
 ## License
 
-See [COPYING](COPYING)
+See [COPYING](COPYING).
 
 ## Credits
 
