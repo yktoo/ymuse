@@ -26,6 +26,7 @@ type Builder struct {
 	*gtk.Builder
 }
 
+// NewBuilder creates and returns a new Builder instance
 func NewBuilder(content string) *Builder {
 	builder, err := gtk.BuilderNew()
 	if err != nil {
@@ -37,7 +38,7 @@ func NewBuilder(content string) *Builder {
 	return &Builder{Builder: builder}
 }
 
-// get() fetches an object with the given name or terminates the app on a failure
+// get fetches an object with the given name or terminates the app on a failure
 func (b *Builder) get(name string) glib.IObject {
 	obj, err := b.GetObject(name)
 	if err != nil {
@@ -46,7 +47,7 @@ func (b *Builder) get(name string) glib.IObject {
 	return obj
 }
 
-// getAdjustment() finds and returns an adjustment by its name
+// getAdjustment finds and returns an adjustment by its name
 func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
 	result, ok := b.get(name).(*gtk.Adjustment)
 	if !ok {
@@ -55,7 +56,7 @@ func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
 	return result
 }
 
-// getApplicationWindow() finds and returns an application window by its name
+// getApplicationWindow finds and returns an application window by its name
 func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
 	result, ok := b.get(name).(*gtk.ApplicationWindow)
 	if !ok {
@@ -64,7 +65,7 @@ func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
 	return result
 }
 
-// getBox() finds and returns a box by its name
+// getBox finds and returns a box by its name
 func (b *Builder) getBox(name string) *gtk.Box {
 	result, ok := b.get(name).(*gtk.Box)
 	if !ok {
@@ -73,7 +74,7 @@ func (b *Builder) getBox(name string) *gtk.Box {
 	return result
 }
 
-// getButton() finds and returns a button by its name
+// getButton finds and returns a button by its name
 func (b *Builder) getButton(name string) *gtk.Button {
 	result, ok := b.get(name).(*gtk.Button)
 	if !ok {
@@ -82,7 +83,7 @@ func (b *Builder) getButton(name string) *gtk.Button {
 	return result
 }
 
-// getCheckButton() finds and returns a check button by its name
+// getCheckButton finds and returns a check button by its name
 func (b *Builder) getCheckButton(name string) *gtk.CheckButton {
 	result, ok := b.get(name).(*gtk.CheckButton)
 	if !ok {
@@ -91,7 +92,7 @@ func (b *Builder) getCheckButton(name string) *gtk.CheckButton {
 	return result
 }
 
-// getComboBoxText() finds and returns a text combo box by its name
+// getComboBoxText finds and returns a text combo box by its name
 func (b *Builder) getComboBoxText(name string) *gtk.ComboBoxText {
 	result, ok := b.get(name).(*gtk.ComboBoxText)
 	if !ok {
@@ -100,7 +101,7 @@ func (b *Builder) getComboBoxText(name string) *gtk.ComboBoxText {
 	return result
 }
 
-// getDialog() finds and returns a dialog by its name
+// getDialog finds and returns a dialog by its name
 func (b *Builder) getDialog(name string) *gtk.Dialog {
 	result, ok := b.get(name).(*gtk.Dialog)
 	if !ok {
@@ -109,7 +110,7 @@ func (b *Builder) getDialog(name string) *gtk.Dialog {
 	return result
 }
 
-// getEntry() finds and returns an entry by its name
+// getEntry finds and returns an entry by its name
 func (b *Builder) getEntry(name string) *gtk.Entry {
 	result, ok := b.get(name).(*gtk.Entry)
 	if !ok {
@@ -118,7 +119,7 @@ func (b *Builder) getEntry(name string) *gtk.Entry {
 	return result
 }
 
-// getLabel() finds and returns a label by its name
+// getLabel finds and returns a label by its name
 func (b *Builder) getLabel(name string) *gtk.Label {
 	result, ok := b.get(name).(*gtk.Label)
 	if !ok {
@@ -127,7 +128,7 @@ func (b *Builder) getLabel(name string) *gtk.Label {
 	return result
 }
 
-// getListBox() finds and returns a list box by its name
+// getListBox finds and returns a list box by its name
 func (b *Builder) getListBox(name string) *gtk.ListBox {
 	result, ok := b.get(name).(*gtk.ListBox)
 	if !ok {
@@ -136,7 +137,7 @@ func (b *Builder) getListBox(name string) *gtk.ListBox {
 	return result
 }
 
-// getMenu() finds and returns a menu by its name
+// getMenu finds and returns a menu by its name
 func (b *Builder) getMenu(name string) *gtk.Menu {
 	result, ok := b.get(name).(*gtk.Menu)
 	if !ok {
@@ -145,7 +146,7 @@ func (b *Builder) getMenu(name string) *gtk.Menu {
 	return result
 }
 
-// getPopoverMenu() finds and returns a popover menu by its name
+// getPopoverMenu finds and returns a popover menu by its name
 func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
 	result, ok := b.get(name).(*gtk.PopoverMenu)
 	if !ok {
@@ -154,7 +155,7 @@ func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
 	return result
 }
 
-// getRadioButton() finds and returns a radio button by its name
+// getRadioButton finds and returns a radio button by its name
 func (b *Builder) getRadioButton(name string) *gtk.RadioButton {
 	result, ok := b.get(name).(*gtk.RadioButton)
 	if !ok {
@@ -163,7 +164,7 @@ func (b *Builder) getRadioButton(name string) *gtk.RadioButton {
 	return result
 }
 
-// getScale() finds and returns a scale by its name
+// getScale finds and returns a scale by its name
 func (b *Builder) getScale(name string) *gtk.Scale {
 	result, ok := b.get(name).(*gtk.Scale)
 	if !ok {
@@ -172,7 +173,7 @@ func (b *Builder) getScale(name string) *gtk.Scale {
 	return result
 }
 
-// getShortcutsWindow() finds and returns a shortcuts window by its name
+// getShortcutsWindow finds and returns a shortcuts window by its name
 func (b *Builder) getShortcutsWindow(name string) *gtk.ShortcutsWindow {
 	result, ok := b.get(name).(*gtk.ShortcutsWindow)
 	if !ok {
@@ -181,7 +182,7 @@ func (b *Builder) getShortcutsWindow(name string) *gtk.ShortcutsWindow {
 	return result
 }
 
-// getStack() finds and returns a stack by its name
+// getStack finds and returns a stack by its name
 func (b *Builder) getStack(name string) *gtk.Stack {
 	result, ok := b.get(name).(*gtk.Stack)
 	if !ok {
@@ -190,7 +191,7 @@ func (b *Builder) getStack(name string) *gtk.Stack {
 	return result
 }
 
-// getSwitch() finds and returns a switch by its name
+// getSwitch finds and returns a switch by its name
 func (b *Builder) getSwitch(name string) *gtk.Switch {
 	result, ok := b.get(name).(*gtk.Switch)
 	if !ok {
@@ -199,7 +200,7 @@ func (b *Builder) getSwitch(name string) *gtk.Switch {
 	return result
 }
 
-// getTextBuffer() finds and returns a text buffer by its name
+// getTextBuffer finds and returns a text buffer by its name
 func (b *Builder) getTextBuffer(name string) *gtk.TextBuffer {
 	result, ok := b.get(name).(*gtk.TextBuffer)
 	if !ok {
@@ -208,7 +209,7 @@ func (b *Builder) getTextBuffer(name string) *gtk.TextBuffer {
 	return result
 }
 
-// getToggleToolButton() finds and returns a toggle tool button by its name
+// getToggleToolButton finds and returns a toggle tool button by its name
 func (b *Builder) getToggleToolButton(name string) *gtk.ToggleToolButton {
 	result, ok := b.get(name).(*gtk.ToggleToolButton)
 	if !ok {
@@ -217,7 +218,7 @@ func (b *Builder) getToggleToolButton(name string) *gtk.ToggleToolButton {
 	return result
 }
 
-// getToolButton() finds and returns a tool button by its name
+// getToolButton finds and returns a tool button by its name
 func (b *Builder) getToolButton(name string) *gtk.ToolButton {
 	result, ok := b.get(name).(*gtk.ToolButton)
 	if !ok {
@@ -226,7 +227,7 @@ func (b *Builder) getToolButton(name string) *gtk.ToolButton {
 	return result
 }
 
-// getTreeView() finds and returns a tree view by its name
+// getTreeView finds and returns a tree view by its name
 func (b *Builder) getTreeView(name string) *gtk.TreeView {
 	result, ok := b.get(name).(*gtk.TreeView)
 	if !ok {

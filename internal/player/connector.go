@@ -60,6 +60,7 @@ type Connector struct {
 	onSubsystemChange func(subsystem string)
 }
 
+// NewConnector creates and returns a new Connector instance
 func NewConnector(onStatusChange func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
 	return &Connector{
 		mpdStatus:         mpd.Attrs{},
@@ -69,7 +70,7 @@ func NewConnector(onStatusChange func(), onHeartbeat func(), onSubsystemChange f
 	}
 }
 
-// Start() initialises the connector
+// Start initialises the connector
 // stayConnected: whether the connection must be automatically re-established when lost
 func (c *Connector) Start(mpdAddress, mpdPassword string, stayConnected bool) {
 	c.mpdAddress = mpdAddress
@@ -91,14 +92,14 @@ func (c *Connector) Start(mpdAddress, mpdPassword string, stayConnected bool) {
 	c.startConnecting()
 }
 
-// Status() returns the last known MPD status
+// Status returns the last known MPD status
 func (c *Connector) Status() mpd.Attrs {
 	c.mpdStatusMutex.Lock()
 	defer c.mpdStatusMutex.Unlock()
 	return c.mpdStatus
 }
 
-// Stop() signals the connector to shut down
+// Stop signals the connector to shut down
 func (c *Connector) Stop() {
 	if c.chConnectorQuit != nil {
 		close(c.chConnectorQuit)
@@ -123,7 +124,7 @@ func (c *Connector) Stop() {
 	c.onStatusChange()
 }
 
-// GetPlaylists() queries and returns a slice of playlist names available in MPD
+// GetPlaylists queries and returns a slice of playlist names available in MPD
 func (c *Connector) GetPlaylists() []string {
 	// Fetch the list of playlists
 	var attrs []mpd.Attrs
@@ -143,7 +144,7 @@ func (c *Connector) GetPlaylists() []string {
 	return names
 }
 
-// IfConnected() runs MPD client code if there's a connection with MPD
+// IfConnected runs MPD client code if there's a connection with MPD
 func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client)) {
 	c.mpdClientMutex.Lock()
 	defer c.mpdClientMutex.Unlock()
@@ -152,7 +153,7 @@ func (c *Connector) IfConnected(funcIfConnected func(client *mpd.Client)) {
 	}
 }
 
-// IfConnectedElse() runs MPD client code if there's a connection with MPD and/or code if there's no connection
+// IfConnectedElse runs MPD client code if there's a connection with MPD and/or code if there's no connection
 func (c *Connector) IfConnectedElse(funcIfConnected func(client *mpd.Client), funcIfDisconnected func()) {
 	c.mpdClientMutex.Lock()
 	defer c.mpdClientMutex.Unlock()
@@ -166,31 +167,31 @@ func (c *Connector) IfConnectedElse(funcIfConnected func(client *mpd.Client), fu
 	}
 }
 
-// IsConnected() returns whether there's a connection with MPD
+// IsConnected returns whether there's a connection with MPD
 func (c *Connector) IsConnected() bool {
 	c.mpdClientMutex.Lock()
 	defer c.mpdClientMutex.Unlock()
 	return c.mpdClient != nil
 }
 
-// resetStatus() clears the current MPD status, thread-safely
+// resetStatus clears the current MPD status, thread-safely
 func (c *Connector) resetStatus() {
 	c.setStatus(&mpd.Attrs{})
 }
 
-// setStatus() sets the current MPD status, thread-safely
+// setStatus sets the current MPD status, thread-safely
 func (c *Connector) setStatus(attrs *mpd.Attrs) {
 	c.mpdStatusMutex.Lock()
 	defer c.mpdStatusMutex.Unlock()
 	c.mpdStatus = *attrs
 }
 
-// startConnecting() signals the connector to initiate connection process
+// startConnecting signals the connector to initiate connection process
 func (c *Connector) startConnecting() {
 	go func() { c.chConnectorConnect <- 1 }()
 }
 
-// connect() takes care of establishing a connection to MPD
+// connect takes care of establishing a connection to MPD
 func (c *Connector) connect() {
 	log.Debug("connect()")
 	var heartbeatTicker = time.NewTicker(time.Second)
@@ -291,7 +292,7 @@ func (c *Connector) connect() {
 	}
 }
 
-// watch() watches MPD subsystem changes
+// watch watches MPD subsystem changes
 func (c *Connector) watch() {
 	log.Debug("watch()")
 	var rewatchTimer *time.Timer

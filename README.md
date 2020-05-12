@@ -1,6 +1,7 @@
 [![Latest release](https://img.shields.io/github/v/release/yktoo/ymuse.svg)](https://github.com/yktoo/ymuse/releases/latest)
 [![License](https://img.shields.io/github/license/yktoo/ymuse.svg)](COPYING)
 [![Build Status](https://travis-ci.org/yktoo/ymuse.svg?branch=master)](https://travis-ci.org/yktoo/ymuse)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yktoo/ymuse)](https://goreportcard.com/report/github.com/yktoo/ymuse)
 
 # ![Ymuse icon](resources/icons/hicolor/32x32/apps/ymuse.png) Ymuse
 

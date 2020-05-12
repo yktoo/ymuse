@@ -21,7 +21,7 @@ import (
 	"strconv"
 )
 
-// AtoiDef() converts a string into an int, returning the given default value if conversion failed
+// AtoiDef converts a string into an int, returning the given default value if conversion failed
 func AtoiDef(s string, def int) int {
 	if i, err := strconv.Atoi(s); err == nil {
 		return i
@@ -29,7 +29,7 @@ func AtoiDef(s string, def int) int {
 	return def
 }
 
-// ParseFloatDef() converts a string into a float64, returning the given default value if conversion failed
+// ParseFloatDef converts a string into a float64, returning the given default value if conversion failed
 func ParseFloatDef(s string, def float64) float64 {
 	if f, err := strconv.ParseFloat(s, 32); err == nil {
 		return f
@@ -37,7 +37,7 @@ func ParseFloatDef(s string, def float64) float64 {
 	return def
 }
 
-// FormatSeconds() formats a number seconds as a string
+// FormatSeconds formats a number seconds as a string
 func FormatSeconds(seconds float64) string {
 	minutes, secs := int(seconds)/60, int(seconds)%60
 	hours, mins := minutes/60, minutes%60
@@ -54,7 +54,7 @@ func FormatSeconds(seconds float64) string {
 	}
 }
 
-// FormatSecondsStr() formats a number seconds as a string given string input
+// FormatSecondsStr formats a number seconds as a string given string input
 func FormatSecondsStr(seconds string) string {
 	if f := ParseFloatDef(seconds, -1); f >= 0 {
 		return FormatSeconds(f)
@@ -62,11 +62,10 @@ func FormatSecondsStr(seconds string) string {
 	return ""
 }
 
-// Default() returns a default value if no value is set
+// Default returns a default value if no value is set
 func Default(def string, value interface{}) string {
 	if set, ok := template.IsTrue(value); ok && set {
 		return fmt.Sprint(value)
-	} else {
-		return def
 	}
+	return def
 }

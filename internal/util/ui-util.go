@@ -22,20 +22,20 @@ import (
 	"github.com/gotk3/gotk3/pango"
 )
 
-// WhenIdle() schedules a function call on GLib's main loop thread
+// WhenIdle schedules a function call on GLib's main loop thread
 func WhenIdle(name string, f interface{}, args ...interface{}) {
 	_, err := glib.IdleAdd(f, args...)
 	errCheck(err, "glib.IdleAdd() failed for "+name)
 }
 
-// ClearChildren() removes all container's children
+// ClearChildren removes all container's children
 func ClearChildren(container gtk.Container) {
 	container.GetChildren().Foreach(func(item interface{}) {
 		container.Remove(item.(gtk.IWidget))
 	})
 }
 
-// NewButton() creates and returns a new button
+// NewButton creates and returns a new button
 func NewButton(label, tooltip, name, icon string, onClicked interface{}, onClickedData ...interface{}) *gtk.Button {
 	btn, err := gtk.ButtonNewWithLabel(label)
 	if errCheck(err, "ButtonNewWithLabel() failed") {
@@ -61,7 +61,7 @@ func NewButton(label, tooltip, name, icon string, onClicked interface{}, onClick
 	return btn
 }
 
-// NewBoxToggleButton() creates, adds to a box and returns a new toggle button
+// NewBoxToggleButton creates, adds to a box and returns a new toggle button
 func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onClicked interface{}, onClickedData ...interface{}) *gtk.ToggleButton {
 	btn, err := gtk.ToggleButtonNewWithLabel(label)
 	if errCheck(err, "ToggleButtonNewWithLabel() failed") {
@@ -90,7 +90,7 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 	return btn
 }
 
-// NewListBoxRow() adds a new row to the list box, a horizontal box, an image and a label to it
+// NewListBoxRow adds a new row to the list box, a horizontal box, an image and a label to it
 // listBox: list box instance
 // label: text for the row
 // name: name of the row
@@ -140,7 +140,7 @@ func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string, widgets ...gt
 	return row, hbx, nil
 }
 
-// ConfirmDialog() shows a confirmation message dialog
+// ConfirmDialog shows a confirmation message dialog
 func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
 	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")
 	dlg.SetMarkup(fmt.Sprintf("<big><b>%v</b></big>\n\n%v", title, text))
@@ -148,13 +148,13 @@ func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
 	return dlg.Run() == gtk.RESPONSE_OK
 }
 
-// GetTextBufferText() returns the entire text stored in a text buffer
+// GetTextBufferText returns the entire text stored in a text buffer
 func GetTextBufferText(buf *gtk.TextBuffer) (string, error) {
 	start, end := buf.GetBounds()
 	return buf.GetText(start, end, true)
 }
 
-// EditDialog() show a dialog with a single text entry
+// EditDialog show a dialog with a single text entry
 func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool) {
 	// Create a dialog
 	dlg, err := gtk.DialogNewWithButtons(
@@ -215,7 +215,7 @@ func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool
 	return "", false
 }
 
-// ErrorDialog() shows an error message dialog
+// ErrorDialog shows an error message dialog
 func ErrorDialog(parent gtk.IWindow, text string) {
 	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text)
 	defer dlg.Destroy()

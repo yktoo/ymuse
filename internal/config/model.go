@@ -21,33 +21,34 @@ import (
 	"sort"
 )
 
-//noinspection GoSnakeCaseUsage
+// MPD's track attribute identifiers
 const (
-	MTA_Artist = iota
-	MTA_ArtistSort
-	MTA_Album
-	MTA_AlbumSort
-	MTA_AlbumArtist
-	MTA_AlbumArtistSort
-	MTA_Disc
-	MTA_Track
-	MTA_Number
-	MTA_Length
-	MTA_Path
-	MTA_Directory
-	MTA_File
-	MTA_Year
-	MTA_Genre
-	MTA_Name
-	MTA_Composer
-	MTA_Performer
-	MTA_Conductor
-	MTA_Work
-	MTA_Grouping
-	MTA_Comment
-	MTA_Label
+	MTAttrArtist = iota
+	MTAttrArtistSort
+	MTAttrAlbum
+	MTAttrAlbumSort
+	MTAttrAlbumArtist
+	MTAttrAlbumArtistSort
+	MTAttrDisc
+	MTAttrTrack
+	MTAttrNumber
+	MTAttrLength
+	MTAttrPath
+	MTAttrDirectory
+	MTAttrFile
+	MTAttrYear
+	MTAttrGenre
+	MTAttrName
+	MTAttrComposer
+	MTAttrPerformer
+	MTAttrConductor
+	MTAttrWork
+	MTAttrGrouping
+	MTAttrComment
+	MTAttrLabel
 )
 
+// MpdTrackAttribute describes an MPD's track attribute
 type MpdTrackAttribute struct {
 	Name      string                // Short display label for the attribute
 	LongName  string                // Display label for the attribute
@@ -57,34 +58,34 @@ type MpdTrackAttribute struct {
 	Formatter func(v string) string // Optional function for formatting the value
 }
 
-// Known MPD attributes
+// MpdTrackAttributes contains all known MPD's track attributes
 var MpdTrackAttributes = map[int]MpdTrackAttribute{
-	MTA_Artist:          {"Artist", "Artist", "Artist", false, 200, nil},
-	MTA_ArtistSort:      {"Artist", "Artist (for sorting)", "Artistsort", false, 200, nil},
-	MTA_Album:           {"Album", "Album", "Album", false, 200, nil},
-	MTA_AlbumSort:       {"Album", "Album (for sorting)", "Albumsort", false, 200, nil},
-	MTA_AlbumArtist:     {"Album artist", "Album artist", "Albumartist", false, 200, nil},
-	MTA_AlbumArtistSort: {"Album artist", "Album artist (for sorting)", "Albumartistsort", false, 200, nil},
-	MTA_Disc:            {"Disc", "Disc", "Disc", false, 50, nil},
-	MTA_Track:           {"Track", "Track title", "Title", false, 200, nil},
-	MTA_Number:          {"#", "Track number", "Track", true, 50, nil},
-	MTA_Length:          {"Length", "Track length", "duration", true, 60, util.FormatSecondsStr},
-	MTA_Path:            {"Path", "Directory and file name", "file", false, 200, nil},
-	MTA_Directory:       {"Directory", "File path", "file", false, 200, path.Dir},
-	MTA_File:            {"File", "File name", "file", false, 200, path.Base},
-	MTA_Year:            {"Year", "Year", "Date", true, 50, nil},
-	MTA_Genre:           {"Genre", "Genre", "Genre", false, 200, nil},
-	MTA_Name:            {"Name", "Stream name", "Name", false, 200, nil},
-	MTA_Composer:        {"Composer", "Composer", "Composer", false, 200, nil},
-	MTA_Performer:       {"Performer", "Performer", "Performer", false, 200, nil},
-	MTA_Conductor:       {"Conductor", "Conductor", "Conductor", false, 200, nil},
-	MTA_Work:            {"Work", "Work", "Work", false, 200, nil},
-	MTA_Grouping:        {"Grouping", "Grouping", "Grouping", false, 200, nil},
-	MTA_Comment:         {"Comment", "Comment", "Comment", false, 200, nil},
-	MTA_Label:           {"Label", "Label", "Label", false, 200, nil},
+	MTAttrArtist:          {"Artist", "Artist", "Artist", false, 200, nil},
+	MTAttrArtistSort:      {"Artist", "Artist (for sorting)", "Artistsort", false, 200, nil},
+	MTAttrAlbum:           {"Album", "Album", "Album", false, 200, nil},
+	MTAttrAlbumSort:       {"Album", "Album (for sorting)", "Albumsort", false, 200, nil},
+	MTAttrAlbumArtist:     {"Album artist", "Album artist", "Albumartist", false, 200, nil},
+	MTAttrAlbumArtistSort: {"Album artist", "Album artist (for sorting)", "Albumartistsort", false, 200, nil},
+	MTAttrDisc:            {"Disc", "Disc", "Disc", false, 50, nil},
+	MTAttrTrack:           {"Track", "Track title", "Title", false, 200, nil},
+	MTAttrNumber:          {"#", "Track number", "Track", true, 50, nil},
+	MTAttrLength:          {"Length", "Track length", "duration", true, 60, util.FormatSecondsStr},
+	MTAttrPath:            {"Path", "Directory and file name", "file", false, 200, nil},
+	MTAttrDirectory:       {"Directory", "File path", "file", false, 200, path.Dir},
+	MTAttrFile:            {"File", "File name", "file", false, 200, path.Base},
+	MTAttrYear:            {"Year", "Year", "Date", true, 50, nil},
+	MTAttrGenre:           {"Genre", "Genre", "Genre", false, 200, nil},
+	MTAttrName:            {"Name", "Stream name", "Name", false, 200, nil},
+	MTAttrComposer:        {"Composer", "Composer", "Composer", false, 200, nil},
+	MTAttrPerformer:       {"Performer", "Performer", "Performer", false, 200, nil},
+	MTAttrConductor:       {"Conductor", "Conductor", "Conductor", false, 200, nil},
+	MTAttrWork:            {"Work", "Work", "Work", false, 200, nil},
+	MTAttrGrouping:        {"Grouping", "Grouping", "Grouping", false, 200, nil},
+	MTAttrComment:         {"Comment", "Comment", "Comment", false, 200, nil},
+	MTAttrLabel:           {"Label", "Label", "Label", false, 200, nil},
 }
 
-// Attribute IDs sorted in desired display order
+// MpdTrackAttributeIds stores attribute IDs sorted in desired display order
 var MpdTrackAttributeIds []int
 
 func init() {

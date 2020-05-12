@@ -16,7 +16,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"github.com/op/go-logging"
 )
@@ -24,10 +23,10 @@ import (
 // Package-wide Logger instance
 var log = logging.MustGetLogger("config")
 
-// errCheck() logs a warning if the error is not nil.
+// errCheck logs a warning if the error is not nil.
 func errCheck(err error, message string) bool {
 	if err != nil {
-		log.Warning(errors.New(fmt.Sprintf("%v: %v", message, err)))
+		log.Warning(fmt.Errorf("%v: %v", message, err))
 		return true
 	}
 	return false

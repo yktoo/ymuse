@@ -23,6 +23,7 @@ import (
 	"strconv"
 )
 
+// PrefsDialog represents the preferences dialog
 type PrefsDialog struct {
 	dialog *gtk.Dialog
 	// Whether the dialog is initialised
@@ -48,6 +49,7 @@ type PrefsDialog struct {
 	onPlayerTitleTemplateChanged func()
 }
 
+// PreferencesDialog creates, shows and disposes of a Preferences dialog instance
 func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
 	// Load the dialog layout
 	builder := NewBuilder(generated.GetPrefsGlade())
@@ -111,9 +113,9 @@ func (d *PrefsDialog) onMap() {
 	d.initialised = true
 }
 
-// addColumn() adds a row with a check box to the Columns list box
-func (d *PrefsDialog) addColumn(attrId int, checked bool) {
-	attr := config.MpdTrackAttributes[attrId]
+// addColumn adds a row with a check box to the Columns list box
+func (d *PrefsDialog) addColumn(attrID int, checked bool) {
+	attr := config.MpdTrackAttributes[attrID]
 
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
@@ -135,13 +137,13 @@ func (d *PrefsDialog) addColumn(attrId int, checked bool) {
 	row.Add(cb)
 
 	// Save the ID into the checkbox's name
-	cb.SetName(strconv.Itoa(attrId))
+	cb.SetName(strconv.Itoa(attrID))
 
 	// Save the checkbox in the dialog for future column updates
 	d.queueColumnCheckboxes = append(d.queueColumnCheckboxes, cb)
 }
 
-// onSettingChange() is a signal handler for a change of a simple setting widget
+// onSettingChange is a signal handler for a change of a simple setting widget
 func (d *PrefsDialog) onSettingChange() {
 	// Ignore if the dialog is not initialised yet
 	if !d.initialised {
@@ -172,7 +174,7 @@ func (d *PrefsDialog) onSettingChange() {
 	}
 }
 
-// populateColumns() fills in the Columns list box
+// populateColumns fills in the Columns list box
 func (d *PrefsDialog) populateColumns() {
 	// First add selected columns
 	selIds := config.GetConfig().QueueColumnIds
@@ -184,8 +186,8 @@ func (d *PrefsDialog) populateColumns() {
 	for _, id := range config.MpdTrackAttributeIds {
 		// Check if the ID is already in the list of selected IDs
 		isSelected := false
-		for _, selId := range selIds {
-			if id == selId {
+		for _, selID := range selIds {
+			if id == selID {
 				isSelected = true
 				break
 			}
@@ -199,7 +201,7 @@ func (d *PrefsDialog) populateColumns() {
 	d.lbxColumns.ShowAll()
 }
 
-// updateColumnsFromListBox() updates queue tree view columns from the currently selected ones in the Columns list box
+// updateColumnsFromListBox updates queue tree view columns from the currently selected ones in the Columns list box
 func (d *PrefsDialog) updateColumnsFromListBox() {
 	// Collect IDs of checked attributes
 	var ids []int

@@ -60,7 +60,7 @@ func main() {
 	log.Infof("Ymuse version %s; %s; released %s", version, commit, date)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
-	application, err := gtk.ApplicationNew(config.AppMetadata.Id, glib.APPLICATION_FLAGS_NONE)
+	application, err := gtk.ApplicationNew(config.AppMetadata.ID, glib.APPLICATION_FLAGS_NONE)
 	if err != nil {
 		log.Fatal("Could not create application", err)
 	}

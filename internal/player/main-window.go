@@ -35,6 +35,7 @@ import (
 	"time"
 )
 
+// MainWindow represents the main application window
 type MainWindow struct {
 	// Application reference
 	app *gtk.Application
@@ -122,22 +123,23 @@ type MainWindow struct {
 	optionsUpdating bool
 }
 
-//noinspection GoSnakeCaseUsage
 var (
 	// Indices of "artificial" queue list store columns used for rendering
-	queueColNum_FontWeight int
-	queueColNum_BgColor    int
+	queueColNumFontWeight int
+	queueColNumBgColor    int
 )
 
 const (
-	FontWeightNormal      = 400
-	FontWeightBold        = 700
-	BackgroundColorNormal = "#ffffff"
-	BackgroundColorActive = "#ffffe0"
+	// Rendering properties for the Queue list
+	fontWeightNormal = 400
+	fontWeightBold   = 700
+	colorBgNormal    = "#ffffff"
+	colorBgActive    = "#ffffe0"
 
-	queueSaveNewPlaylistId = "\u0001new"
+	queueSaveNewPlaylistID = "\u0001new"
 )
 
+// NewMainWindow creates and returns a new MainWindow instance
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
 	builder := NewBuilder(generated.GetPlayerGlade())
@@ -230,7 +232,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	return w, nil
 }
 
-// createQueueListStore() initialises the queue list store object
+// createQueueListStore initialises the queue list store object
 func createQueueListStore() *gtk.ListStore {
 	// Collect column types from MPD attributes
 	countAttrs := len(config.MpdTrackAttributeIds)
@@ -240,10 +242,10 @@ func createQueueListStore() *gtk.ListStore {
 	}
 
 	// Last 2 columns are font weight and background color
-	queueColNum_FontWeight = countAttrs
-	queueColNum_BgColor = countAttrs + 1
-	types[queueColNum_FontWeight] = glib.TYPE_INT
-	types[queueColNum_BgColor] = glib.TYPE_STRING
+	queueColNumFontWeight = countAttrs
+	queueColNumBgColor = countAttrs + 1
+	types[queueColNumFontWeight] = glib.TYPE_INT
+	types[queueColNumBgColor] = glib.TYPE_STRING
 
 	// Create a list store instance
 	store, err := gtk.ListStoreNew(types...)
@@ -329,7 +331,7 @@ func (w *MainWindow) onMap() {
 	for _, id := range config.MpdTrackAttributeIds {
 		w.cbxQueueSortBy.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
 	}
-	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(cfg.DefaultSortAttrId))
+	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(cfg.DefaultSortAttrID))
 
 	// Update Queue tree view columns
 	w.updateQueueColumns()
@@ -509,18 +511,18 @@ func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) 
 
 func (w *MainWindow) onQueueSavePopoverValidate() {
 	// Only show new playlist widgets if (new playlist) is selected in the combo box
-	selectedId := w.cbxQueueSavePlaylist.GetActiveID()
-	isNew := selectedId == queueSaveNewPlaylistId
+	selectedID := w.cbxQueueSavePlaylist.GetActiveID()
+	isNew := selectedID == queueSaveNewPlaylistID
 	w.lblQueueSavePlaylistName.SetVisible(isNew)
 	w.eQueueSavePlaylistName.SetVisible(isNew)
 
 	// Validate the actions
-	valid := (!isNew && selectedId != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
+	valid := (!isNew && selectedID != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
 	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
 	w.aQueueSaveAppend.SetEnabled(valid)
 }
 
-// about() shows the application's about dialog
+// about shows the application's about dialog
 func (w *MainWindow) about() {
 	dlg, err := gtk.AboutDialogNew()
 	if errCheck(err, "AboutDialogNew() failed") {
@@ -540,7 +542,7 @@ func (w *MainWindow) about() {
 	dlg.Run()
 }
 
-// addAction() add a new application action, with an optional keyboard shortcut
+// addAction add a new application action, with an optional keyboard shortcut
 func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *glib.SimpleAction {
 	action := glib.SimpleActionNew(name, nil)
 	if _, err := action.Connect("activate", onActivate); err != nil {
@@ -553,7 +555,7 @@ func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *g
 	return action
 }
 
-// applyLibrarySelection() navigates into the folder or adds or replaces the content of the queue with the currently
+// applyLibrarySelection navigates into the folder or adds or replaces the content of the queue with the currently
 // selected items in the library
 func (w *MainWindow) applyLibrarySelection(replace bool) {
 	// Get selected path
@@ -571,14 +573,14 @@ func (w *MainWindow) applyLibrarySelection(replace bool) {
 	}
 }
 
-// applyPlaylistSelection() adds or replaces the content of the queue with the currently selected playlist
+// applyPlaylistSelection adds or replaces the content of the queue with the currently selected playlist
 func (w *MainWindow) applyPlaylistSelection(replace bool) {
 	if name := w.getSelectedPlaylistName(); name != "" {
 		w.queuePlaylist(replace, name)
 	}
 }
 
-// applyQueueSelection() starts playing from the currently selected track
+// applyQueueSelection starts playing from the currently selected track
 func (w *MainWindow) applyQueueSelection() {
 	// Get the tree's selection
 	var err error
@@ -593,7 +595,7 @@ func (w *MainWindow) applyQueueSelection() {
 	w.errCheckDialog(err, "Failed to play the selected track")
 }
 
-// connect() starts connecting to MPD
+// connect starts connecting to MPD
 func (w *MainWindow) connect() {
 	// First disconnect, if connected
 	if w.connector.IsConnected() {
@@ -605,12 +607,12 @@ func (w *MainWindow) connect() {
 	w.connector.Start(cfg.MpdAddress(), cfg.MpdPassword, cfg.MpdAutoReconnect)
 }
 
-// disconnect() starts disconnecting from MPD
+// disconnect starts disconnecting from MPD
 func (w *MainWindow) disconnect() {
 	w.connector.Stop()
 }
 
-// errCheckDialog() checks for error, and if it isn't nil, shows an error dialog ti the given text and the error info
+// errCheckDialog checks for error, and if it isn't nil, shows an error dialog ti the given text and the error info
 func (w *MainWindow) errCheckDialog(err error, message string) bool {
 	if err != nil {
 		formatted := fmt.Sprintf("%v: %v", message, err)
@@ -621,7 +623,7 @@ func (w *MainWindow) errCheckDialog(err error, message string) bool {
 	return false
 }
 
-// getQueueSaveNewPlaylistName() returns the text entered in the New playlist name entry, or an empty string if there's an error
+// getQueueSaveNewPlaylistName returns the text entered in the New playlist name entry, or an empty string if there's an error
 func (w *MainWindow) getQueueSaveNewPlaylistName() string {
 	s, err := w.eQueueSavePlaylistName.GetText()
 	if errCheck(err, "eQueueSavePlaylistName.GetText() failed") {
@@ -630,7 +632,7 @@ func (w *MainWindow) getQueueSaveNewPlaylistName() string {
 	return s
 }
 
-// getQueueSelectedIndices() returns indices of the currently selected rows in the queue
+// getQueueSelectedIndices returns indices of the currently selected rows in the queue
 func (w *MainWindow) getQueueSelectedIndices() []int {
 	// Get the tree's selection
 	sel, err := w.trvQueue.GetSelection()
@@ -648,7 +650,7 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 	return indices
 }
 
-// getSelectedLibraryPath() returns the full path of the currently selected library item and whether it's a directory,
+// getSelectedLibraryPath returns the full path of the currently selected library item and whether it's a directory,
 // or an empty string if there's an error
 func (w *MainWindow) getSelectedLibraryPath() (string, bool) {
 	// If there's selection
@@ -674,7 +676,7 @@ func (w *MainWindow) getSelectedLibraryPath() (string, bool) {
 	return libPath, strings.HasPrefix(name, "d:")
 }
 
-// getSelectedPlaylistName() returns the name of the currently selected playlist, or an empty string if there's an error
+// getSelectedPlaylistName returns the name of the currently selected playlist, or an empty string if there's an error
 func (w *MainWindow) getSelectedPlaylistName() string {
 	// If there's selection
 	row := w.lbxPlaylists.GetSelectedRow()
@@ -690,7 +692,7 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 	return name
 }
 
-// libraryUpdate() updates or rescans the library
+// libraryUpdate updates or rescans the library
 func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	// Determine the update path
 	libPath := ""
@@ -715,7 +717,7 @@ func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	w.errCheckDialog(err, "Failed to update the library")
 }
 
-// playerPrevious() rewinds the player to the previous track
+// playerPrevious rewinds the player to the previous track
 func (w *MainWindow) playerPrevious() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -726,7 +728,7 @@ func (w *MainWindow) playerPrevious() {
 	w.errCheckDialog(err, "Failed to skip to previous track")
 }
 
-// playerStop() stops the playback
+// playerStop stops the playback
 func (w *MainWindow) playerStop() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -737,7 +739,7 @@ func (w *MainWindow) playerStop() {
 	w.errCheckDialog(err, "Failed to stop playback")
 }
 
-// playerPlayPause() pauses or resumes the playback
+// playerPlayPause pauses or resumes the playback
 func (w *MainWindow) playerPlayPause() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -755,7 +757,7 @@ func (w *MainWindow) playerPlayPause() {
 	w.errCheckDialog(err, "Failed to toggle playback")
 }
 
-// playerNext() advances the player to the next track
+// playerNext advances the player to the next track
 func (w *MainWindow) playerNext() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -766,7 +768,7 @@ func (w *MainWindow) playerNext() {
 	w.errCheckDialog(err, "Failed to skip to next track")
 }
 
-// playerToggleConsume() toggles player's consume mode
+// playerToggleConsume toggles player's consume mode
 func (w *MainWindow) playerToggleConsume() {
 	// Ignore if the state of the button is being updated programmatically
 	if w.optionsUpdating {
@@ -782,7 +784,7 @@ func (w *MainWindow) playerToggleConsume() {
 	w.errCheckDialog(err, "Failed to toggle consume mode")
 }
 
-// playerToggleRandom() toggles player's random mode
+// playerToggleRandom toggles player's random mode
 func (w *MainWindow) playerToggleRandom() {
 	// Ignore if the state of the button is being updated programmatically
 	if w.optionsUpdating {
@@ -798,7 +800,7 @@ func (w *MainWindow) playerToggleRandom() {
 	w.errCheckDialog(err, "Failed to toggle random mode")
 }
 
-// playerToggleRepeat() toggles player's repeat mode
+// playerToggleRepeat toggles player's repeat mode
 func (w *MainWindow) playerToggleRepeat() {
 	// Ignore if the state of the button is being updated programmatically
 	if w.optionsUpdating {
@@ -814,12 +816,12 @@ func (w *MainWindow) playerToggleRepeat() {
 	w.errCheckDialog(err, "Failed to toggle repeat mode")
 }
 
-// preferences() shows the preferences dialog
+// preferences shows the preferences dialog
 func (w *MainWindow) preferences() {
 	PreferencesDialog(w.window, w.connect, w.updateQueueColumns, w.updatePlayerTitleTemplate)
 }
 
-// queue() adds or replaces the content of the queue with the specified URIs
+// queue adds or replaces the content of the queue with the specified URIs
 func (w *MainWindow) queue(replace bool, uris []string) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -843,7 +845,7 @@ func (w *MainWindow) queue(replace bool, uris []string) {
 	w.errCheckDialog(err, "Failed to add track(s) to the queue")
 }
 
-// queueClear() empties MPD's play queue
+// queueClear empties MPD's play queue
 func (w *MainWindow) queueClear() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -854,7 +856,7 @@ func (w *MainWindow) queueClear() {
 	w.errCheckDialog(err, "Failed to clear the queue")
 }
 
-// queueDelete() deletes the selected tracks from MPD's play queue
+// queueDelete deletes the selected tracks from MPD's play queue
 func (w *MainWindow) queueDelete() {
 	// Get selected nodes' indices
 	indices := w.getQueueSelectedIndices()
@@ -879,12 +881,12 @@ func (w *MainWindow) queueDelete() {
 	w.errCheckDialog(err, "Failed to delete tracks from the queue")
 }
 
-// queueOne() adds or replaces the content of the queue with one specified URI
+// queueOne adds or replaces the content of the queue with one specified URI
 func (w *MainWindow) queueOne(replace bool, uri string) {
 	w.queue(replace, []string{uri})
 }
 
-// queuePlaylist() adds or replaces the content of the queue with the specified playlist
+// queuePlaylist adds or replaces the content of the queue with the specified playlist
 func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 	log.Debugf("queuePlaylist(%v, %v)", replace, playlistName)
 	var err error
@@ -907,7 +909,7 @@ func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 	w.errCheckDialog(err, "Failed to add playlist to the queue")
 }
 
-// queueSave() shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
+// queueSave shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
 func (w *MainWindow) queueSave() {
 	// Tweak widgets
 	selection := len(w.getQueueSelectedIndices()) > 0
@@ -917,23 +919,23 @@ func (w *MainWindow) queueSave() {
 
 	// Populate the playlists combo box
 	w.cbxQueueSavePlaylist.RemoveAll()
-	w.cbxQueueSavePlaylist.Append(queueSaveNewPlaylistId, "(new playlist)")
+	w.cbxQueueSavePlaylist.Append(queueSaveNewPlaylistID, "(new playlist)")
 	for _, name := range w.connector.GetPlaylists() {
 		w.cbxQueueSavePlaylist.Append(name, name)
 	}
-	w.cbxQueueSavePlaylist.SetActiveID(queueSaveNewPlaylistId)
+	w.cbxQueueSavePlaylist.SetActiveID(queueSaveNewPlaylistID)
 
 	// Show the popover
 	w.pmnQueueSave.Popup()
 }
 
-// queueSaveApply() performs queue saving into a playlist
+// queueSaveApply performs queue saving into a playlist
 func (w *MainWindow) queueSaveApply(replace bool) {
 	// Collect current values from the UI
 	selIndices := w.getQueueSelectedIndices()
 	selOnly := len(selIndices) > 0 && w.cbQueueSaveSelectedOnly.GetActive()
 	name := w.cbxQueueSavePlaylist.GetActiveID()
-	isNew := name == queueSaveNewPlaylistId
+	isNew := name == queueSaveNewPlaylistID
 	if isNew {
 		name = w.getQueueSaveNewPlaylistName()
 	}
@@ -980,7 +982,7 @@ func (w *MainWindow) queueSaveApply(replace bool) {
 	w.errCheckDialog(err, "Failed to create a playlist")
 }
 
-// queueShuffle() randomises MPD's play queue
+// queueShuffle randomises MPD's play queue
 func (w *MainWindow) queueShuffle() {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -991,7 +993,7 @@ func (w *MainWindow) queueShuffle() {
 	w.errCheckDialog(err, "Failed to shuffle the queue")
 }
 
-// queueSort() orders MPD's play queue on the provided attribute
+// queueSort orders MPD's play queue on the provided attribute
 func (w *MainWindow) queueSort(attr *config.MpdTrackAttribute, descending bool) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
@@ -1034,7 +1036,7 @@ func (w *MainWindow) queueSort(attr *config.MpdTrackAttribute, descending bool) 
 
 }
 
-// queueSortApply() performs MPD's play queue ordering based on the currently selected in popover mode
+// queueSortApply performs MPD's play queue ordering based on the currently selected in popover mode
 func (w *MainWindow) queueSortApply(descending bool) {
 	// Fetch the ID of the currently selected item in the Sort by combo box, and the corresponding attribute
 	if attr, ok := config.MpdTrackAttributes[util.AtoiDef(w.cbxQueueSortBy.GetActiveID(), -1)]; ok {
@@ -1042,7 +1044,7 @@ func (w *MainWindow) queueSortApply(descending bool) {
 	}
 }
 
-// shortcutInfo() displays a shortcut info window
+// shortcutInfo displays a shortcut info window
 func (w *MainWindow) shortcutInfo() {
 	// TODO update ShortcutsWindow usage once it's properly implemented in gotk3
 	builder := NewBuilder(generated.GetShortcutsGlade())
@@ -1053,12 +1055,12 @@ func (w *MainWindow) shortcutInfo() {
 	errCheck(err, "Failed to connect unmap signal")
 }
 
-// Show() shows the window and all its child widgets
+// Show displays the window and all its child widgets
 func (w *MainWindow) Show() {
 	w.window.ShowAll()
 }
 
-// setLibraryPath() sets the current library path selector and updates its widget and the current library list
+// setLibraryPath sets the current library path selector and updates its widget and the current library list
 func (w *MainWindow) setLibraryPath(path string) {
 	w.currentLibPath = path
 	w.updateLibraryPath()
@@ -1066,27 +1068,27 @@ func (w *MainWindow) setLibraryPath(path string) {
 	w.lbxLibrary.GrabFocus()
 }
 
-// setQueueHighlight() selects or deselects an item in the Queue tree view at the given index
+// setQueueHighlight selects or deselects an item in the Queue tree view at the given index
 func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	if index >= 0 {
 		if iter, err := w.queueListStore.GetIterFromString(strconv.Itoa(index)); err == nil {
-			weight := FontWeightNormal
-			bgColor := BackgroundColorNormal
+			weight := fontWeightNormal
+			bgColor := colorBgNormal
 			if selected {
-				weight = FontWeightBold
-				bgColor = BackgroundColorActive
+				weight = fontWeightBold
+				bgColor = colorBgActive
 			}
 			errCheck(
 				w.queueListStore.SetCols(iter, map[int]interface{}{
-					queueColNum_FontWeight: weight,
-					queueColNum_BgColor:    bgColor,
+					queueColNumFontWeight: weight,
+					queueColNumBgColor:    bgColor,
 				}),
 				"lstQueue.SetValue() failed")
 		}
 	}
 }
 
-// updateAll() updates all window's widgets and lists
+// updateAll updates all window's widgets and lists
 func (w *MainWindow) updateAll() {
 	w.updateQueue()
 	w.updateLibraryPath()
@@ -1098,7 +1100,7 @@ func (w *MainWindow) updateAll() {
 	w.updatePlayer()
 }
 
-// updateLibrary() updates the current library list contents
+// updateLibrary updates the current library list contents
 func (w *MainWindow) updateLibrary(indexToSelect int) {
 	// Clear the library list
 	util.ClearChildren(w.lbxLibrary.Container)
@@ -1193,7 +1195,7 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 	w.lblLibraryInfo.SetText(info)
 }
 
-// updateLibraryActions() updates the widgets for library list
+// updateLibraryActions updates the widgets for library list
 func (w *MainWindow) updateLibraryActions() {
 	connected, selected := w.connector.IsConnected(), w.lbxLibrary.GetSelectedRow() != nil
 	w.aLibraryUpdate.SetEnabled(connected)
@@ -1203,7 +1205,7 @@ func (w *MainWindow) updateLibraryActions() {
 	w.aLibraryRescanSel.SetEnabled(connected && selected)
 }
 
-// updateLibraryPath() updates the current library path selector
+// updateLibraryPath updates the current library path selector
 func (w *MainWindow) updateLibraryPath() {
 	// Remove all buttons from the box
 	util.ClearChildren(w.bxLibraryPath.Container)
@@ -1236,7 +1238,7 @@ func (w *MainWindow) updateLibraryPath() {
 	}
 }
 
-// updateOptions() updates player options widgets
+// updateOptions updates player options widgets
 func (w *MainWindow) updateOptions() {
 	w.optionsUpdating = true
 	status := w.connector.Status()
@@ -1246,7 +1248,7 @@ func (w *MainWindow) updateOptions() {
 	w.optionsUpdating = false
 }
 
-// updatePlayer() updates player control widgets
+// updatePlayer updates player control widgets
 func (w *MainWindow) updatePlayer() {
 	connected := false
 	statusText := "<i>(not connected)</i>"
@@ -1308,7 +1310,7 @@ func (w *MainWindow) updatePlayer() {
 	w.updatePlayerSeekBar()
 }
 
-// updatePlayerSeekBar() updates the seek bar position and status
+// updatePlayerSeekBar updates the seek bar position and status
 func (w *MainWindow) updatePlayerSeekBar() {
 	seekPos := ""
 	var trackLen, trackPos float64
@@ -1350,7 +1352,7 @@ func (w *MainWindow) updatePlayerSeekBar() {
 	w.lblPosition.SetMarkup(seekPos)
 }
 
-// updatePlayerTitleTemplate() compiles the player title template
+// updatePlayerTitleTemplate compiles the player title template
 func (w *MainWindow) updatePlayerTitleTemplate() {
 	tmpl, err := template.New("playerTitle").
 		Funcs(template.FuncMap{
@@ -1372,7 +1374,7 @@ func (w *MainWindow) updatePlayerTitleTemplate() {
 	}
 }
 
-// updatePlaylists() updates the current playlists list contents
+// updatePlaylists updates the current playlists list contents
 func (w *MainWindow) updatePlaylists() {
 	// Clear the playlists list
 	util.ClearChildren(w.lbxPlaylists.Container)
@@ -1407,14 +1409,14 @@ func (w *MainWindow) updatePlaylists() {
 	w.lblPlaylistsInfo.SetText(info)
 }
 
-// updatePlaylistsActions() updates the widgets for playlists list
+// updatePlaylistsActions updates the widgets for playlists list
 func (w *MainWindow) updatePlaylistsActions() {
 	connected, selected := w.connector.IsConnected(), w.getSelectedPlaylistName() != ""
 	w.aPlaylistRename.SetEnabled(connected && selected)
 	w.aPlaylistDelete.SetEnabled(connected && selected)
 }
 
-// updateQueue() updates the current play queue contents
+// updateQueue updates the current play queue contents
 func (w *MainWindow) updateQueue() {
 	// Clear the queue list store
 	w.queueListStore.Clear()
@@ -1449,8 +1451,8 @@ func (w *MainWindow) updateQueue() {
 			rowData[id] = value
 
 			// Add the "artificial" column values
-			rowData[queueColNum_FontWeight] = FontWeightNormal
-			rowData[queueColNum_BgColor] = BackgroundColorNormal
+			rowData[queueColNumFontWeight] = fontWeightNormal
+			rowData[queueColNumBgColor] = colorBgNormal
 		}
 
 		// Add a row to the list store
@@ -1489,7 +1491,7 @@ func (w *MainWindow) updateQueue() {
 	w.updateQueueActions()
 }
 
-// updateQueueColumns() updates the columns in the play queue tree view
+// updateQueueColumns updates the columns in the play queue tree view
 func (w *MainWindow) updateQueueColumns() {
 	// Remove all columns
 	w.trvQueue.GetColumns().Foreach(func(item interface{}) {
@@ -1520,8 +1522,8 @@ func (w *MainWindow) updateQueueColumns() {
 		col.SetFixedWidth(attr.Width)
 		col.SetClickable(true)
 		col.SetResizable(true)
-		col.AddAttribute(renderer, "background", queueColNum_BgColor)
-		col.AddAttribute(renderer, "weight", queueColNum_FontWeight)
+		col.AddAttribute(renderer, "background", queueColNumBgColor)
+		col.AddAttribute(renderer, "weight", queueColNumFontWeight)
 
 		// Bind the clicked signal
 		localIndex := index // Make an in-loop copy of index for the closure below
@@ -1536,7 +1538,7 @@ func (w *MainWindow) updateQueueColumns() {
 	w.trvQueue.ShowAll()
 }
 
-// updateQueueActions() updates the play queue actions
+// updateQueueActions updates the play queue actions
 func (w *MainWindow) updateQueueActions() {
 	connected := w.connector.IsConnected()
 	notEmpty := connected && w.currentQueueSize > 0
@@ -1551,7 +1553,7 @@ func (w *MainWindow) updateQueueActions() {
 	w.aQueueSave.SetEnabled(notEmpty)
 }
 
-// updateQueueNowPlaying() scrolls the queue tree view to the currently played track
+// updateQueueNowPlaying scrolls the queue tree view to the currently played track
 func (w *MainWindow) updateQueueNowPlaying() {
 	// Update queue highlight
 	if curIdx := util.AtoiDef(w.connector.Status()["song"], -1); w.currentQueueIndex != curIdx {

@@ -36,9 +36,10 @@ changelog:
     sort: asc
     filters:
         exclude:
+            - '^ci:'
+            - '^code:'
             - '^docs:'
             - '^test:'
-            - '^ci:'
 
 release:
     github:
