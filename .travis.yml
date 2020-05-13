@@ -26,6 +26,11 @@ script:
     # Verify goreleaser config
     - curl -sfL https://git.io/goreleaser | bash -s -- check
 
-after_success:
-    # Run goreleaser without deploying
-    - curl -sfL https://git.io/goreleaser | bash -s -- --rm-dist --skip-publish --snapshot
+deploy:
+    - provider: script
+      skip_cleanup: true
+      script: curl -sfL https://git.io/goreleaser | bash
+      on:
+          branch: master
+          tags: true
+          condition: $TRAVIS_OS_NAME = linux
