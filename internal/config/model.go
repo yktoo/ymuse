@@ -21,7 +21,7 @@ import (
 	"sort"
 )
 
-// MPD's track attribute identifiers
+// MPD's track attribute identifiers. These must precisely match the queueListStore's columns declared in player.glade
 const (
 	MTAttrArtist = iota
 	MTAttrArtistSort
@@ -46,6 +46,10 @@ const (
 	MTAttrGrouping
 	MTAttrComment
 	MTAttrLabel
+	// List store's "artificial" columns used for rendering
+	QueueColumnFontWeight
+	QueueColumnBgColor
+	QueueColumnVisible
 )
 
 // MpdTrackAttribute describes an MPD's track attribute

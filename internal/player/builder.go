@@ -137,6 +137,15 @@ func (b *Builder) getListBox(name string) *gtk.ListBox {
 	return result
 }
 
+// getListStore finds and returns a list box by its name
+func (b *Builder) getListStore(name string) *gtk.ListStore {
+	result, ok := b.get(name).(*gtk.ListStore)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
+	}
+	return result
+}
+
 // getMenu finds and returns a menu by its name
 func (b *Builder) getMenu(name string) *gtk.Menu {
 	result, ok := b.get(name).(*gtk.Menu)
@@ -169,6 +178,24 @@ func (b *Builder) getScale(name string) *gtk.Scale {
 	result, ok := b.get(name).(*gtk.Scale)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.Scale", name))
+	}
+	return result
+}
+
+// getSearchBar finds and returns a search bar by its name
+func (b *Builder) getSearchBar(name string) *gtk.SearchBar {
+	result, ok := b.get(name).(*gtk.SearchBar)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.SearchBar", name))
+	}
+	return result
+}
+
+// getSearchEntry finds and returns a search entry by its name
+func (b *Builder) getSearchEntry(name string) *gtk.SearchEntry {
+	result, ok := b.get(name).(*gtk.SearchEntry)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.SearchEntry", name))
 	}
 	return result
 }
@@ -223,6 +250,15 @@ func (b *Builder) getToolButton(name string) *gtk.ToolButton {
 	result, ok := b.get(name).(*gtk.ToolButton)
 	if !ok {
 		log.Fatal(errors.Errorf("%v is not a gtk.ToolButton", name))
+	}
+	return result
+}
+
+// getTreeModelFilter finds and returns a tree model filter by its name
+func (b *Builder) getTreeModelFilter(name string) *gtk.TreeModelFilter {
+	result, ok := b.get(name).(*gtk.TreeModelFilter)
+	if !ok {
+		log.Fatal(errors.Errorf("%v is not a gtk.TreeModelFilter", name))
 	}
 	return result
 }

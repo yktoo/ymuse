@@ -15,6 +15,7 @@
 
 package player
 
+import "C"
 import (
 	"bytes"
 	"fmt"
@@ -54,12 +55,18 @@ type MainWindow struct {
 	scPlayPosition  *gtk.Scale
 	adjPlayPosition *gtk.Adjustment
 	// Queue widgets
-	bxQueue      *gtk.Box
-	lblQueueInfo *gtk.Label
-	trvQueue     *gtk.TreeView
-	pmnQueueSort *gtk.PopoverMenu
-	pmnQueueSave *gtk.PopoverMenu
-	mnQueue      *gtk.Menu
+	bxQueue          *gtk.Box
+	lblQueueInfo     *gtk.Label
+	trvQueue         *gtk.TreeView
+	pmnQueueSort     *gtk.PopoverMenu
+	pmnQueueSave     *gtk.PopoverMenu
+	mnQueue          *gtk.Menu
+	btnQueueFilter   *gtk.ToggleToolButton
+	queueSearchBar   *gtk.SearchBar
+	queueSearchEntry *gtk.SearchEntry
+	lblQueueFilter   *gtk.Label
+	queueListStore   *gtk.ListStore
+	queueListFilter  *gtk.TreeModelFilter
 	// Queue sort popup
 	cbxQueueSortBy *gtk.ComboBoxText
 	// Queue save popup
@@ -104,30 +111,16 @@ type MainWindow struct {
 	aPlayerRepeat     *glib.SimpleAction
 	aPlayerConsume    *glib.SimpleAction
 
-	// Queue list store
-	queueListStore *gtk.ListStore
-	// Number of items in the play queue
-	currentQueueSize int
-	// Queue's track index (last) marked as current
-	currentQueueIndex int
+	currentQueueSize  int // Number of items in the play queue
+	currentQueueIndex int // Queue's track index (last) marked as current
 
-	// Current library path, separated by slashes
-	currentLibPath string
+	currentLibPath string // Current library path, separated by slashes
 
-	// Compiled template for player's track title
-	playerTitleTemplate *template.Template
+	playerTitleTemplate *template.Template // Compiled template for player's track title
 
-	// Play position manual update flag
-	playPosUpdating bool
-	// Options update flag
-	optionsUpdating bool
+	playPosUpdating bool // Play position manual update flag
+	optionsUpdating bool // Options update flag
 }
-
-var (
-	// Indices of "artificial" queue list store columns used for rendering
-	queueColNumFontWeight int
-	queueColNumBgColor    int
-)
 
 const (
 	// Rendering properties for the Queue list
@@ -158,12 +151,18 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		scPlayPosition:  builder.getScale("scPlayPosition"),
 		adjPlayPosition: builder.getAdjustment("adjPlayPosition"),
 		// Queue
-		bxQueue:      builder.getBox("bxQueue"),
-		lblQueueInfo: builder.getLabel("lblQueueInfo"),
-		trvQueue:     builder.getTreeView("trvQueue"),
-		pmnQueueSort: builder.getPopoverMenu("pmnQueueSort"),
-		pmnQueueSave: builder.getPopoverMenu("pmnQueueSave"),
-		mnQueue:      builder.getMenu("mnQueue"),
+		bxQueue:          builder.getBox("bxQueue"),
+		lblQueueInfo:     builder.getLabel("lblQueueInfo"),
+		trvQueue:         builder.getTreeView("trvQueue"),
+		pmnQueueSort:     builder.getPopoverMenu("pmnQueueSort"),
+		pmnQueueSave:     builder.getPopoverMenu("pmnQueueSave"),
+		mnQueue:          builder.getMenu("mnQueue"),
+		btnQueueFilter:   builder.getToggleToolButton("btnQueueFilter"),
+		queueSearchBar:   builder.getSearchBar("queueSearchBar"),
+		queueSearchEntry: builder.getSearchEntry("queueSearchEntry"),
+		lblQueueFilter:   builder.getLabel("lblQueueFilter"),
+		queueListStore:   builder.getListStore("queueListStore"),
+		queueListFilter:  builder.getTreeModelFilter("queueListFilter"),
 		// Queue sort popup
 		cbxQueueSortBy: builder.getComboBoxText("cbxQueueSortBy"),
 		// Queue save popup
@@ -181,39 +180,45 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
-
-		// Other stuff
-		queueListStore: createQueueListStore(),
 	}
 
-	// Bind the list store to the queue tree view
-	w.trvQueue.SetModel(w.queueListStore)
+	// Initialise queue filter model
+	w.queueListFilter.SetVisibleColumn(config.QueueColumnVisible)
 
 	// Initialise player title template
 	w.updatePlayerTitleTemplate()
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_mainWindow_delete":            w.onDelete,
-		"on_mainWindow_map":               w.onMap,
-		"on_trvQueue_buttonPress":         w.onQueueTreeViewButtonPress,
-		"on_trvQueue_keyPress":            w.onQueueTreeViewKeyPress,
-		"on_tselQueue_changed":            w.updateQueueActions,
-		"on_lbxLibrary_buttonPress":       w.onLibraryListBoxButtonPress,
-		"on_lbxLibrary_keyPress":          w.onLibraryListBoxKeyPress,
-		"on_lbxLibrary_selectionChange":   w.updateLibraryActions,
-		"on_lbxPlaylists_buttonPress":     w.onPlaylistListBoxButtonPress,
-		"on_lbxPlaylists_keyPress":        w.onPlaylistListBoxKeyPress,
-		"on_lbxPlaylists_selectionChange": w.updatePlaylistsActions,
-		"on_pmnQueueSave_validate":        w.onQueueSavePopoverValidate,
-		"on_scPlayPosition_buttonEvent":   w.onPlayPositionButtonEvent,
-		"on_scPlayPosition_valueChanged":  w.updatePlayerSeekBar,
+		"on_mainWindow_delete":              w.onDelete,
+		"on_mainWindow_map":                 w.onMap,
+		"on_trvQueue_buttonPress":           w.onQueueTreeViewButtonPress,
+		"on_trvQueue_keyPress":              w.onQueueTreeViewKeyPress,
+		"on_tselQueue_changed":              w.updateQueueActions,
+		"on_queueSearchBar_searchMode":      w.queueFilter,
+		"on_queueSearchEntry_searchChanged": w.queueFilter,
+		"on_lbxLibrary_buttonPress":         w.onLibraryListBoxButtonPress,
+		"on_lbxLibrary_keyPress":            w.onLibraryListBoxKeyPress,
+		"on_lbxLibrary_selectionChange":     w.updateLibraryActions,
+		"on_lbxPlaylists_buttonPress":       w.onPlaylistListBoxButtonPress,
+		"on_lbxPlaylists_keyPress":          w.onPlaylistListBoxKeyPress,
+		"on_lbxPlaylists_selectionChange":   w.updatePlaylistsActions,
+		"on_pmnQueueSave_validate":          w.onQueueSavePopoverValidate,
+		"on_scPlayPosition_buttonEvent":     w.onPlayPositionButtonEvent,
+		"on_scPlayPosition_valueChanged":    w.updatePlayerSeekBar,
 
 		// For some reason binding actions to menu items keeps them grayed out, so old-school signals are used here
 		"on_miQueueNowPlaying_activate": w.updateQueueNowPlaying,
 		"on_miQueueClear_activate":      w.queueClear,
 		"on_miQueueDelete_activate":     w.queueDelete,
 	})
+
+	// Configure search bar
+	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.btnQueueFilter.Object, "active", glib.BINDING_BIDIRECTIONAL)
+	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.lblQueueFilter.Object, "visible", glib.BINDING_DEFAULT)
+
+	// Forcefully disable tree search popup on Ctrl+F
+	w.trvQueue.SetSearchColumn(-1)
 
 	// Register the main window with the app
 	application.AddWindow(w.window)
@@ -230,29 +235,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Instantiate a connector
 	w.connector = NewConnector(w.onConnectorStatusChange, w.onConnectorHeartbeat, w.onConnectorSubsystemChange)
 	return w, nil
-}
-
-// createQueueListStore initialises the queue list store object
-func createQueueListStore() *gtk.ListStore {
-	// Collect column types from MPD attributes
-	countAttrs := len(config.MpdTrackAttributeIds)
-	types := make([]glib.Type, countAttrs+2)
-	for i := range config.MpdTrackAttributeIds {
-		types[i] = glib.TYPE_STRING
-	}
-
-	// Last 2 columns are font weight and background color
-	queueColNumFontWeight = countAttrs
-	queueColNumBgColor = countAttrs + 1
-	types[queueColNumFontWeight] = glib.TYPE_INT
-	types[queueColNumBgColor] = glib.TYPE_STRING
-
-	// Create a list store instance
-	store, err := gtk.ListStoreNew(types...)
-	if err != nil {
-		log.Fatal("Failed to create queue tree view list store", err)
-	}
-	return store
 }
 
 func (w *MainWindow) onConnectorStatusChange() {
@@ -433,10 +415,15 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 	mask := gtk.AcceleratorGetDefaultModMask()
 	state := gdk.ModifierType(evt.State())
 	switch evt.KeyVal() {
-	// Enter
+	// Enter: apply current selection
 	case gdk.KEY_Return:
 		if state&mask == 0 {
 			w.applyQueueSelection()
+		}
+	// Esc: exit filtering mode if it's active
+	case gdk.KEY_Escape:
+		if state&mask == 0 {
+			w.queueSearchBar.SetSearchMode(false)
 		}
 	// Delete
 	case gdk.KEY_Delete:
@@ -452,6 +439,11 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 	case gdk.KEY_space:
 		if state&mask == 0 {
 			w.playerPlayPause()
+		}
+	// Ctrl+F: activate search bar
+	case gdk.KEY_f:
+		if state&mask == gdk.GDK_CONTROL_MASK {
+			w.queueSearchBar.SetSearchMode(true)
 		}
 	}
 }
@@ -632,6 +624,15 @@ func (w *MainWindow) getQueueSaveNewPlaylistName() string {
 	return s
 }
 
+// getQueueHasSelection returns whether there's any selected rows in the queue
+func (w *MainWindow) getQueueHasSelection() bool {
+	if sel, err := w.trvQueue.GetSelection(); errCheck(err, "getQueueHasSelection(): trvQueue.GetSelection() failed") {
+		return false
+	} else {
+		return sel.CountSelectedRows() > 0
+	}
+}
+
 // getQueueSelectedIndices returns indices of the currently selected rows in the queue
 func (w *MainWindow) getQueueSelectedIndices() []int {
 	// Get the tree's selection
@@ -642,11 +643,17 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 
 	// Get selected nodes' indices
 	var indices []int
-	sel.GetSelectedRows(nil).Foreach(func(item interface{}) {
-		if ix := item.(*gtk.TreePath).GetIndices(); len(ix) > 0 {
-			indices = append(indices, ix[0])
+	err = sel.SelectedForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) {
+		// Convert the provided tree (filtered) path into unfiltered one
+		if queuePath := w.queueListFilter.ConvertPathToChildPath(path); queuePath != nil {
+			if ix := queuePath.GetIndices(); len(ix) > 0 {
+				indices = append(indices, ix[0])
+			}
 		}
 	})
+	if errCheck(err, "getQueueSelectedIndices(): SelectedForEach() failed") {
+		return nil
+	}
 	return indices
 }
 
@@ -881,6 +888,65 @@ func (w *MainWindow) queueDelete() {
 	w.errCheckDialog(err, "Failed to delete tracks from the queue")
 }
 
+// queueFilter applies the currently entered filter substring to the queue
+func (w *MainWindow) queueFilter() {
+	log.Debug("queueFilter()")
+	substr := ""
+
+	// Only use filter pattern if the search bar is visible
+	if w.queueSearchBar.GetSearchMode() {
+		var err error
+		if substr, err = w.queueSearchEntry.GetText(); errCheck(err, "queueSearchEntry.GetText() failed") {
+			return
+		}
+	}
+
+	// Iterate all rows in the list store
+	count := 0
+	err := w.queueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) bool {
+		// Show all rows if no search pattern given
+		visible := substr == ""
+		if !visible {
+			// We're going to compare case-insensitively
+			substr := strings.ToLower(substr)
+
+			// Scan all known columns in the row
+			for _, id := range config.MpdTrackAttributeIds {
+				// Get column's value
+				v, err := model.GetValue(iter, id)
+				if errCheck(err, "queueFilter(): queueListStore.GetValue() failed") {
+					continue
+				}
+
+				// Convert the value into a string
+				s, _ := v.GetString() // Ignoring the returned error due to https://github.com/gotk3/gotk3/issues/583
+
+				// Check for a match and stop checking if match has already been found
+				visible = s != "" && strings.Contains(strings.ToLower(s), substr)
+				if visible {
+					break
+				}
+			}
+		}
+
+		// Modify the row's visibility
+		if err := w.queueListStore.SetValue(iter, config.QueueColumnVisible, visible); errCheck(err, "queueFilter(): queueListStore.SetValue() failed") {
+			return true
+		}
+		if visible {
+			count++
+		}
+
+		// Proceed to the next row
+		return false
+	})
+	if errCheck(err, "queueListStore.ForEach() failed") {
+		return
+	}
+
+	w.lblQueueFilter.SetText(fmt.Sprintf("%d tracks displayed", count))
+}
+
 // queueOne adds or replaces the content of the queue with one specified URI
 func (w *MainWindow) queueOne(replace bool, uri string) {
 	w.queue(replace, []string{uri})
@@ -912,7 +978,7 @@ func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
 // queueSave shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
 func (w *MainWindow) queueSave() {
 	// Tweak widgets
-	selection := len(w.getQueueSelectedIndices()) > 0
+	selection := w.getQueueHasSelection()
 	w.cbQueueSaveSelectedOnly.SetVisible(selection)
 	w.cbQueueSaveSelectedOnly.SetActive(selection)
 	w.eQueueSavePlaylistName.SetText("")
@@ -1057,7 +1123,7 @@ func (w *MainWindow) shortcutInfo() {
 
 // Show displays the window and all its child widgets
 func (w *MainWindow) Show() {
-	w.window.ShowAll()
+	w.window.Show()
 }
 
 // setLibraryPath sets the current library path selector and updates its widget and the current library list
@@ -1080,8 +1146,8 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 			}
 			errCheck(
 				w.queueListStore.SetCols(iter, map[int]interface{}{
-					queueColNumFontWeight: weight,
-					queueColNumBgColor:    bgColor,
+					config.QueueColumnFontWeight: weight,
+					config.QueueColumnBgColor:    bgColor,
 				}),
 				"lstQueue.SetValue() failed")
 		}
@@ -1449,8 +1515,9 @@ func (w *MainWindow) updateQueue() {
 			rowData[id] = value
 
 			// Add the "artificial" column values
-			rowData[queueColNumFontWeight] = fontWeightNormal
-			rowData[queueColNumBgColor] = colorBgNormal
+			rowData[config.QueueColumnFontWeight] = fontWeightNormal
+			rowData[config.QueueColumnBgColor] = colorBgNormal
+			rowData[config.QueueColumnVisible] = true
 		}
 
 		// Add a row to the list store
@@ -1465,7 +1532,7 @@ func (w *MainWindow) updateQueue() {
 
 	// Add number of tracks
 	var status string
-	switch len(attrs) {
+	switch w.currentQueueSize {
 	case 0:
 		status = "Queue is empty"
 	case 1:
@@ -1527,8 +1594,8 @@ func (w *MainWindow) updateQueueColumns() {
 		col.SetFixedWidth(width)
 		col.SetClickable(true)
 		col.SetResizable(true)
-		col.AddAttribute(renderer, "background", queueColNumBgColor)
-		col.AddAttribute(renderer, "weight", queueColNumFontWeight)
+		col.AddAttribute(renderer, "weight", config.QueueColumnFontWeight)
+		col.AddAttribute(renderer, "background", config.QueueColumnBgColor)
 
 		// Bind the clicked signal
 		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, index, &attr) })
@@ -1550,7 +1617,7 @@ func (w *MainWindow) updateQueueColumns() {
 func (w *MainWindow) updateQueueActions() {
 	connected := w.connector.IsConnected()
 	notEmpty := connected && w.currentQueueSize > 0
-	selection := notEmpty && len(w.getQueueSelectedIndices()) > 0
+	selection := notEmpty && w.getQueueHasSelection()
 	w.aQueueNowPlaying.SetEnabled(notEmpty)
 	w.aQueueClear.SetEnabled(notEmpty)
 	w.aQueueSort.SetEnabled(notEmpty)
@@ -1572,7 +1639,14 @@ func (w *MainWindow) updateQueueNowPlaying() {
 
 	// Scroll to the currently playing
 	if w.currentQueueIndex >= 0 {
-		if treePath, err := gtk.TreePathNewFromString(strconv.Itoa(w.currentQueueIndex)); err == nil {
+		// Obtain a path in the unfiltered list
+		treePath, err := gtk.TreePathNewFromIndicesv([]int{w.currentQueueIndex})
+		if errCheck(err, "updateQueueNowPlaying(): TreePathNewFromString() failed") {
+			return
+		}
+
+		// Convert the path into one in the filtered list
+		if treePath = w.queueListFilter.ConvertChildPathToPath(treePath); treePath != nil {
 			w.trvQueue.ScrollToCell(treePath, nil, true, 0.5, 0)
 		}
 	}

@@ -45,6 +45,65 @@
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="queueListStore">
+    <columns>
+      <!-- column-name Artist -->
+      <column type="gchararray"/>
+      <!-- column-name ArtistSort -->
+      <column type="gchararray"/>
+      <!-- column-name Album -->
+      <column type="gchararray"/>
+      <!-- column-name AlbumSort -->
+      <column type="gchararray"/>
+      <!-- column-name AlbumArtist -->
+      <column type="gchararray"/>
+      <!-- column-name AlbumArtistSort -->
+      <column type="gchararray"/>
+      <!-- column-name Disc -->
+      <column type="gchararray"/>
+      <!-- column-name Track -->
+      <column type="gchararray"/>
+      <!-- column-name Number -->
+      <column type="gchararray"/>
+      <!-- column-name Length -->
+      <column type="gchararray"/>
+      <!-- column-name Path -->
+      <column type="gchararray"/>
+      <!-- column-name Directory -->
+      <column type="gchararray"/>
+      <!-- column-name File -->
+      <column type="gchararray"/>
+      <!-- column-name Year -->
+      <column type="gchararray"/>
+      <!-- column-name Genre -->
+      <column type="gchararray"/>
+      <!-- column-name Name -->
+      <column type="gchararray"/>
+      <!-- column-name Composer -->
+      <column type="gchararray"/>
+      <!-- column-name Performer -->
+      <column type="gchararray"/>
+      <!-- column-name Conductor -->
+      <column type="gchararray"/>
+      <!-- column-name Work -->
+      <column type="gchararray"/>
+      <!-- column-name Grouping -->
+      <column type="gchararray"/>
+      <!-- column-name Comment -->
+      <column type="gchararray"/>
+      <!-- column-name Label -->
+      <column type="gchararray"/>
+      <!-- column-name FontWeight -->
+      <column type="guint"/>
+      <!-- column-name BgColor -->
+      <column type="gchararray"/>
+      <!-- column-name Visible -->
+      <column type="gboolean"/>
+    </columns>
+  </object>
+  <object class="GtkTreeModelFilter" id="queueListFilter">
+    <property name="child_model">queueListStore</property>
+  </object>
   <object class="GtkApplicationWindow" id="mainWindow">
     <property name="width_request">600</property>
     <property name="height_request">300</property>
@@ -122,6 +181,7 @@
                         <property name="action_name">app.queue.now-playing</property>
                         <property name="label" translatable="yes">Now playing</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">multimedia-volume-control</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -136,6 +196,7 @@
                         <property name="action_name">app.queue.clear</property>
                         <property name="label" translatable="yes">Clear</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">dialog-close</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -151,6 +212,7 @@
                         <property name="action_name">app.queue.sort</property>
                         <property name="label" translatable="yes">Sort ▾</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">view-sort-descending</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -165,6 +227,7 @@
                         <property name="action_name">app.queue.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">edit-delete</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -180,6 +243,21 @@
                         <property name="action_name">app.queue.save</property>
                         <property name="label" translatable="yes">Save ▾</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">document-save</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleToolButton" id="btnQueueFilter">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Filter the play queue</property>
+                        <property name="label" translatable="yes">Search</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">edit-find</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -194,18 +272,45 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSearchBar" id="queueSearchBar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="show_close_button">True</property>
+                    <signal name="notify::search-mode-enabled" handler="on_queueSearchBar_searchMode" swapped="no"/>
+                    <child>
+                      <object class="GtkSearchEntry" id="queueSearchEntry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="width_chars">50</property>
+                        <property name="primary_icon_name">edit-find-symbolic</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">False</property>
+                        <property name="placeholder_text" translatable="yes">Filter…</property>
+                        <signal name="search-changed" handler="on_queueSearchEntry_searchChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkScrolledWindow" id="swQueue">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="shadow_type">etched-out</property>
                     <child>
                       <object class="GtkTreeView" id="trvQueue">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
+                        <property name="model">queueListFilter</property>
+                        <property name="enable_search">False</property>
                         <property name="fixed_height_mode">True</property>
                         <property name="rubber_banding">True</property>
                         <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
@@ -222,24 +327,52 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="lblQueueInfo">
+                  <object class="GtkBox" id="bxQueueInfo">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">False</property>
-                    <property name="label" translatable="yes">...</property>
-                    <property name="ellipsize">end</property>
-                    <property name="track_visited_links">False</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="lblQueueInfo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="label" translatable="yes">…</property>
+                        <property name="ellipsize">end</property>
+                        <property name="track_visited_links">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="lblQueueFilter">
+                        <property name="can_focus">False</property>
+                        <property name="margin_right">6</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="label" translatable="yes">…</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <style>
+                      <class name="inline-toolbar"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="padding">6</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -341,19 +474,33 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="lblLibraryInfo">
+                  <object class="GtkBox" id="bxLibraryInfo">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">False</property>
-                    <property name="label" translatable="yes">...</property>
-                    <property name="ellipsize">end</property>
-                    <property name="track_visited_links">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel" id="lblLibraryInfo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="label" translatable="yes">...</property>
+                        <property name="ellipsize">end</property>
+                        <property name="track_visited_links">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <style>
+                      <class name="inline-toolbar"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="padding">6</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -440,19 +587,33 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="lblPlaylistsInfo">
+                  <object class="GtkBox" id="bxPlaylistsInfo">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">False</property>
-                    <property name="label" translatable="yes">...</property>
-                    <property name="ellipsize">end</property>
-                    <property name="track_visited_links">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel" id="lblPlaylistsInfo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="label" translatable="yes">...</property>
+                        <property name="ellipsize">end</property>
+                        <property name="track_visited_links">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <style>
+                      <class name="inline-toolbar"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="padding">6</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -471,17 +632,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSeparator" id="sepPlayerBottom">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="lblStatus">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -494,7 +644,7 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="padding">6</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -676,7 +826,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
