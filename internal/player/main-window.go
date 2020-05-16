@@ -75,11 +75,16 @@ type MainWindow struct {
 	eQueueSavePlaylistName   *gtk.Entry
 	cbQueueSaveSelectedOnly  *gtk.CheckButton
 	// Library widgets
-	pmnLibraryUpdate *gtk.PopoverMenu
-	bxLibrary        *gtk.Box
-	bxLibraryPath    *gtk.Box
-	lbxLibrary       *gtk.ListBox
-	lblLibraryInfo   *gtk.Label
+	pmnLibraryUpdate     *gtk.PopoverMenu
+	bxLibrary            *gtk.Box
+	bxLibraryPath        *gtk.Box
+	bxLibrarySearch      *gtk.Box
+	btnLibrarySearch     *gtk.ToggleToolButton
+	libraryToolStack     *gtk.Stack
+	librarySearchEntry   *gtk.SearchEntry
+	cbxLibrarySearchAttr *gtk.ComboBoxText
+	lbxLibrary           *gtk.ListBox
+	lblLibraryInfo       *gtk.Label
 	// Playlists widgets
 	bxPlaylists      *gtk.Box
 	lbxPlaylists     *gtk.ListBox
@@ -130,6 +135,7 @@ const (
 	colorBgActive    = "#ffffe0"
 
 	queueSaveNewPlaylistID = "\u0001new"
+	librarySearchAllAttrID = "\u0001any"
 )
 
 // NewMainWindow creates and returns a new MainWindow instance
@@ -171,11 +177,16 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		eQueueSavePlaylistName:   builder.getEntry("eQueueSavePlaylistName"),
 		cbQueueSaveSelectedOnly:  builder.getCheckButton("cbQueueSaveSelectedOnly"),
 		// Library
-		pmnLibraryUpdate: builder.getPopoverMenu("pmnLibraryUpdate"),
-		bxLibrary:        builder.getBox("bxLibrary"),
-		bxLibraryPath:    builder.getBox("bxLibraryPath"),
-		lbxLibrary:       builder.getListBox("lbxLibrary"),
-		lblLibraryInfo:   builder.getLabel("lblLibraryInfo"),
+		pmnLibraryUpdate:     builder.getPopoverMenu("pmnLibraryUpdate"),
+		bxLibrary:            builder.getBox("bxLibrary"),
+		bxLibraryPath:        builder.getBox("bxLibraryPath"),
+		bxLibrarySearch:      builder.getBox("bxLibrarySearch"),
+		btnLibrarySearch:     builder.getToggleToolButton("btnLibrarySearch"),
+		libraryToolStack:     builder.getStack("libraryToolStack"),
+		librarySearchEntry:   builder.getSearchEntry("librarySearchEntry"),
+		cbxLibrarySearchAttr: builder.getComboBoxText("cbxLibrarySearchAttr"),
+		lbxLibrary:           builder.getListBox("lbxLibrary"),
+		lblLibraryInfo:       builder.getLabel("lblLibraryInfo"),
 		// Playlists
 		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
@@ -187,6 +198,9 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 
 	// Initialise player title template
 	w.updatePlayerTitleTemplate()
+
+	// Initialise widgets and actions
+	w.initWidgets()
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
@@ -200,6 +214,8 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_lbxLibrary_buttonPress":         w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":            w.onLibraryListBoxKeyPress,
 		"on_lbxLibrary_selectionChange":     w.updateLibraryActions,
+		"on_librarySearchChanged":           w.updateLibrary,
+		"on_librarySearchStop":              w.onLibraryStopSearch,
 		"on_lbxPlaylists_buttonPress":       w.onPlaylistListBoxButtonPress,
 		"on_lbxPlaylists_keyPress":          w.onPlaylistListBoxKeyPress,
 		"on_lbxPlaylists_selectionChange":   w.updatePlaylistsActions,
@@ -212,13 +228,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_miQueueClear_activate":      w.queueClear,
 		"on_miQueueDelete_activate":     w.queueDelete,
 	})
-
-	// Configure search bar
-	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.btnQueueFilter.Object, "active", glib.BINDING_BIDIRECTIONAL)
-	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.lblQueueFilter.Object, "visible", glib.BINDING_DEFAULT)
-
-	// Forcefully disable tree search popup on Ctrl+F
-	w.trvQueue.SetSearchColumn(-1)
 
 	// Register the main window with the app
 	application.AddWindow(w.window)
@@ -249,7 +258,7 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
 	switch subsystem {
 	case "database", "update":
-		util.WhenIdle("updateLibrary()", w.updateLibrary, 0)
+		util.WhenIdle("updateLibrary()", w.updateLibrary)
 	case "options":
 		util.WhenIdle("updateOptions()", w.updateOptions)
 	case "player":
@@ -266,60 +275,12 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
-	cfg := config.GetConfig()
 
-	// Create actions
-	// Application
-	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
-	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
-	w.addAction("prefs", "<Ctrl>comma", w.preferences)
-	w.addAction("about", "F1", w.about)
-	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
-	w.addAction("quit", "<Ctrl>Q", w.window.Close)
-	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
-	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
-	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
-	// Queue
-	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
-	w.aQueueClear = w.addAction("queue.clear", "", w.queueClear)
-	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
-	w.aQueueSortAsc = w.addAction("queue.sort.asc", "", func() { w.queueSortApply(false) })
-	w.aQueueSortDesc = w.addAction("queue.sort.desc", "", func() { w.queueSortApply(true) })
-	w.aQueueSortShuffle = w.addAction("queue.sort.shuffle", "", w.queueShuffle)
-	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
-	w.aQueueSave = w.addAction("queue.save", "", w.queueSave)
-	w.aQueueSaveReplace = w.addAction("queue.save.replace", "", func() { w.queueSaveApply(true) })
-	w.aQueueSaveAppend = w.addAction("queue.save.append", "", func() { w.queueSaveApply(false) })
-	// Library
-	w.aLibraryUpdate = w.addAction("library.update", "", w.pmnLibraryUpdate.Popup)
-	w.aLibraryUpdateAll = w.addAction("library.update.all", "", func() { w.libraryUpdate(false, false) })
-	w.aLibraryUpdateSel = w.addAction("library.update.selected", "", func() { w.libraryUpdate(false, true) })
-	w.aLibraryRescanAll = w.addAction("library.rescan.all", "", func() { w.libraryUpdate(true, false) })
-	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
-	// Playlist
-	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
-	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
-	// Player
-	w.aPlayerPrevious = w.addAction("player.previous", "<Ctrl>Left", w.playerPrevious)
-	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.playerStop)
-	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.playerPlayPause)
-	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.playerNext)
-	// TODO convert to stateful actions once Gotk3 supporting GVariant is released
-	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
-	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
-	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
-
-	// Populate Queue sort by combo box
-	for _, id := range config.MpdTrackAttributeIds {
-		w.cbxQueueSortBy.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
-	}
-	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(cfg.DefaultSortAttrID))
-
-	// Update Queue tree view columns
-	w.updateQueueColumns()
+	// Activate the Queue page
+	w.focusMainList(w.bxQueue)
 
 	// Start connecting if needed
-	if cfg.MpdAutoConnect {
+	if config.GetConfig().MpdAutoConnect {
 		w.connect()
 	}
 }
@@ -340,6 +301,84 @@ func (w *MainWindow) onDelete() {
 	cfg.Save()
 }
 
+func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
+	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
+		// Double click in the list box
+		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
+	}
+}
+
+func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
+	evt := gdk.EventKeyNewFromEvent(event)
+	state := gdk.ModifierType(evt.State()) & gtk.AcceleratorGetDefaultModMask()
+	switch evt.KeyVal() {
+	// Enter: we need to go deeper
+	case gdk.KEY_Return:
+		switch state {
+		// Enter: use default mode
+		case 0:
+			w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
+		// Ctrl+Enter: replace
+		case gdk.GDK_CONTROL_MASK:
+			w.applyLibrarySelection(true)
+		// Shift+Enter: append
+		case gdk.GDK_SHIFT_MASK:
+			w.applyLibrarySelection(false)
+		}
+
+	// Backspace: go level up (not in search mode)
+	case gdk.KEY_BackSpace:
+		if state == 0 && !w.btnLibrarySearch.GetActive() {
+			idx := strings.LastIndexByte(w.currentLibPath, '/')
+			if idx < 0 {
+				w.setLibraryPath("")
+			} else {
+				w.setLibraryPath(w.currentLibPath[:idx])
+			}
+		}
+
+	// Escape: deactivate search mode
+	case gdk.KEY_Escape:
+		if state == 0 {
+			w.onLibraryStopSearch()
+		}
+
+	// Ctrl+F: activate search mode
+	case gdk.KEY_f:
+		if state == gdk.GDK_CONTROL_MASK {
+			w.btnLibrarySearch.SetActive(true)
+		}
+	}
+}
+
+// onLibrarySearchToggle activates or deactivates library search mode
+func (w *MainWindow) onLibrarySearchToggle() {
+	searchMode := w.btnLibrarySearch.GetActive()
+
+	// Show the appropriate tool stack's page
+	if searchMode {
+		w.libraryToolStack.SetVisibleChild(w.bxLibrarySearch)
+		// Clear and shift focus to the search entry
+		w.librarySearchEntry.SetText("")
+		w.librarySearchEntry.GrabFocus()
+	} else {
+		w.libraryToolStack.SetVisibleChild(w.bxLibraryPath)
+	}
+
+	// Run search or load library
+	w.updateLibrary()
+
+	// If search mode finished, move focus to the library list
+	if !searchMode {
+		w.focusMainList(nil)
+	}
+}
+
+// onLibraryStopSearch deactivates library search mode
+func (w *MainWindow) onLibraryStopSearch() {
+	w.btnLibrarySearch.SetActive(false)
+}
+
 func (w *MainWindow) onPlaylistDelete() {
 	var err error
 	if name := w.getSelectedPlaylistName(); name != "" {
@@ -354,6 +393,33 @@ func (w *MainWindow) onPlaylistDelete() {
 	w.errCheckDialog(err, "Failed to delete the playlist")
 }
 
+func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
+	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
+		// Double click in the list box
+		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
+	}
+}
+
+func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
+	evt := gdk.EventKeyNewFromEvent(event)
+	state := gdk.ModifierType(evt.State()) & gtk.AcceleratorGetDefaultModMask()
+	switch evt.KeyVal() {
+	// Enter: apply selection
+	case gdk.KEY_Return:
+		switch state {
+		// Enter: use default mode
+		case 0:
+			w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
+		// Ctrl+Enter: replace
+		case gdk.GDK_CONTROL_MASK:
+			w.applyPlaylistSelection(true)
+		// Shift+Enter: append
+		case gdk.GDK_SHIFT_MASK:
+			w.applyPlaylistSelection(false)
+		}
+	}
+}
+
 func (w *MainWindow) onPlaylistRename() {
 	var err error
 	if name := w.getSelectedPlaylistName(); name != "" {
@@ -366,6 +432,33 @@ func (w *MainWindow) onPlaylistRename() {
 
 	// Check for error (outside IfConnected() because it would keep the client locked)
 	w.errCheckDialog(err, "Failed to rename the playlist")
+}
+
+func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
+	switch gdk.EventButtonNewFromEvent(event).Type() {
+	case gdk.EVENT_BUTTON_PRESS:
+		w.playPosUpdating = true
+
+	case gdk.EVENT_BUTTON_RELEASE:
+		w.playPosUpdating = false
+		w.connector.IfConnected(func(client *mpd.Client) {
+			d := time.Duration(w.adjPlayPosition.GetValue())
+			errCheck(client.SeekCur(d*time.Second, false), "SeekCur() failed")
+		})
+	}
+}
+
+func (w *MainWindow) onQueueSavePopoverValidate() {
+	// Only show new playlist widgets if (new playlist) is selected in the combo box
+	selectedID := w.cbxQueueSavePlaylist.GetActiveID()
+	isNew := selectedID == queueSaveNewPlaylistID
+	w.lblQueueSavePlaylistName.SetVisible(isNew)
+	w.eQueueSavePlaylistName.SetVisible(isNew)
+
+	// Validate the actions
+	valid := (!isNew && selectedID != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
+	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
+	w.aQueueSaveAppend.SetEnabled(valid)
 }
 
 func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index int, attr *config.MpdTrackAttribute) {
@@ -412,22 +505,21 @@ func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Even
 
 func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) {
 	evt := gdk.EventKeyNewFromEvent(event)
-	mask := gtk.AcceleratorGetDefaultModMask()
-	state := gdk.ModifierType(evt.State())
+	state := gdk.ModifierType(evt.State()) & gtk.AcceleratorGetDefaultModMask()
 	switch evt.KeyVal() {
 	// Enter: apply current selection
 	case gdk.KEY_Return:
-		if state&mask == 0 {
+		if state == 0 {
 			w.applyQueueSelection()
 		}
 	// Esc: exit filtering mode if it's active
 	case gdk.KEY_Escape:
-		if state&mask == 0 {
+		if state == 0 {
 			w.queueSearchBar.SetSearchMode(false)
 		}
 	// Delete
 	case gdk.KEY_Delete:
-		switch state & mask {
+		switch state {
 		// Delete: delete selection
 		case 0:
 			w.queueDelete()
@@ -437,81 +529,15 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 		}
 	// Space
 	case gdk.KEY_space:
-		if state&mask == 0 {
+		if state == 0 {
 			w.playerPlayPause()
 		}
 	// Ctrl+F: activate search bar
 	case gdk.KEY_f:
-		if state&mask == gdk.GDK_CONTROL_MASK {
+		if state == gdk.GDK_CONTROL_MASK {
 			w.queueSearchBar.SetSearchMode(true)
 		}
 	}
-}
-
-func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the list box
-		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
-	}
-}
-
-func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
-	ek := gdk.EventKeyNewFromEvent(event)
-	switch ek.KeyVal() {
-	// Enter: we need to go deeper
-	case gdk.KEY_Return:
-		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
-
-	// Backspace: go level up
-	case gdk.KEY_BackSpace:
-		idx := strings.LastIndexByte(w.currentLibPath, '/')
-		if idx < 0 {
-			w.setLibraryPath("")
-		} else {
-			w.setLibraryPath(w.currentLibPath[:idx])
-		}
-	}
-}
-
-func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the list box
-		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
-	}
-}
-
-func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
-	ek := gdk.EventKeyNewFromEvent(event)
-	if ek.KeyVal() == gdk.KEY_Return {
-		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
-	}
-}
-
-func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
-	switch gdk.EventButtonNewFromEvent(event).Type() {
-	case gdk.EVENT_BUTTON_PRESS:
-		w.playPosUpdating = true
-
-	case gdk.EVENT_BUTTON_RELEASE:
-		w.playPosUpdating = false
-		w.connector.IfConnected(func(client *mpd.Client) {
-			d := time.Duration(w.adjPlayPosition.GetValue())
-			errCheck(client.SeekCur(d*time.Second, false), "SeekCur() failed")
-		})
-	}
-}
-
-func (w *MainWindow) onQueueSavePopoverValidate() {
-	// Only show new playlist widgets if (new playlist) is selected in the combo box
-	selectedID := w.cbxQueueSavePlaylist.GetActiveID()
-	isNew := selectedID == queueSaveNewPlaylistID
-	w.lblQueueSavePlaylistName.SetVisible(isNew)
-	w.eQueueSavePlaylistName.SetVisible(isNew)
-
-	// Validate the actions
-	valid := (!isNew && selectedID != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
-	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
-	w.aQueueSaveAppend.SetEnabled(valid)
 }
 
 // about shows the application's about dialog
@@ -615,6 +641,33 @@ func (w *MainWindow) errCheckDialog(err error, message string) bool {
 	return false
 }
 
+// focusMainList optionally switches the main stack to the given widget and transfers the focus to the main list on the
+// currently visible page
+func (w *MainWindow) focusMainList(widget gtk.IWidget) {
+	// Switch the visible page, if needed
+	if widget != nil {
+		w.mainStack.SetVisibleChild(widget)
+	}
+
+	// Sort the focus
+	switch w.mainStack.GetVisibleChildName() {
+	case "queue":
+		w.trvQueue.GrabFocus()
+
+	// Library: move focus to the selected row, if any
+	case "library":
+		if row := w.lbxLibrary.GetSelectedRow(); row != nil {
+			row.GrabFocus()
+		}
+
+	// Playlists: move focus to the selected row, if any
+	case "playlists":
+		if row := w.lbxPlaylists.GetSelectedRow(); row != nil {
+			row.GrabFocus()
+		}
+	}
+}
+
 // getQueueSaveNewPlaylistName returns the text entered in the New playlist name entry, or an empty string if there's an error
 func (w *MainWindow) getQueueSaveNewPlaylistName() string {
 	s, err := w.eQueueSavePlaylistName.GetText()
@@ -697,6 +750,98 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 		return ""
 	}
 	return name
+}
+
+// initLibraryWidgets initialises library widgets and actions
+func (w *MainWindow) initLibraryWidgets() {
+	// Create actions
+	w.aLibraryUpdate = w.addAction("library.update", "", w.pmnLibraryUpdate.Popup)
+	w.aLibraryUpdateAll = w.addAction("library.update.all", "", func() { w.libraryUpdate(false, false) })
+	w.aLibraryUpdateSel = w.addAction("library.update.selected", "", func() { w.libraryUpdate(false, true) })
+	w.aLibraryRescanAll = w.addAction("library.rescan.all", "", func() { w.libraryUpdate(true, false) })
+	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
+	w.addAction("library.search.toggle", "", w.onLibrarySearchToggle)
+
+	// Populate search attribute combo box
+	w.cbxLibrarySearchAttr.Append(librarySearchAllAttrID, "Everywhere")
+	for _, id := range config.MpdTrackAttributeIds {
+		if config.MpdTrackAttributes[id].Searchable {
+			w.cbxLibrarySearchAttr.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
+		}
+	}
+	w.cbxLibrarySearchAttr.SetActiveID(librarySearchAllAttrID)
+
+}
+
+// initPlayerWidgets initialises player widgets and actions
+func (w *MainWindow) initPlayerWidgets() {
+	// Create actions
+	w.aPlayerPrevious = w.addAction("player.previous", "<Ctrl>Left", w.playerPrevious)
+	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.playerStop)
+	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.playerPlayPause)
+	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.playerNext)
+	// TODO convert to stateful actions once Gotk3 supporting GVariant is released
+	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
+	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
+	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
+}
+
+// initPlaylistsWidgets initialises playlists widgets and actions
+func (w *MainWindow) initPlaylistsWidgets() {
+	// Create actions
+	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
+	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
+}
+
+// initQueueWidgets initialises queue widgets and actions
+func (w *MainWindow) initQueueWidgets() {
+	// Configure the search bar
+	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.btnQueueFilter.Object, "active", glib.BINDING_BIDIRECTIONAL)
+	glib.BindProperty(w.queueSearchBar.Object, "search-mode-enabled", w.lblQueueFilter.Object, "visible", glib.BINDING_DEFAULT)
+
+	// Forcefully disable tree search popup on Ctrl+F
+	w.trvQueue.SetSearchColumn(-1)
+
+	// Create actions
+	w.aQueueNowPlaying = w.addAction("queue.now-playing", "<Ctrl>J", w.updateQueueNowPlaying)
+	w.aQueueClear = w.addAction("queue.clear", "", w.queueClear)
+	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
+	w.aQueueSortAsc = w.addAction("queue.sort.asc", "", func() { w.queueSortApply(false) })
+	w.aQueueSortDesc = w.addAction("queue.sort.desc", "", func() { w.queueSortApply(true) })
+	w.aQueueSortShuffle = w.addAction("queue.sort.shuffle", "", w.queueShuffle)
+	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
+	w.aQueueSave = w.addAction("queue.save", "", w.queueSave)
+	w.aQueueSaveReplace = w.addAction("queue.save.replace", "", func() { w.queueSaveApply(true) })
+	w.aQueueSaveAppend = w.addAction("queue.save.append", "", func() { w.queueSaveApply(false) })
+
+	// Populate "Queue sort by" combo box
+	for _, id := range config.MpdTrackAttributeIds {
+		w.cbxQueueSortBy.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
+	}
+	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(config.GetConfig().DefaultSortAttrID))
+
+	// Update Queue tree view columns
+	w.updateQueueColumns()
+}
+
+// initWidgets initialises all widgets and actions
+func (w *MainWindow) initWidgets() {
+	// Create global actions
+	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
+	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
+	w.addAction("prefs", "<Ctrl>comma", w.preferences)
+	w.addAction("about", "F1", w.about)
+	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
+	w.addAction("quit", "<Ctrl>Q", w.window.Close)
+	w.addAction("page.queue", "<Ctrl>1", func() { w.focusMainList(w.bxQueue) })
+	w.addAction("page.library", "<Ctrl>2", func() { w.focusMainList(w.bxLibrary) })
+	w.addAction("page.playlists", "<Ctrl>3", func() { w.focusMainList(w.bxPlaylists) })
+
+	// Init other widgets and actions
+	w.initQueueWidgets()
+	w.initLibraryWidgets()
+	w.initPlaylistsWidgets()
+	w.initPlayerWidgets()
 }
 
 // libraryUpdate updates or rescans the library
@@ -890,7 +1035,6 @@ func (w *MainWindow) queueDelete() {
 
 // queueFilter applies the currently entered filter substring to the queue
 func (w *MainWindow) queueFilter() {
-	log.Debug("queueFilter()")
 	substr := ""
 
 	// Only use filter pattern if the search bar is visible
@@ -1130,8 +1274,8 @@ func (w *MainWindow) Show() {
 func (w *MainWindow) setLibraryPath(path string) {
 	w.currentLibPath = path
 	w.updateLibraryPath()
-	w.updateLibrary(0)
-	w.lbxLibrary.GrabFocus()
+	w.updateLibrary()
+	w.focusMainList(nil)
 }
 
 // setQueueHighlight selects or deselects an item in the Queue tree view at the given index
@@ -1158,7 +1302,7 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 func (w *MainWindow) updateAll() {
 	w.updateQueue()
 	w.updateLibraryPath()
-	w.updateLibrary(0)
+	w.updateLibrary()
 	w.updateLibraryActions()
 	w.updatePlaylists()
 	w.updatePlaylistsActions()
@@ -1167,26 +1311,55 @@ func (w *MainWindow) updateAll() {
 }
 
 // updateLibrary updates the current library list contents
-func (w *MainWindow) updateLibrary(indexToSelect int) {
+func (w *MainWindow) updateLibrary() {
 	// Clear the library list
 	util.ClearChildren(w.lbxLibrary.Container)
 
-	// Update the library list if there's a connection
 	var attrs []mpd.Attrs
 	var err error
-	w.connector.IfConnected(func(client *mpd.Client) {
-		attrs, err = client.ListInfo(w.currentLibPath)
-	})
-	if errCheck(err, "ListInfo() failed") {
-		return
+	pattern := ""
+	maxResultRows := -1
+	// pathPrefix will need to be removed from element names
+	pathPrefix := ""
+
+	// If search mode activated
+	if w.btnLibrarySearch.GetActive() {
+		var err error
+		if pattern, err = w.librarySearchEntry.GetText(); errCheck(err, "librarySearchEntry.GetText() failed") {
+			return
+		}
 	}
 
-	// pathPrefix will need to be removed from element names
-	pathPrefix := w.currentLibPath + "/"
+	// No pattern means browse mode: load the library list for the current path if there's a connection
+	if pattern == "" {
+		w.connector.IfConnected(func(client *mpd.Client) {
+			attrs, err = client.ListInfo(w.currentLibPath)
+		})
+		if errCheck(err, "updateLibrary(): ListInfo() failed") {
+			return
+		}
+		pathPrefix = w.currentLibPath + "/"
+
+	} else {
+		// Search mode. Fetch selected attribute
+		attrName := "any"
+		if attr, ok := config.MpdTrackAttributes[util.AtoiDef(w.cbxLibrarySearchAttr.GetActiveID(), -1)]; ok {
+			attrName = attr.AttrName
+		}
+
+		// Run search
+		w.connector.IfConnected(func(client *mpd.Client) {
+			attrs, err = client.Search(fmt.Sprintf("(%s contains \"%s\")", attrName, pattern))
+		})
+		if errCheck(err, "updateLibrary(): Search() failed") {
+			return
+		}
+		maxResultRows = config.GetConfig().MaxSearchResults
+	}
 
 	// Repopulate the library list
 	var rowToSelect *gtk.ListBoxRow
-	idxRow, countDirs, countFiles := 0, 0, 0
+	idxRow, countDirs, countFiles, limited := 0, 0, 0, false
 	for _, a := range attrs {
 		// Pick files and directories only
 		uri, iconName, prefix := "", "", ""
@@ -1218,7 +1391,9 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
-		if indexToSelect == idxRow {
+
+		// First row will be selected
+		if rowToSelect == nil {
 			rowToSelect = row
 		}
 
@@ -1231,6 +1406,11 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 			hbx.PackEnd(lbl, false, false, 0)
 		}
 		idxRow++
+
+		if maxResultRows >= 0 && idxRow >= maxResultRows {
+			limited = true
+			break
+		}
 	}
 
 	// Show all rows
@@ -1242,15 +1422,24 @@ func (w *MainWindow) updateLibrary(indexToSelect int) {
 	}
 
 	// Compose info
-	info := "No folders"
-	if countDirs > 0 {
-		info = fmt.Sprintf("%d folders", countDirs)
-	}
-	if countFiles > 0 {
-		info += fmt.Sprintf(", %d files", countFiles)
+	info := ""
+	if countDirs+countFiles == 0 {
+		info = "No items"
 	} else {
-		info += ", no files"
+		if countDirs > 0 {
+			info += fmt.Sprintf("%d folders", countDirs)
+		}
+		if countFiles > 0 {
+			if info != "" {
+				info += " and "
+			}
+			info += fmt.Sprintf("%d files", countFiles)
+		}
+		if limited {
+			info += fmt.Sprintf(" (limited selection of %d items)", len(attrs))
+		}
 	}
+
 	if _, ok := w.connector.Status()["updating_db"]; ok {
 		info += " — updating database…"
 	}

@@ -408,6 +408,21 @@
                             <property name="homogeneous">True</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkToggleToolButton" id="btnLibrarySearch">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Search the library</property>
+                            <property name="action_name">app.library.search.toggle</property>
+                            <property name="label" translatable="yes">Search</property>
+                            <property name="use_underline">True</property>
+                            <property name="icon_name">edit-find</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -416,22 +431,75 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="bxLibraryPath">
+                      <object class="GtkStack" id="libraryToolStack">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="margin_left">6</property>
-                        <property name="margin_right">6</property>
-                        <property name="margin_top">6</property>
-                        <property name="margin_bottom">6</property>
+                        <property name="transition_type">slide-up-down</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkBox" id="bxLibraryPath">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="border_width">6</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <style>
+                              <class name="linked"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="name">page1</property>
+                            <property name="title" translatable="yes">page1</property>
+                          </packing>
                         </child>
-                        <style>
-                          <class name="linked"/>
-                        </style>
+                        <child>
+                          <object class="GtkBox" id="bxLibrarySearch">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="border_width">6</property>
+                            <property name="spacing">6</property>
+                            <child>
+                              <object class="GtkSearchEntry" id="librarySearchEntry">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="width_chars">40</property>
+                                <property name="primary_icon_name">edit-find-symbolic</property>
+                                <property name="primary_icon_activatable">False</property>
+                                <property name="primary_icon_sensitive">False</property>
+                                <property name="placeholder_text" translatable="yes">Search…</property>
+                                <signal name="search-changed" handler="on_librarySearchChanged" swapped="no"/>
+                                <signal name="stop-search" handler="on_librarySearchStop" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="cbxLibrarySearchAttr">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Track attribute(s) to search</property>
+                                <signal name="changed" handler="on_librarySearchChanged" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="name">page0</property>
+                            <property name="title" translatable="yes">page0</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
@@ -442,6 +510,9 @@
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="swLibrary">
@@ -470,7 +541,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -501,7 +572,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>

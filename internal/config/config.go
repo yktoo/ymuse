@@ -78,7 +78,9 @@ type Config struct {
 	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
 	PlayerTitleTemplate    string        // Track's title formatting template for the player
-	MainWindowDimensions   Dimensions    // Main window dimensions
+	MaxSearchResults       int           // Maximum number of displayed search results
+
+	MainWindowDimensions Dimensions // Main window dimensions
 }
 
 // Config singleton with all the defaults
@@ -112,6 +114,7 @@ from <b>{{ .file | dirname }}</b>
 {{- else -}}
 <i>(no track)</i>
 {{- end -}}`,
+	MaxSearchResults:     500,
 	MainWindowDimensions: Dimensions{-1, -1, -1, -1},
 }
 var once sync.Once
