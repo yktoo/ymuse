@@ -1769,6 +1769,7 @@ func (w *MainWindow) updateQueueColumns() {
 		if errCheck(err, "CellRendererTextNew() failed") {
 			continue
 		}
+		errCheck(renderer.SetProperty("xalign", attr.XAlign), "renderer.SetProperty(xalign) failed")
 
 		// Add a new tree column
 		col, err := gtk.TreeViewColumnNewWithAttribute(attr.Name, renderer, "text", colSpec.ID)
