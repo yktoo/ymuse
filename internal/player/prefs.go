@@ -144,8 +144,8 @@ func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
 	row.Add(hbx)
 
 	// Add a checkbox
-	cb, err := gtk.CheckButtonNewWithLabel(config.MpdTrackAttributes[attrID].LongName)
-	if errCheck(err, "CheckButtonNewWithLabel() failed") {
+	cb, err := gtk.CheckButtonNew()
+	if errCheck(err, "CheckButtonNew() failed") {
 		return
 	}
 	cb.SetActive(selected)
@@ -154,6 +154,14 @@ func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
 		return
 	}
 	hbx.PackStart(cb, false, false, 0)
+
+	// Add a label
+	lbl, err := gtk.LabelNew(config.MpdTrackAttributes[attrID].LongName)
+	if errCheck(err, "LabelNew() failed") {
+		return
+	}
+	lbl.SetXAlign(0)
+	hbx.PackStart(lbl, true, true, 0)
 }
 
 // columnCheckboxToggled is a handler of the toggled signal for queue column checkboxes

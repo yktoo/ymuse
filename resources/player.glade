@@ -911,10 +911,7 @@
       <object class="GtkBox" id="bxAppMenu">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">12</property>
-        <property name="margin_right">12</property>
-        <property name="margin_top">12</property>
-        <property name="margin_bottom">12</property>
+        <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkModelButton" id="mbtnMpdConnect">
@@ -1036,10 +1033,7 @@
       <object class="GtkBox" id="bxLibraryUpdate">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">12</property>
-        <property name="margin_right">12</property>
-        <property name="margin_top">12</property>
-        <property name="margin_bottom">12</property>
+        <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkModelButton" id="mbtnLibraryUpdateAll">
@@ -1115,15 +1109,13 @@
       <object class="GtkBox" id="bxQueueSave">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="border_width">12</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
         <child>
           <object class="GtkGrid" id="gQueueSave">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">12</property>
-            <property name="margin_right">12</property>
-            <property name="margin_top">12</property>
-            <property name="margin_bottom">12</property>
             <property name="hexpand">True</property>
             <property name="row_spacing">6</property>
             <property name="column_spacing">6</property>
@@ -1256,10 +1248,7 @@
       <object class="GtkBox" id="bxQueueSort">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">12</property>
-        <property name="margin_right">12</property>
-        <property name="margin_top">12</property>
-        <property name="margin_bottom">12</property>
+        <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
