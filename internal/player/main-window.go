@@ -206,10 +206,11 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	builder.ConnectSignals(map[string]interface{}{
 		"on_mainWindow_delete":              w.onDelete,
 		"on_mainWindow_map":                 w.onMap,
+		"on_mainStack_switched":             w.focusMainList,
 		"on_trvQueue_buttonPress":           w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":              w.onQueueTreeViewKeyPress,
 		"on_tselQueue_changed":              w.updateQueueActions,
-		"on_queueSearchBar_searchMode":      w.queueFilter,
+		"on_queueSearchBar_searchMode":      w.onQueueSearchMode,
 		"on_queueSearchEntry_searchChanged": w.queueFilter,
 		"on_lbxLibrary_buttonPress":         w.onLibraryListBoxButtonPress,
 		"on_lbxLibrary_keyPress":            w.onLibraryListBoxKeyPress,
@@ -276,8 +277,8 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
 
-	// Activate the Queue page
-	w.focusMainList(w.bxQueue)
+	// Activate the Queue tree view
+	w.focusMainList()
 
 	// Start connecting if needed
 	if config.GetConfig().MpdAutoConnect {
@@ -370,7 +371,7 @@ func (w *MainWindow) onLibrarySearchToggle() {
 
 	// If search mode finished, move focus to the library list
 	if !searchMode {
-		w.focusMainList(nil)
+		w.focusMainList()
 	}
 }
 
@@ -459,6 +460,15 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 	valid := (!isNew && selectedID != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
 	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
 	w.aQueueSaveAppend.SetEnabled(valid)
+}
+
+func (w *MainWindow) onQueueSearchMode() {
+	w.queueFilter()
+
+	// Return focus to the queue on deactivating search
+	if !w.queueSearchBar.GetSearchMode() {
+		w.focusMainList()
+	}
 }
 
 func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index int, attr *config.MpdTrackAttribute) {
@@ -641,30 +651,33 @@ func (w *MainWindow) errCheckDialog(err error, message string) bool {
 	return false
 }
 
-// focusMainList optionally switches the main stack to the given widget and transfers the focus to the main list on the
-// currently visible page
-func (w *MainWindow) focusMainList(widget gtk.IWidget) {
-	// Switch the visible page, if needed
-	if widget != nil {
-		w.mainStack.SetVisibleChild(widget)
-	}
-
-	// Sort the focus
+// focusMainList transfers the focus to the main list on the currently visible page
+func (w *MainWindow) focusMainList() {
+	var widget *gtk.Widget
 	switch w.mainStack.GetVisibleChildName() {
 	case "queue":
-		w.trvQueue.GrabFocus()
+		widget = &w.trvQueue.Widget
 
 	// Library: move focus to the selected row, if any
 	case "library":
 		if row := w.lbxLibrary.GetSelectedRow(); row != nil {
-			row.GrabFocus()
+			widget = &row.Widget
+		} else {
+			widget = &w.lbxLibrary.Widget
 		}
 
 	// Playlists: move focus to the selected row, if any
 	case "playlists":
 		if row := w.lbxPlaylists.GetSelectedRow(); row != nil {
-			row.GrabFocus()
+			widget = &row.Widget
+		} else {
+			widget = &w.lbxPlaylists.Widget
 		}
+	}
+
+	// Move focus
+	if widget != nil {
+		widget.GrabFocus()
 	}
 }
 
@@ -833,9 +846,9 @@ func (w *MainWindow) initWidgets() {
 	w.addAction("about", "F1", w.about)
 	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
-	w.addAction("page.queue", "<Ctrl>1", func() { w.focusMainList(w.bxQueue) })
-	w.addAction("page.library", "<Ctrl>2", func() { w.focusMainList(w.bxLibrary) })
-	w.addAction("page.playlists", "<Ctrl>3", func() { w.focusMainList(w.bxPlaylists) })
+	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
+	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
+	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
 
 	// Init other widgets and actions
 	w.initQueueWidgets()
@@ -1275,7 +1288,7 @@ func (w *MainWindow) setLibraryPath(path string) {
 	w.currentLibPath = path
 	w.updateLibraryPath()
 	w.updateLibrary()
-	w.focusMainList(nil)
+	w.focusMainList()
 }
 
 // setQueueHighlight selects or deselects an item in the Queue tree view at the given index
