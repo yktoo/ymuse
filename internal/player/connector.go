@@ -25,48 +25,38 @@ import (
 
 // Connector encapsulates functionality for connecting to MPD and watch for its changes
 type Connector struct {
-	// MPD address
-	mpdAddress string
-	// MPD password
-	mpdPassword string
-	// Whether a connection is supposed to be kept alive
-	stayConnected bool
+	mpdAddress    string // MPD address
+	mpdPassword   string // MPD password
+	stayConnected bool   // Whether a connection is supposed to be kept alive
 
-	// MPD client instance
-	mpdClient      *mpd.Client
+	mpdClient      *mpd.Client // MPD client instance
 	mpdClientMutex sync.Mutex
 
-	// Last reported MPD status
-	mpdStatus      mpd.Attrs
+	mpdStatus      mpd.Attrs // Last reported MPD status
 	mpdStatusMutex sync.Mutex
 
-	// Connector's connect channel
-	chConnectorConnect chan int
-	// Connector's quit channel
-	chConnectorQuit chan int
+	chConnectorConnect chan bool // Connector's connect channel
+	chConnectorQuit    chan bool // Connector's quit channel
 
-	// Watcher's start channel
-	chWatcherStart chan int
-	// Watcher's quit channel
-	chWatcherQuit chan int
-	// MPD watcher instance
-	mpdWatcher *mpd.Watcher
+	chWatcherStart chan bool // Watcher's start channel
+	chWatcherStop  chan bool // Watcher's suspend/quit channel
 
-	// Callback for connection status change notifications
-	onStatusChange func()
-	// Callback for periodic message notifications
-	onHeartbeat func()
-	// Callback for subsystem change notifications
-	onSubsystemChange func(subsystem string)
+	onStatusChange    func()                 // Callback for connection status change notifications
+	onHeartbeat       func()                 // Callback for periodic message notifications
+	onSubsystemChange func(subsystem string) // Callback for subsystem change notifications
 }
 
 // NewConnector creates and returns a new Connector instance
 func NewConnector(onStatusChange func(), onHeartbeat func(), onSubsystemChange func(subsystem string)) *Connector {
 	return &Connector{
-		mpdStatus:         mpd.Attrs{},
-		onStatusChange:    onStatusChange,
-		onHeartbeat:       onHeartbeat,
-		onSubsystemChange: onSubsystemChange,
+		mpdStatus:          mpd.Attrs{},
+		onStatusChange:     onStatusChange,
+		onHeartbeat:        onHeartbeat,
+		onSubsystemChange:  onSubsystemChange,
+		chConnectorConnect: make(chan bool),
+		chConnectorQuit:    make(chan bool),
+		chWatcherStart:     make(chan bool),
+		chWatcherStop:      make(chan bool),
 	}
 }
 
@@ -76,12 +66,6 @@ func (c *Connector) Start(mpdAddress, mpdPassword string, stayConnected bool) {
 	c.mpdAddress = mpdAddress
 	c.mpdPassword = mpdPassword
 	c.stayConnected = stayConnected
-
-	// Allocate signals
-	c.chConnectorConnect = make(chan int)
-	c.chConnectorQuit = make(chan int)
-	c.chWatcherStart = make(chan int)
-	c.chWatcherQuit = make(chan int)
 
 	// Start the connect goroutine
 	go c.connect()
@@ -101,18 +85,13 @@ func (c *Connector) Status() mpd.Attrs {
 
 // Stop signals the connector to shut down
 func (c *Connector) Stop() {
-	if c.chConnectorQuit != nil {
-		close(c.chConnectorQuit)
-		c.chConnectorQuit = nil
-	}
-	if c.chWatcherQuit != nil {
-		close(c.chWatcherQuit)
-		c.chWatcherQuit = nil
-	}
+	// Quit connector and watcher
+	c.chConnectorQuit <- true
+	c.chWatcherStop <- true
 
 	// Close the connection to MPD, if any
 	c.IfConnected(func(client *mpd.Client) {
-		log.Debug("Stop connector")
+		log.Debug("Disconnect from MPD")
 		errCheck(client.Close(), "Close() failed")
 		c.mpdClient = nil
 	})
@@ -188,7 +167,7 @@ func (c *Connector) setStatus(attrs *mpd.Attrs) {
 
 // startConnecting signals the connector to initiate connection process
 func (c *Connector) startConnecting() {
-	go func() { c.chConnectorConnect <- 1 }()
+	go func() { c.chConnectorConnect <- true }()
 }
 
 // connect takes care of establishing a connection to MPD
@@ -230,7 +209,7 @@ func (c *Connector) connect() {
 					connected = true
 
 					// Start the watcher
-					go func() { c.chWatcherStart <- 1 }()
+					go func() { c.chWatcherStart <- true }()
 
 				})
 
@@ -256,6 +235,9 @@ func (c *Connector) connect() {
 					if errCheck(err, "Status() failed: connection to MPD lost") {
 						// Remove client connection
 						c.mpdClient = nil
+
+						// Suspend the watcher
+						go func() { c.chWatcherStop <- false }()
 
 						// Clear the status
 						c.resetStatus()
@@ -292,12 +274,18 @@ func (c *Connector) connect() {
 	}
 }
 
-// watch watches MPD subsystem changes
+// unwatch asks the watcher to suspend (quit == false) or stop entirely (quit == true)
+func (c *Connector) stopWatching(quit bool) {
+	go func() { c.chWatcherStop <- quit }()
+}
+
+// watch starts watching MPD subsystem changes
 func (c *Connector) watch() {
 	log.Debug("watch()")
 	var rewatchTimer *time.Timer
 	var eventChannel chan string
 	var errorChannel chan error
+	var mpdWatcher *mpd.Watcher
 	for {
 		select {
 		// Request to watch
@@ -308,19 +296,19 @@ func (c *Connector) watch() {
 			rewatchTimer = nil
 
 			// If no watcher yet
-			if c.mpdWatcher == nil {
+			if mpdWatcher == nil {
 				watcher, err := mpd.NewWatcher("tcp", c.mpdAddress, c.mpdPassword)
 				// Failed to connect
 				if err != nil {
 					log.Warning("Failed to watch MPD", err)
 					// Schedule a reconnection
 					rewatchTimer = time.AfterFunc(3*time.Second, func() {
-						c.chWatcherStart <- 1
+						c.chWatcherStart <- true
 					})
 
-					// Connection succeeded
 				} else {
-					c.mpdWatcher = watcher
+					// Connection succeeded
+					mpdWatcher = watcher
 					eventChannel = watcher.Event
 					errorChannel = watcher.Error
 				}
@@ -351,19 +339,24 @@ func (c *Connector) watch() {
 			log.Warning("Watcher error", err)
 
 		// Request to quit
-		case <-c.chWatcherQuit:
+		case doQuit := <-c.chWatcherStop:
 			// Kill the reconnection timer, if any
 			if rewatchTimer != nil {
 				rewatchTimer.Stop()
+				rewatchTimer = nil
 			}
 
 			// Close the connection to MPD, if any
-			if c.mpdWatcher != nil {
+			if mpdWatcher != nil {
 				log.Debug("Stop watcher")
-				errCheck(c.mpdWatcher.Close(), "mpdWatcher.Close() failed")
-				c.mpdWatcher = nil
+				errCheck(mpdWatcher.Close(), "mpdWatcher.Close() failed")
+				mpdWatcher = nil
 			}
-			return
+
+			// If we need to quit
+			if doQuit {
+				return
+			}
 		}
 	}
 }
