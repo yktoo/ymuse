@@ -69,6 +69,12 @@
                 <property name="accelerator">&lt;ctrl&gt;3</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Switch to Streams tab</property>
+                <property name="accelerator">&lt;ctrl&gt;4</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -96,6 +102,12 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Go to Now playing</property>
                 <property name="accelerator">&lt;ctrl&gt;J</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Open Filter bar</property>
+                <property name="accelerator">&lt;ctrl&gt;F</property>
               </object>
             </child>
           </object>

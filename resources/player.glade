@@ -45,6 +45,81 @@
       </object>
     </child>
   </object>
+  <object class="GtkPopoverMenu" id="pmnLibraryUpdate">
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkBox" id="bxLibraryUpdate">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">12</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryUpdateAll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the entire music database</property>
+            <property name="action_name">app.library.update.all</property>
+            <property name="text" translatable="yes">Update entire library</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryUpdateSelected">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
+            <property name="action_name">app.library.update.selected</property>
+            <property name="text" translatable="yes">Update selected item</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryRescanAll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the entire music database, including unmodified files</property>
+            <property name="action_name">app.library.rescan.all</property>
+            <property name="text" translatable="yes">Rescan all files</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryRescanSelected">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Update the selected item, including unmodified files</property>
+            <property name="action_name">app.library.rescan.selected</property>
+            <property name="text" translatable="yes">Rescan selected item</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
   <object class="GtkListStore" id="queueListStore">
     <columns>
       <!-- column-name Artist -->
@@ -182,7 +257,7 @@
                         <property name="action_name">app.queue.now-playing</property>
                         <property name="label" translatable="yes">Now playing</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">multimedia-volume-control</property>
+                        <property name="icon_name">ymuse-now-playing</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -197,7 +272,7 @@
                         <property name="action_name">app.queue.clear</property>
                         <property name="label" translatable="yes">Clear</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">dialog-close</property>
+                        <property name="icon_name">ymuse-clear</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -213,7 +288,7 @@
                         <property name="action_name">app.queue.sort</property>
                         <property name="label" translatable="yes">Sort ▾</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">view-sort-descending</property>
+                        <property name="icon_name">ymuse-sort</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -228,7 +303,7 @@
                         <property name="action_name">app.queue.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">edit-delete</property>
+                        <property name="icon_name">ymuse-delete-track</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -244,7 +319,7 @@
                         <property name="action_name">app.queue.save</property>
                         <property name="label" translatable="yes">Save ▾</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">document-save</property>
+                        <property name="icon_name">ymuse-save</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -258,7 +333,7 @@
                         <property name="tooltip_text" translatable="yes">Filter the play queue</property>
                         <property name="label" translatable="yes">Search</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">edit-find</property>
+                        <property name="icon_name">ymuse-filter</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -283,7 +358,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="width_chars">50</property>
-                        <property name="primary_icon_name">edit-find-symbolic</property>
+                        <property name="primary_icon_name">ymuse-filter</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
                         <property name="placeholder_text" translatable="yes">Filter…</property>
@@ -401,8 +476,10 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Update the music library</property>
+                            <property name="is_important">True</property>
                             <property name="action_name">app.library.update</property>
                             <property name="label" translatable="yes">Update ▾</property>
+                            <property name="icon_name">ymuse-update-db</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -417,7 +494,7 @@
                             <property name="action_name">app.library.search.toggle</property>
                             <property name="label" translatable="yes">Search</property>
                             <property name="use_underline">True</property>
-                            <property name="icon_name">edit-find</property>
+                            <property name="icon_name">ymuse-search</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -464,7 +541,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="width_chars">40</property>
-                                <property name="primary_icon_name">edit-find-symbolic</property>
+                                <property name="primary_icon_name">ymuse-search</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">False</property>
                                 <property name="placeholder_text" translatable="yes">Search…</property>
@@ -601,6 +678,7 @@
                         <property name="action_name">app.playlist.rename</property>
                         <property name="label" translatable="yes">Rename</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">ymuse-edit</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -615,6 +693,7 @@
                         <property name="action_name">app.playlist.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
+                        <property name="icon_name">ymuse-delete</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -740,7 +819,7 @@
                     <property name="action_name">app.player.previous</property>
                     <property name="label" translatable="yes">Previous</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-skip-backward</property>
+                    <property name="icon_name">ymuse-previous</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -755,7 +834,7 @@
                     <property name="action_name">app.player.stop</property>
                     <property name="label" translatable="yes">Stop</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-playback-stop</property>
+                    <property name="icon_name">ymuse-stop</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -770,7 +849,7 @@
                     <property name="action_name">app.player.play-pause</property>
                     <property name="label" translatable="yes">Play/Pause</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-playback-start</property>
+                    <property name="icon_name">ymuse-play</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -785,7 +864,7 @@
                     <property name="action_name">app.player.next</property>
                     <property name="label" translatable="yes">Next</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-skip-forward</property>
+                    <property name="icon_name">ymuse-next</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -810,7 +889,7 @@
                     <property name="action_name">app.player.toggle.random</property>
                     <property name="label" translatable="yes">Random</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-playlist-shuffle</property>
+                    <property name="icon_name">ymuse-random</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -825,7 +904,7 @@
                     <property name="action_name">app.player.toggle.repeat</property>
                     <property name="label" translatable="yes">Repeat</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">media-playlist-repeat</property>
+                    <property name="icon_name">ymuse-repeat</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -840,7 +919,7 @@
                     <property name="action_name">app.player.toggle.consume</property>
                     <property name="label" translatable="yes">Consume</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">edit-cut</property>
+                    <property name="icon_name">ymuse-consume</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1017,82 +1096,6 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">7</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="submenu">main</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-  </object>
-  <object class="GtkPopoverMenu" id="pmnLibraryUpdate">
-    <property name="can_focus">False</property>
-    <property name="relative_to">btnLibraryUpdate</property>
-    <child>
-      <object class="GtkBox" id="bxLibraryUpdate">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkModelButton" id="mbtnLibraryUpdateAll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the entire music database</property>
-            <property name="action_name">app.library.update.all</property>
-            <property name="text" translatable="yes">Update entire library</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkModelButton" id="mbtnLibraryUpdateSelected">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
-            <property name="action_name">app.library.update.selected</property>
-            <property name="text" translatable="yes">Update selected item</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkModelButton" id="mbtnLibraryRescanAll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the entire music database, including unmodified files</property>
-            <property name="action_name">app.library.rescan.all</property>
-            <property name="text" translatable="yes">Rescan all files</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkModelButton" id="mbtnLibraryRescanSelected">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the selected item, including unmodified files</property>
-            <property name="action_name">app.library.rescan.selected</property>
-            <property name="text" translatable="yes">Rescan selected item</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">3</property>
           </packing>
         </child>
       </object>

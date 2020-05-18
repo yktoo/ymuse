@@ -1398,8 +1398,8 @@ func (w *MainWindow) updateLibrary() {
 			prefix+name,
 			iconName,
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "list-add", func() { w.queueOne(false, uri) }),
-			util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queueOne(true, uri) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queueOne(false, uri) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queueOne(true, uri) }))
 
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
@@ -1547,9 +1547,9 @@ func (w *MainWindow) updatePlayer() {
 		status := w.connector.Status()
 		switch status["state"] {
 		case "play":
-			w.btnPlayPause.SetIconName("media-playback-pause")
+			w.btnPlayPause.SetIconName("ymuse-pause")
 		default:
-			w.btnPlayPause.SetIconName("media-playback-start")
+			w.btnPlayPause.SetIconName("ymuse-play")
 		}
 
 	} else if err := w.connector.Status()["error"]; err != "" {
@@ -1653,10 +1653,10 @@ func (w *MainWindow) updatePlaylists() {
 			w.lbxPlaylists,
 			name,
 			name,
-			"format-justify-left",
+			"ymuse-playlist",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "list-add", func() { w.queuePlaylist(false, name) }),
-			util.NewButton("", "Replace the queue", "", "edit-paste", func() { w.queuePlaylist(true, name) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queuePlaylist(false, name) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queuePlaylist(true, name) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
