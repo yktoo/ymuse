@@ -353,7 +353,7 @@
                         <property name="action_name">app.queue.now-playing</property>
                         <property name="label" translatable="yes">Now playing</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-now-playing</property>
+                        <property name="icon_name">ymuse-now-playing-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -368,7 +368,7 @@
                         <property name="action_name">app.queue.clear</property>
                         <property name="label" translatable="yes">Clear</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-clear</property>
+                        <property name="icon_name">ymuse-clear-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -384,7 +384,7 @@
                         <property name="action_name">app.queue.sort</property>
                         <property name="label" translatable="yes">Sort ▾</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-sort</property>
+                        <property name="icon_name">ymuse-sort-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -399,7 +399,7 @@
                         <property name="action_name">app.queue.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete-track</property>
+                        <property name="icon_name">ymuse-delete-track-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -415,7 +415,7 @@
                         <property name="action_name">app.queue.save</property>
                         <property name="label" translatable="yes">Save ▾</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-save</property>
+                        <property name="icon_name">ymuse-save-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -429,7 +429,7 @@
                         <property name="tooltip_text" translatable="yes">Filter the play queue</property>
                         <property name="label" translatable="yes">Search</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-filter</property>
+                        <property name="icon_name">ymuse-filter-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -454,7 +454,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="width_chars">50</property>
-                        <property name="primary_icon_name">ymuse-filter</property>
+                        <property name="primary_icon_name">ymuse-filter-symbolic</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
                         <property name="placeholder_text" translatable="yes">Filter…</property>
@@ -575,7 +575,7 @@
                             <property name="is_important">True</property>
                             <property name="action_name">app.library.update</property>
                             <property name="label" translatable="yes">Update ▾</property>
-                            <property name="icon_name">ymuse-update-db</property>
+                            <property name="icon_name">ymuse-update-db-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -590,7 +590,7 @@
                             <property name="action_name">app.library.search.toggle</property>
                             <property name="label" translatable="yes">Search</property>
                             <property name="use_underline">True</property>
-                            <property name="icon_name">ymuse-search</property>
+                            <property name="icon_name">ymuse-search-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -637,7 +637,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="width_chars">40</property>
-                                <property name="primary_icon_name">ymuse-search</property>
+                                <property name="primary_icon_name">ymuse-search-symbolic</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">False</property>
                                 <property name="placeholder_text" translatable="yes">Search…</property>
@@ -774,7 +774,7 @@
                         <property name="action_name">app.playlist.rename</property>
                         <property name="label" translatable="yes">Rename</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-edit</property>
+                        <property name="icon_name">ymuse-edit-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -789,7 +789,7 @@
                         <property name="action_name">app.playlist.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete</property>
+                        <property name="icon_name">ymuse-delete-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -889,7 +889,7 @@
                         <property name="action_name">app.stream.add</property>
                         <property name="label" translatable="yes">Add</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-add</property>
+                        <property name="icon_name">ymuse-add-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -904,7 +904,7 @@
                         <property name="action_name">app.stream.edit</property>
                         <property name="label" translatable="yes">Edit</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-edit</property>
+                        <property name="icon_name">ymuse-edit-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -919,7 +919,7 @@
                         <property name="action_name">app.stream.delete</property>
                         <property name="label" translatable="yes">Delete</property>
                         <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete</property>
+                        <property name="icon_name">ymuse-delete-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1045,7 +1045,7 @@
                     <property name="action_name">app.player.previous</property>
                     <property name="label" translatable="yes">Previous</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-previous</property>
+                    <property name="icon_name">ymuse-previous-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1060,7 +1060,7 @@
                     <property name="action_name">app.player.stop</property>
                     <property name="label" translatable="yes">Stop</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-stop</property>
+                    <property name="icon_name">ymuse-stop-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1075,7 +1075,7 @@
                     <property name="action_name">app.player.play-pause</property>
                     <property name="label" translatable="yes">Play/Pause</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-play</property>
+                    <property name="icon_name">ymuse-play-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1090,7 +1090,7 @@
                     <property name="action_name">app.player.next</property>
                     <property name="label" translatable="yes">Next</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-next</property>
+                    <property name="icon_name">ymuse-next-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1115,7 +1115,7 @@
                     <property name="action_name">app.player.toggle.random</property>
                     <property name="label" translatable="yes">Random</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-random</property>
+                    <property name="icon_name">ymuse-random-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1130,7 +1130,7 @@
                     <property name="action_name">app.player.toggle.repeat</property>
                     <property name="label" translatable="yes">Repeat</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-repeat</property>
+                    <property name="icon_name">ymuse-repeat-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1145,7 +1145,7 @@
                     <property name="action_name">app.player.toggle.consume</property>
                     <property name="label" translatable="yes">Consume</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-consume</property>
+                    <property name="icon_name">ymuse-consume-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

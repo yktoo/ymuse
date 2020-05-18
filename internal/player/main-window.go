@@ -1587,8 +1587,8 @@ func (w *MainWindow) updateLibrary() {
 			prefix+name,
 			iconName,
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queueOne(false, uri) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queueOne(true, uri) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueOne(false, uri) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueOne(true, uri) }))
 
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
@@ -1736,9 +1736,9 @@ func (w *MainWindow) updatePlayer() {
 		status := w.connector.Status()
 		switch status["state"] {
 		case "play":
-			w.btnPlayPause.SetIconName("ymuse-pause")
+			w.btnPlayPause.SetIconName("ymuse-pause-symbolic")
 		default:
-			w.btnPlayPause.SetIconName("ymuse-play")
+			w.btnPlayPause.SetIconName("ymuse-play-symbolic")
 		}
 
 	} else if err := w.connector.Status()["error"]; err != "" {
@@ -1842,10 +1842,10 @@ func (w *MainWindow) updatePlaylists() {
 			w.lbxPlaylists,
 			name,
 			name,
-			"ymuse-playlist",
+			"ymuse-playlist-symbolic",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queuePlaylist(false, name) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queuePlaylist(true, name) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queuePlaylist(false, name) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(true, name) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
@@ -2061,10 +2061,10 @@ func (w *MainWindow) updateStreams() {
 			w.lbxStreams,
 			stream.Name,
 			"",
-			"ymuse-stream",
+			"ymuse-stream-symbolic",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queueStream(false, stream.URI) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queueStream(true, stream.URI) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueStream(false, stream.URI) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueStream(true, stream.URI) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
