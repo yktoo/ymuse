@@ -215,6 +215,15 @@ func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool
 	return "", false
 }
 
+// EntryText returns the text in an entry, or the default string if an error occurred
+func EntryText(entry *gtk.Entry, def string) string {
+	s, err := entry.GetText()
+	if errCheck(err, "EntryText(): GetText() failed") {
+		return def
+	}
+	return s
+}
+
 // ErrorDialog shows an error message dialog
 func ErrorDialog(parent gtk.IWindow, text string) {
 	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text)

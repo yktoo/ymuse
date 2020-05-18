@@ -66,19 +66,27 @@ type ColumnSpec struct {
 	Width int // Column width, if differs from the default, otherwise 0
 }
 
+// StreamSpec describes settings for an Internet stream
+type StreamSpec struct {
+	Name string // Stream name
+	URI  string // Stream URI
+}
+
 // Config represents (storable) application configuration
 type Config struct {
-	MpdHost                string        // MPD's IP address or hostname
-	MpdPort                int           // MPD's port number
-	MpdPassword            string        // MPD's password (optional)
-	MpdAutoConnect         bool          // Whether to automatically connect to MPD on startup
-	MpdAutoReconnect       bool          // Whether to automatically reconnect to MPD after connection is lost
-	QueueColumns           *[]ColumnSpec // Displayed queue columns
-	DefaultSortAttrID      int           // ID of MPD attribute used as a default for queue sorting
-	TrackDefaultReplace    bool          // Whether the default action for double-clicking a track is replace rather than append
-	PlaylistDefaultReplace bool          // Whether the default action for double-clicking a playlist is replace rather than append
-	PlayerTitleTemplate    string        // Track's title formatting template for the player
-	MaxSearchResults       int           // Maximum number of displayed search results
+	MpdHost                string       // MPD's IP address or hostname
+	MpdPort                int          // MPD's port number
+	MpdPassword            string       // MPD's password (optional)
+	MpdAutoConnect         bool         // Whether to automatically connect to MPD on startup
+	MpdAutoReconnect       bool         // Whether to automatically reconnect to MPD after connection is lost
+	QueueColumns           []ColumnSpec // Displayed queue columns
+	DefaultSortAttrID      int          // ID of MPD attribute used as a default for queue sorting
+	TrackDefaultReplace    bool         // Whether the default action for double-clicking a track is replace rather than append
+	PlaylistDefaultReplace bool         // Whether the default action for double-clicking a playlist is replace rather than append
+	StreamDefaultReplace   bool         // Whether the default action for double-clicking a stream is replace rather than append
+	PlayerTitleTemplate    string       // Track's title formatting template for the player
+	MaxSearchResults       int          // Maximum number of displayed search results
+	Streams                []StreamSpec // Registered stream specifications
 
 	MainWindowDimensions Dimensions // Main window dimensions
 }
@@ -90,7 +98,7 @@ var config = &Config{
 	MpdPassword:      "",
 	MpdAutoConnect:   true,
 	MpdAutoReconnect: true,
-	QueueColumns: &[]ColumnSpec{
+	QueueColumns: []ColumnSpec{
 		{ID: MTAttrArtist},
 		{ID: MTAttrYear},
 		{ID: MTAttrAlbum},
@@ -103,6 +111,7 @@ var config = &Config{
 	DefaultSortAttrID:      MTAttrPath,
 	TrackDefaultReplace:    false,
 	PlaylistDefaultReplace: true,
+	StreamDefaultReplace:   true,
 	PlayerTitleTemplate: `{{- if or .Title .Album | or .Artist -}}
 <big><b>{{ .Title | default "(unknown title)" }}</b></big>
 by <b>{{ .Artist | default "(unknown artist)" }}</b> from <b>{{ .Album | default "(unknown album)" }}</b>
@@ -114,7 +123,10 @@ from <b>{{ .file | dirname }}</b>
 {{- else -}}
 <i>(no track)</i>
 {{- end -}}`,
-	MaxSearchResults:     500,
+	MaxSearchResults: 500,
+	Streams: []StreamSpec{
+		{Name: "BBC World News", URI: "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws"},
+	},
 	MainWindowDimensions: Dimensions{-1, -1, -1, -1},
 }
 var once sync.Once

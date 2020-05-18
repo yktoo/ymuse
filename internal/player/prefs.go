@@ -44,6 +44,8 @@ type PrefsDialog struct {
 	rbLibraryDefaultAppend    *gtk.RadioButton
 	rbPlaylistsDefaultReplace *gtk.RadioButton
 	rbPlaylistsDefaultAppend  *gtk.RadioButton
+	rbStreamsDefaultReplace   *gtk.RadioButton
+	rbStreamsDefaultAppend    *gtk.RadioButton
 	txbPlayerTitleTemplate    *gtk.TextBuffer
 	// Columns page widgets
 	lbxColumns   *gtk.ListBox
@@ -72,6 +74,8 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 		rbLibraryDefaultAppend:    builder.getRadioButton("rbLibraryDefaultAppend"),
 		rbPlaylistsDefaultReplace: builder.getRadioButton("rbPlaylistsDefaultReplace"),
 		rbPlaylistsDefaultAppend:  builder.getRadioButton("rbPlaylistsDefaultAppend"),
+		rbStreamsDefaultReplace:   builder.getRadioButton("rbStreamsDefaultReplace"),
+		rbStreamsDefaultAppend:    builder.getRadioButton("rbStreamsDefaultAppend"),
 		txbPlayerTitleTemplate:    builder.getTextBuffer("txbPlayerTitleTemplate"),
 		// Columns page widgets
 		lbxColumns: builder.getListBox("lbxColumns"),
@@ -118,6 +122,8 @@ func (d *PrefsDialog) onMap() {
 	d.rbLibraryDefaultAppend.SetActive(!cfg.TrackDefaultReplace)
 	d.rbPlaylistsDefaultReplace.SetActive(cfg.PlaylistDefaultReplace)
 	d.rbPlaylistsDefaultAppend.SetActive(!cfg.PlaylistDefaultReplace)
+	d.rbStreamsDefaultReplace.SetActive(cfg.StreamDefaultReplace)
+	d.rbStreamsDefaultAppend.SetActive(!cfg.StreamDefaultReplace)
 	d.txbPlayerTitleTemplate.SetText(cfg.PlayerTitleTemplate)
 	// Columns page
 	d.populateColumns()
@@ -234,7 +240,7 @@ func (d *PrefsDialog) notifyColumnsChanged() {
 	}
 
 	// Save the IDs in the config
-	config.GetConfig().QueueColumns = &colSpecs
+	config.GetConfig().QueueColumns = colSpecs
 
 	// Notify the callback
 	d.onQueueColumnsChanged()
@@ -273,6 +279,7 @@ func (d *PrefsDialog) onSettingChange() {
 	// Interface page
 	cfg.TrackDefaultReplace = d.rbLibraryDefaultReplace.GetActive()
 	cfg.PlaylistDefaultReplace = d.rbPlaylistsDefaultReplace.GetActive()
+	cfg.StreamDefaultReplace = d.rbStreamsDefaultReplace.GetActive()
 	if s, err := util.GetTextBufferText(d.txbPlayerTitleTemplate); !errCheck(err, "util.GetTextBufferText() failed") {
 		if s != cfg.PlayerTitleTemplate {
 			cfg.PlayerTitleTemplate = s
@@ -285,7 +292,7 @@ func (d *PrefsDialog) onSettingChange() {
 func (d *PrefsDialog) populateColumns() {
 	// First add selected columns
 	selColSpecs := config.GetConfig().QueueColumns
-	for _, colSpec := range *selColSpecs {
+	for _, colSpec := range selColSpecs {
 		d.addQueueColumn(colSpec.ID, colSpec.Width, true)
 	}
 
@@ -293,7 +300,7 @@ func (d *PrefsDialog) populateColumns() {
 	for _, id := range config.MpdTrackAttributeIds {
 		// Check if the ID is already in the list of selected IDs
 		isSelected := false
-		for _, selSpec := range *selColSpecs {
+		for _, selSpec := range selColSpecs {
 			if id == selSpec.ID {
 				isSelected = true
 				break

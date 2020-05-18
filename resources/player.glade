@@ -120,6 +120,102 @@
       </packing>
     </child>
   </object>
+  <object class="GtkPopoverMenu" id="pmnStreamProps">
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkBox" id="bxStreamProps">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">12</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkGrid" id="gStreamProps">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="row_spacing">6</property>
+            <property name="column_spacing">6</property>
+            <child>
+              <object class="GtkLabel" id="lblStreamPropsName">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">False</property>
+                <property name="label" translatable="yes">Stream name:</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="eStreamPropsUri">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="width_chars">60</property>
+                <signal name="changed" handler="on_streamProps_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lblStreamPropsUri">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">False</property>
+                <property name="label" translatable="yes">Stream URI:</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="eStreamPropsName">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="width_chars">60</property>
+                <signal name="changed" handler="on_streamProps_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="btnStreamPropsApply">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.stream.props.apply</property>
+            <property name="text" translatable="yes">Apply</property>
+            <property name="centered">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
+      </packing>
+    </child>
+  </object>
   <object class="GtkListStore" id="queueListStore">
     <columns>
       <!-- column-name Artist -->
@@ -686,7 +782,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnPlaylistsNew2">
+                      <object class="GtkToolButton" id="btnPlaylistsDelete">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Delete selected playlist</property>
@@ -773,6 +869,136 @@
                 <property name="name">playlists</property>
                 <property name="title" translatable="yes">Playlists</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="bxStreams">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkToolbar" id="tbStreams">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_size">2</property>
+                    <child>
+                      <object class="GtkToolButton" id="btnStreamsAdd">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Add a new stream</property>
+                        <property name="action_name">app.stream.add</property>
+                        <property name="label" translatable="yes">Add</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">ymuse-add</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnStreamsEdit">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Edit the selected stream</property>
+                        <property name="action_name">app.stream.edit</property>
+                        <property name="label" translatable="yes">Edit</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">ymuse-edit</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="btnStreamsDelete">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Delete the selected stream</property>
+                        <property name="action_name">app.stream.delete</property>
+                        <property name="label" translatable="yes">Delete</property>
+                        <property name="use_underline">True</property>
+                        <property name="icon_name">ymuse-delete</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="swStreams">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkViewport" id="vwpStreams">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkListBox" id="lbxStreams">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="selection_mode">browse</property>
+                            <signal name="button-press-event" handler="on_lbxStreams_buttonPress" swapped="no"/>
+                            <signal name="key-press-event" handler="on_lbxStreams_keyPress" swapped="no"/>
+                            <signal name="selected-rows-changed" handler="on_lbxStreams_selectionChange" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="bxStreamsInfo">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkLabel" id="lblStreamsInfo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="label" translatable="yes">...</property>
+                        <property name="ellipsize">end</property>
+                        <property name="track_visited_links">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <style>
+                      <class name="inline-toolbar"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="name">streams</property>
+                <property name="title" translatable="yes">Streams</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>

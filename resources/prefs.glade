@@ -53,10 +53,7 @@
               <object class="GtkBox" id="bxGeneral">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">12</property>
-                <property name="margin_right">12</property>
-                <property name="margin_top">12</property>
-                <property name="margin_bottom">12</property>
+                <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frMpdConnection">
@@ -265,10 +262,7 @@
               <object class="GtkBox" id="bxInterface">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">12</property>
-                <property name="margin_right">12</property>
-                <property name="margin_top">12</property>
-                <property name="margin_bottom">12</property>
+                <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
@@ -293,13 +287,13 @@
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_bottom">6</property>
                                 <property name="label" translatable="yes">On double click / Enter on a track:</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="padding">6</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -376,13 +370,13 @@
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_bottom">6</property>
                                 <property name="label" translatable="yes">On double click / Enter on a playlist:</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="padding">6</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -438,7 +432,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frPlayer">
+                  <object class="GtkFrame" id="frStreams">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -456,10 +450,93 @@
                             <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">On double click / Enter on a stream:</property>
+                                <property name="xalign">0</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">6</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="rbStreamsDefaultReplace">
+                                <property name="label" translatable="yes">Replace the queue</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="rbStreamsDefaultAppend">
+                                <property name="label" translatable="yes">Append to the queue</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">rbStreamsDefaultReplace</property>
+                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Streams&lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="frPlayer">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="bottom_padding">6</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">6</property>
+                            <child>
                               <object class="GtkLabel" id="lblPlayerTitleTemplate">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_bottom">6</property>
                                 <property name="label" translatable="yes">Track title template:</property>
                                 <property name="xalign">0</property>
                               </object>
@@ -508,7 +585,7 @@
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -531,10 +608,7 @@
               <object class="GtkBox" id="bxColumns">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">12</property>
-                <property name="margin_right">12</property>
-                <property name="margin_top">12</property>
-                <property name="margin_bottom">12</property>
+                <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="lblColumnsTop">

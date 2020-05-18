@@ -89,6 +89,16 @@ type MainWindow struct {
 	bxPlaylists      *gtk.Box
 	lbxPlaylists     *gtk.ListBox
 	lblPlaylistsInfo *gtk.Label
+	// Streams widgets
+	bxStreams      *gtk.Box
+	btnStreamsAdd  *gtk.ToolButton
+	btnStreamsEdit *gtk.ToolButton
+	lbxStreams     *gtk.ListBox
+	lblStreamsInfo *gtk.Label
+	// Streams props popup
+	pmnStreamProps   *gtk.PopoverMenu
+	eStreamPropsName *gtk.Entry
+	eStreamPropsUri  *gtk.Entry
 
 	// Actions
 	aQueueNowPlaying  *glib.SimpleAction
@@ -108,6 +118,10 @@ type MainWindow struct {
 	aLibraryRescanSel *glib.SimpleAction
 	aPlaylistRename   *glib.SimpleAction
 	aPlaylistDelete   *glib.SimpleAction
+	aStreamAdd        *glib.SimpleAction
+	aStreamEdit       *glib.SimpleAction
+	aStreamDelete     *glib.SimpleAction
+	aStreamPropsApply *glib.SimpleAction
 	aPlayerPrevious   *glib.SimpleAction
 	aPlayerStop       *glib.SimpleAction
 	aPlayerPlayPause  *glib.SimpleAction
@@ -125,6 +139,7 @@ type MainWindow struct {
 
 	playPosUpdating bool // Play position manual update flag
 	optionsUpdating bool // Options update flag
+	addingStream    bool // Whether the property popover is open to add a stream (rather than edit an existing one)
 }
 
 const (
@@ -191,6 +206,16 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		bxPlaylists:      builder.getBox("bxPlaylists"),
 		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
 		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
+		// Streams
+		bxStreams:      builder.getBox("bxStreams"),
+		btnStreamsAdd:  builder.getToolButton("btnStreamsAdd"),
+		btnStreamsEdit: builder.getToolButton("btnStreamsEdit"),
+		lbxStreams:     builder.getListBox("lbxStreams"),
+		lblStreamsInfo: builder.getLabel("lblStreamsInfo"),
+		// Streams props popup
+		pmnStreamProps:   builder.getPopoverMenu("pmnStreamProps"),
+		eStreamPropsName: builder.getEntry("eStreamPropsName"),
+		eStreamPropsUri:  builder.getEntry("eStreamPropsUri"),
 	}
 
 	// Initialise queue filter model
@@ -220,6 +245,10 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_lbxPlaylists_buttonPress":       w.onPlaylistListBoxButtonPress,
 		"on_lbxPlaylists_keyPress":          w.onPlaylistListBoxKeyPress,
 		"on_lbxPlaylists_selectionChange":   w.updatePlaylistsActions,
+		"on_lbxStreams_buttonPress":         w.onStreamListBoxButtonPress,
+		"on_lbxStreams_keyPress":            w.onStreamListBoxKeyPress,
+		"on_lbxStreams_selectionChange":     w.updateStreamsActions,
+		"on_streamProps_changed":            w.onStreamPropsChanged,
 		"on_pmnQueueSave_validate":          w.onQueueSavePopoverValidate,
 		"on_scPlayPosition_buttonEvent":     w.onPlayPositionButtonEvent,
 		"on_scPlayPosition_valueChanged":    w.updatePlayerSeekBar,
@@ -279,6 +308,9 @@ func (w *MainWindow) onMap() {
 
 	// Activate the Queue tree view
 	w.focusMainList()
+
+	// Update stream list
+	w.updateStreams()
 
 	// Start connecting if needed
 	if config.GetConfig().MpdAutoConnect {
@@ -457,7 +489,7 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 	w.eQueueSavePlaylistName.SetVisible(isNew)
 
 	// Validate the actions
-	valid := (!isNew && selectedID != "") || (isNew && w.getQueueSaveNewPlaylistName() != "")
+	valid := (!isNew && selectedID != "") || (isNew && util.EntryText(w.eQueueSavePlaylistName, "") != "")
 	w.aQueueSaveReplace.SetEnabled(valid && !isNew)
 	w.aQueueSaveAppend.SetEnabled(valid)
 }
@@ -550,6 +582,119 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 	}
 }
 
+func (w *MainWindow) onStreamAdd() {
+	// Reset property values
+	w.eStreamPropsName.SetText("")
+	w.eStreamPropsUri.SetText("")
+
+	// Disable the Apply action initially
+	w.aStreamPropsApply.SetEnabled(false)
+
+	// Show the popover
+	w.addingStream = true
+	w.pmnStreamProps.SetRelativeTo(w.btnStreamsAdd)
+	w.pmnStreamProps.Popup()
+}
+
+func (w *MainWindow) onStreamDelete() {
+	// Fetch the selected stream
+	idx := w.getSelectedStreamIndex()
+	if idx < 0 {
+		return
+	}
+
+	// Ask for a confirmation
+	streams := &config.GetConfig().Streams
+	if util.ConfirmDialog(w.window, "Delete stream", fmt.Sprintf("Are you sure you want to delete stream \"%s\"?", (*streams)[idx].Name)) {
+		*streams = append((*streams)[:idx], (*streams)[idx+1:]...)
+	}
+
+	// Update stream list
+	w.updateStreams()
+}
+
+func (w *MainWindow) onStreamEdit() {
+	// Fetch the selected stream
+	idx := w.getSelectedStreamIndex()
+	if idx < 0 {
+		return
+	}
+	stream := config.GetConfig().Streams[idx]
+
+	// Reset property values
+	w.eStreamPropsName.SetText(stream.Name)
+	w.eStreamPropsUri.SetText(stream.URI)
+
+	// Disable the Apply action initially
+	w.aStreamPropsApply.SetEnabled(false)
+
+	// Show the popover
+	w.addingStream = false
+	w.pmnStreamProps.SetRelativeTo(w.btnStreamsEdit)
+	w.pmnStreamProps.Popup()
+}
+
+func (w *MainWindow) onStreamListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
+	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
+		// Double click in the list box
+		w.applyStreamSelection(config.GetConfig().StreamDefaultReplace)
+	}
+}
+
+func (w *MainWindow) onStreamListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
+	evt := gdk.EventKeyNewFromEvent(event)
+	state := gdk.ModifierType(evt.State()) & gtk.AcceleratorGetDefaultModMask()
+	switch evt.KeyVal() {
+	// Enter: apply selection
+	case gdk.KEY_Return:
+		switch state {
+		// Enter: use default mode
+		case 0:
+			w.applyStreamSelection(config.GetConfig().StreamDefaultReplace)
+		// Ctrl+Enter: replace
+		case gdk.GDK_CONTROL_MASK:
+			w.applyStreamSelection(true)
+		// Shift+Enter: append
+		case gdk.GDK_SHIFT_MASK:
+			w.applyStreamSelection(false)
+		}
+	}
+}
+
+func (w *MainWindow) onStreamPropsApply() {
+	// Fetch entered data
+	name, uri := util.EntryText(w.eStreamPropsName, ""), util.EntryText(w.eStreamPropsUri, "")
+	if name == "" || uri == "" {
+		return
+	}
+
+	// Make a stream spec instance
+	stream := config.StreamSpec{
+		Name: name,
+		URI:  uri,
+	}
+
+	// Adding a stream
+	cfg := config.GetConfig()
+	if w.addingStream {
+		cfg.Streams = append(cfg.Streams, stream)
+
+	} else if idx := w.getSelectedStreamIndex(); idx >= 0 {
+		// Editing an existing stream
+		cfg.Streams[idx] = stream
+	}
+
+	// Update stream list
+	w.updateStreams()
+}
+
+func (w *MainWindow) onStreamPropsChanged() {
+	// Validate the popover
+	w.aStreamPropsApply.SetEnabled(
+		util.EntryText(w.eStreamPropsName, "") != "" &&
+			util.EntryText(w.eStreamPropsUri, "") != "")
+}
+
 // about shows the application's about dialog
 func (w *MainWindow) about() {
 	dlg, err := gtk.AboutDialogNew()
@@ -623,6 +768,13 @@ func (w *MainWindow) applyQueueSelection() {
 	w.errCheckDialog(err, "Failed to play the selected track")
 }
 
+// applyStreamSelection adds or replaces the content of the queue with the currently selected stream
+func (w *MainWindow) applyStreamSelection(replace bool) {
+	if idx := w.getSelectedStreamIndex(); idx >= 0 {
+		w.queueStream(replace, config.GetConfig().Streams[idx].URI)
+	}
+}
+
 // connect starts connecting to MPD
 func (w *MainWindow) connect() {
 	// First disconnect, if connected
@@ -673,21 +825,20 @@ func (w *MainWindow) focusMainList() {
 		} else {
 			widget = &w.lbxPlaylists.Widget
 		}
+
+	// Streams: move focus to the selected row, if any
+	case "streams":
+		if row := w.lbxStreams.GetSelectedRow(); row != nil {
+			widget = &row.Widget
+		} else {
+			widget = &w.lbxStreams.Widget
+		}
 	}
 
 	// Move focus
 	if widget != nil {
 		widget.GrabFocus()
 	}
-}
-
-// getQueueSaveNewPlaylistName returns the text entered in the New playlist name entry, or an empty string if there's an error
-func (w *MainWindow) getQueueSaveNewPlaylistName() string {
-	s, err := w.eQueueSavePlaylistName.GetText()
-	if errCheck(err, "eQueueSavePlaylistName.GetText() failed") {
-		return ""
-	}
-	return s
 }
 
 // getQueueHasSelection returns whether there's any selected rows in the queue
@@ -765,6 +916,16 @@ func (w *MainWindow) getSelectedPlaylistName() string {
 	return name
 }
 
+// getSelectedStreamIndex returns the index of the currently selected stream, or -1 if there's an error
+func (w *MainWindow) getSelectedStreamIndex() int {
+	// If there's selection
+	row := w.lbxStreams.GetSelectedRow()
+	if row == nil {
+		return -1
+	}
+	return row.GetIndex()
+}
+
 // initLibraryWidgets initialises library widgets and actions
 func (w *MainWindow) initLibraryWidgets() {
 	// Create actions
@@ -837,6 +998,15 @@ func (w *MainWindow) initQueueWidgets() {
 	w.updateQueueColumns()
 }
 
+// initStreamsWidgets initialises streams widgets and actions
+func (w *MainWindow) initStreamsWidgets() {
+	// Create actions
+	w.aStreamAdd = w.addAction("stream.add", "", w.onStreamAdd)
+	w.aStreamEdit = w.addAction("stream.edit", "", w.onStreamEdit)
+	w.aStreamDelete = w.addAction("stream.delete", "", w.onStreamDelete)
+	w.aStreamPropsApply = w.addAction("stream.props.apply", "", w.onStreamPropsApply)
+}
+
 // initWidgets initialises all widgets and actions
 func (w *MainWindow) initWidgets() {
 	// Create global actions
@@ -849,11 +1019,13 @@ func (w *MainWindow) initWidgets() {
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
 	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
+	w.addAction("page.streams", "<Ctrl>4", func() { w.mainStack.SetVisibleChild(w.bxStreams) })
 
 	// Init other widgets and actions
 	w.initQueueWidgets()
 	w.initLibraryWidgets()
 	w.initPlaylistsWidgets()
+	w.initStreamsWidgets()
 	w.initPlayerWidgets()
 }
 
@@ -1052,10 +1224,7 @@ func (w *MainWindow) queueFilter() {
 
 	// Only use filter pattern if the search bar is visible
 	if w.queueSearchBar.GetSearchMode() {
-		var err error
-		if substr, err = w.queueSearchEntry.GetText(); errCheck(err, "queueSearchEntry.GetText() failed") {
-			return
-		}
+		substr = util.EntryText(&w.queueSearchEntry.Entry, "")
 	}
 
 	// Iterate all rows in the list store
@@ -1160,7 +1329,7 @@ func (w *MainWindow) queueSaveApply(replace bool) {
 	name := w.cbxQueueSavePlaylist.GetActiveID()
 	isNew := name == queueSaveNewPlaylistID
 	if isNew {
-		name = w.getQueueSaveNewPlaylistName()
+		name = util.EntryText(w.eQueueSavePlaylistName, "Unnamed")
 	}
 
 	err := errors.New("Not connected to MPD")
@@ -1267,6 +1436,29 @@ func (w *MainWindow) queueSortApply(descending bool) {
 	}
 }
 
+// queueStream adds or replaces the content of the queue with the specified stream
+func (w *MainWindow) queueStream(replace bool, uri string) {
+	log.Debugf("queueStream(%v, %v)", replace, uri)
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		commands := client.BeginCommandList()
+
+		// Clear the queue, if needed
+		if replace {
+			commands.Clear()
+		}
+
+		// Add the content of the playlist
+		commands.Add(uri)
+
+		// Run the commands
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to add stream to the queue")
+}
+
 // shortcutInfo displays a shortcut info window
 func (w *MainWindow) shortcutInfo() {
 	// TODO update ShortcutsWindow usage once it's properly implemented in gotk3
@@ -1337,10 +1529,7 @@ func (w *MainWindow) updateLibrary() {
 
 	// If search mode activated
 	if w.btnLibrarySearch.GetActive() {
-		var err error
-		if pattern, err = w.librarySearchEntry.GetText(); errCheck(err, "librarySearchEntry.GetText() failed") {
-			return
-		}
+		pattern = util.EntryText(&w.librarySearchEntry.Entry, "")
 	}
 
 	// No pattern means browse mode: load the library list for the current path if there's a connection
@@ -1766,8 +1955,7 @@ func (w *MainWindow) updateQueueColumns() {
 	})
 
 	// Add selected columns
-	queueColumns := config.GetConfig().QueueColumns
-	for index, colSpec := range *queueColumns {
+	for index, colSpec := range config.GetConfig().QueueColumns {
 		index := index // Make an in-loop copy of index for the closures below
 
 		// Fetch the attribute by its ID
@@ -1805,7 +1993,9 @@ func (w *MainWindow) updateQueueColumns() {
 		errCheck(err, "col.Connect(clicked) failed")
 
 		// Bind the width property change signal: update QueueColumns on each change
-		_, err = col.Connect("notify::fixed-width", func() { (*queueColumns)[index].Width = col.GetFixedWidth() })
+		_, err = col.Connect("notify::fixed-width", func() {
+			config.GetConfig().QueueColumns[index].Width = col.GetFixedWidth()
+		})
 		errCheck(err, "col.Connect(notify::fixed-width) failed")
 
 		// Add the column to the tree view
@@ -1853,4 +2043,50 @@ func (w *MainWindow) updateQueueNowPlaying() {
 			w.trvQueue.ScrollToCell(treePath, nil, true, 0.5, 0)
 		}
 	}
+}
+
+// updateStreams updates the current streams list contents
+func (w *MainWindow) updateStreams() {
+	// Clear the streams list
+	util.ClearChildren(w.lbxStreams.Container)
+
+	// Make sure the streams are sorted by name
+	cfg := config.GetConfig()
+	sort.Slice(cfg.Streams, func(i, j int) bool { return cfg.Streams[i].Name < cfg.Streams[j].Name })
+
+	// Repopulate the streams list
+	for _, stream := range config.GetConfig().Streams {
+		stream := stream // Make an in-loop copy of the var
+		_, _, err := util.NewListBoxRow(
+			w.lbxStreams,
+			stream.Name,
+			"",
+			"ymuse-stream",
+			// Add replace/append buttons
+			util.NewButton("", "Append to the queue", "", "ymuse-add", func() { w.queueStream(false, stream.URI) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue", func() { w.queueStream(true, stream.URI) }))
+		if errCheck(err, "NewListBoxRow() failed") {
+			return
+		}
+	}
+
+	// Show all rows
+	w.lbxStreams.ShowAll()
+
+	// Compose info
+	info := "No streams"
+	if cnt := len(config.GetConfig().Streams); cnt > 0 {
+		info = fmt.Sprintf("%d streams", cnt)
+	}
+
+	// Update info
+	w.lblStreamsInfo.SetText(info)
+}
+
+// updateStreamsActions updates the widgets for streams list
+func (w *MainWindow) updateStreamsActions() {
+	selected := w.getSelectedStreamIndex() >= 0
+	w.aStreamAdd.SetEnabled(true) // Adding a stream is always possible
+	w.aStreamEdit.SetEnabled(selected)
+	w.aStreamDelete.SetEnabled(selected)
 }
