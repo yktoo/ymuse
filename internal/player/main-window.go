@@ -130,6 +130,10 @@ type MainWindow struct {
 	aPlayerRepeat     *glib.SimpleAction
 	aPlayerConsume    *glib.SimpleAction
 
+	// Colours
+	colourBgNormal string // Normal background colour
+	colourBgActive string // Active background colour
+
 	currentQueueSize  int // Number of items in the play queue
 	currentQueueIndex int // Queue's track index (last) marked as current
 
@@ -146,8 +150,6 @@ const (
 	// Rendering properties for the Queue list
 	fontWeightNormal = 400
 	fontWeightBold   = 700
-	colorBgNormal    = "#ffffff"
-	colorBgActive    = "#ffffe0"
 
 	queueSaveNewPlaylistID = "\u0001new"
 	librarySearchAllAttrID = "\u0001any"
@@ -231,6 +233,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	builder.ConnectSignals(map[string]interface{}{
 		"on_mainWindow_delete":              w.onDelete,
 		"on_mainWindow_map":                 w.onMap,
+		"on_mainWindow_styleUpdated":        w.updateStyle,
 		"on_mainStack_switched":             w.focusMainList,
 		"on_trvQueue_buttonPress":           w.onQueueTreeViewButtonPress,
 		"on_trvQueue_keyPress":              w.onQueueTreeViewKeyPress,
@@ -1009,6 +1012,9 @@ func (w *MainWindow) initStreamsWidgets() {
 
 // initWidgets initialises all widgets and actions
 func (w *MainWindow) initWidgets() {
+	// Determine base colours
+	w.updateStyle()
+
 	// Create global actions
 	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
 	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
@@ -1488,17 +1494,17 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	if index >= 0 {
 		if iter, err := w.queueListStore.GetIterFromString(strconv.Itoa(index)); err == nil {
 			weight := fontWeightNormal
-			bgColor := colorBgNormal
+			bgColor := w.colourBgNormal
 			if selected {
 				weight = fontWeightBold
-				bgColor = colorBgActive
+				bgColor = w.colourBgActive
 			}
 			errCheck(
 				w.queueListStore.SetCols(iter, map[int]interface{}{
 					config.QueueColumnFontWeight: weight,
 					config.QueueColumnBgColor:    bgColor,
 				}),
-				"lstQueue.SetValue() failed")
+				"setQueueHighlight(): SetCols() failed")
 		}
 	}
 }
@@ -1907,7 +1913,7 @@ func (w *MainWindow) updateQueue() {
 
 			// Add the "artificial" column values
 			rowData[config.QueueColumnFontWeight] = fontWeightNormal
-			rowData[config.QueueColumnBgColor] = colorBgNormal
+			rowData[config.QueueColumnBgColor] = w.colourBgNormal
 			rowData[config.QueueColumnVisible] = true
 		}
 
@@ -2089,4 +2095,59 @@ func (w *MainWindow) updateStreamsActions() {
 	w.aStreamAdd.SetEnabled(true) // Adding a stream is always possible
 	w.aStreamEdit.SetEnabled(selected)
 	w.aStreamDelete.SetEnabled(selected)
+}
+
+// updateStyle updates custom colours based on the current theme
+func (w *MainWindow) updateStyle() {
+	log.Debug("updateStyle()")
+
+	// Fetch window's style context
+	ctx, err := w.window.GetStyleContext()
+	if errCheck(err, "updateStyle(): GetStyleContext() failed") {
+		return
+	}
+
+	// Determine normal background colour
+	var bgNormal, bgActive string
+	if rgba, ok := ctx.LookupColor("theme_bg_color"); ok {
+		bgNormal = rgba.String()
+	} else {
+		log.Warning("Unknown colour: theme_bg_color")
+		bgNormal = "#ffffff"
+	}
+
+	// Determine active background colour: same as selected colour, but at 30% opacity
+	if rgba, ok := ctx.LookupColor("theme_selected_bg_color"); ok {
+		newRGBA := rgba.Floats()
+		rgba.SetColors(newRGBA[0], newRGBA[1], newRGBA[2], newRGBA[3]*0.3)
+		bgActive = rgba.String()
+	} else {
+		log.Warning("Unknown colour: theme_selected_bg_color")
+		bgActive = "#ffffe0"
+	}
+
+	// If the colours changed, we need to update the queue list store
+	if w.colourBgNormal != bgNormal || w.colourBgActive != bgActive {
+		w.colourBgNormal = bgNormal
+		w.colourBgActive = bgActive
+		w.currentQueueIndex = -1
+
+		err := w.queueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) bool {
+			// Update item's background color
+			if err := w.queueListStore.SetValue(iter, config.QueueColumnBgColor, w.colourBgNormal); errCheck(err, "updateStyle(): SetValue() failed") {
+				return true
+			}
+
+			// Proceed to the next row
+			return false
+		})
+		if errCheck(err, "queueListStore.ForEach() failed") {
+			return
+		}
+
+		// Update the active row, if the app has been initialised
+		if w.connector != nil {
+			w.updateQueueNowPlaying()
+		}
+	}
 }
