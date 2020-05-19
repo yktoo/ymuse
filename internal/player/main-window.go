@@ -1573,12 +1573,12 @@ func (w *MainWindow) updateLibrary() {
 		uri, iconName, prefix := "", "", ""
 		if dir, ok := a["directory"]; ok {
 			uri = dir
-			iconName = "folder"
+			iconName = "ymuse-folder"
 			prefix = "d:"
 			countDirs++
 		} else if file, ok := a["file"]; ok {
 			uri = file
-			iconName = "audio-x-generic"
+			iconName = "ymuse-audio-file"
 			prefix = "f:"
 			countFiles++
 		} else {
@@ -1690,7 +1690,7 @@ func (w *MainWindow) updateLibraryPath() {
 				pathCopy := libPath
 
 				// Create a button. The last button must be depressed
-				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
+				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "ymuse-folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
 			}
 		}
 
@@ -1848,7 +1848,7 @@ func (w *MainWindow) updatePlaylists() {
 			w.lbxPlaylists,
 			name,
 			name,
-			"ymuse-playlist-symbolic",
+			"ymuse-playlist",
 			// Add replace/append buttons
 			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queuePlaylist(false, name) }),
 			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(true, name) }))
@@ -2067,7 +2067,7 @@ func (w *MainWindow) updateStreams() {
 			w.lbxStreams,
 			stream.Name,
 			"",
-			"ymuse-stream-symbolic",
+			"ymuse-stream",
 			// Add replace/append buttons
 			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueStream(false, stream.URI) }),
 			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueStream(true, stream.URI) }))
