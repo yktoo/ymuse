@@ -943,6 +943,53 @@ func (w *MainWindow) getSelectedStreamIndex() int {
 	return row.GetIndex()
 }
 
+// information displays a dialog with MPD information
+func (w *MainWindow) information() {
+	// Fetch information
+	var version string
+	var stats mpd.Attrs
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		version = client.Version()
+		stats, err = client.Stats()
+	})
+	if w.errCheckDialog(err, "Failed to retrieve information from MPD") || stats == nil {
+		return
+	}
+
+	// Parse DB update time
+	updateTime := "(unknown)"
+	if i, err := strconv.ParseInt(stats["db_update"], 10, 64); err == nil {
+		updateTime = time.Unix(i, 0).Format("2006-01-02 15:04:05")
+	}
+
+	// Show an info dialog
+	dlg := gtk.MessageDialogNew(w.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "")
+	defer dlg.Destroy()
+	dlg.SetMarkup(fmt.Sprintf(
+		"<big><b>MPD Information</b></big>\n\n"+
+			"<tt>"+
+			"<b>Daemon version:</b>       %20s\n"+
+			"<b>Number of artists:</b>    %20s\n"+
+			"<b>Number of albums:</b>     %20s\n"+
+			"<b>Number of tracks:</b>     %20s\n"+
+			"<b>Total playing time:</b>   %20s\n"+
+			"<b>Last database update:</b> %20s\n"+
+			"<b>Daemon uptime:</b>        %20s\n"+
+			"<b>Listening time:</b>       %20s\n"+
+			"</tt>",
+		version,
+		stats["artists"],
+		stats["albums"],
+		stats["songs"],
+		util.FormatSecondsStr(stats["db_playtime"]),
+		updateTime,
+		util.FormatSecondsStr(stats["uptime"]),
+		util.FormatSecondsStr(stats["playtime"]),
+	))
+	dlg.Run()
+}
+
 // initLibraryWidgets initialises library widgets and actions
 func (w *MainWindow) initLibraryWidgets() {
 	// Create actions
@@ -1032,6 +1079,7 @@ func (w *MainWindow) initWidgets() {
 	// Create global actions
 	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
 	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
+	w.addAction("mpd.info", "<Ctrl><Shift>I", w.information)
 	w.addAction("prefs", "<Ctrl>comma", w.preferences)
 	w.addAction("about", "F1", w.about)
 	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
