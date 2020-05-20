@@ -47,6 +47,7 @@ const (
 	MTAttrComment
 	MTAttrLabel
 	// List store's "artificial" columns used for rendering
+	QueueColumnIcon
 	QueueColumnFontWeight
 	QueueColumnBgColor
 	QueueColumnVisible
@@ -54,41 +55,42 @@ const (
 
 // MpdTrackAttribute describes an MPD's track attribute
 type MpdTrackAttribute struct {
-	Name       string                // Short display label for the attribute
-	LongName   string                // Display label for the attribute
-	AttrName   string                // Internal name of the corresponding MPD attribute
-	Numeric    bool                  // Whether the attribute's value is numeric
-	Searchable bool                  // Whether the attribute is searchable
-	Width      int                   // Default width of the column displaying this attribute
-	XAlign     float64               // X alignment of the column displaying this attribute (0...1)
-	Formatter  func(v string) string // Optional function for formatting the value
+	Name            string                // Short display label for the attribute
+	LongName        string                // Display label for the attribute
+	AttrName        string                // Internal name of the corresponding MPD attribute
+	Numeric         bool                  // Whether the attribute's value is numeric
+	Searchable      bool                  // Whether the attribute is searchable
+	Width           int                   // Default width of the column displaying this attribute
+	XAlign          float64               // X alignment of the column displaying this attribute (0...1)
+	Formatter       func(v string) string // Optional function for formatting the value
+	FallbackAttrIDs []int                 // Optional references to the fallback attributes to use when there's no value, in the order of preference
 }
 
 // MpdTrackAttributes contains all known MPD's track attributes
 var MpdTrackAttributes = map[int]MpdTrackAttribute{
-	MTAttrArtist:          {"Artist", "Artist", "Artist", false, true, 200, 0, nil},
-	MTAttrArtistSort:      {"Artist", "Artist (for sorting)", "Artistsort", false, false, 200, 0, nil},
-	MTAttrAlbum:           {"Album", "Album", "Album", false, true, 200, 0, nil},
-	MTAttrAlbumSort:       {"Album", "Album (for sorting)", "Albumsort", false, false, 200, 0, nil},
-	MTAttrAlbumArtist:     {"Album artist", "Album artist", "Albumartist", false, true, 200, 0, nil},
-	MTAttrAlbumArtistSort: {"Album artist", "Album artist (for sorting)", "Albumartistsort", false, false, 200, 0, nil},
-	MTAttrDisc:            {"Disc", "Disc", "Disc", false, true, 50, 1, nil},
-	MTAttrTrack:           {"Track", "Track title", "Title", false, true, 200, 0, nil},
-	MTAttrNumber:          {"#", "Track number", "Track", true, true, 50, 1, nil},
-	MTAttrLength:          {"Length", "Track length", "duration", true, false, 60, 1, util.FormatSecondsStr},
-	MTAttrPath:            {"Path", "Directory and file name", "file", false, true, 200, 0, nil},
-	MTAttrDirectory:       {"Directory", "File path", "file", false, false, 200, 0, path.Dir},
-	MTAttrFile:            {"File", "File name", "file", false, false, 200, 0, path.Base},
-	MTAttrYear:            {"Year", "Year", "Date", true, true, 50, 1, nil},
-	MTAttrGenre:           {"Genre", "Genre", "Genre", false, true, 200, 0, nil},
-	MTAttrName:            {"Name", "Stream name", "Name", false, true, 200, 0, nil},
-	MTAttrComposer:        {"Composer", "Composer", "Composer", false, true, 200, 0, nil},
-	MTAttrPerformer:       {"Performer", "Performer", "Performer", false, true, 200, 0, nil},
-	MTAttrConductor:       {"Conductor", "Conductor", "Conductor", false, false, 200, 0, nil},
-	MTAttrWork:            {"Work", "Work", "Work", false, false, 200, 0, nil},
-	MTAttrGrouping:        {"Grouping", "Grouping", "Grouping", false, false, 200, 0, nil},
-	MTAttrComment:         {"Comment", "Comment", "Comment", false, true, 200, 0, nil},
-	MTAttrLabel:           {"Label", "Label", "Label", false, true, 200, 0, nil},
+	MTAttrArtist:          {"Artist", "Artist", "Artist", false, true, 200, 0, nil, nil},
+	MTAttrArtistSort:      {"Artist", "Artist (for sorting)", "Artistsort", false, false, 200, 0, nil, nil},
+	MTAttrAlbum:           {"Album", "Album", "Album", false, true, 200, 0, nil, nil},
+	MTAttrAlbumSort:       {"Album", "Album (for sorting)", "Albumsort", false, false, 200, 0, nil, nil},
+	MTAttrAlbumArtist:     {"Album artist", "Album artist", "Albumartist", false, true, 200, 0, nil, nil},
+	MTAttrAlbumArtistSort: {"Album artist", "Album artist (for sorting)", "Albumartistsort", false, false, 200, 0, nil, nil},
+	MTAttrDisc:            {"Disc", "Disc", "Disc", false, true, 50, 1, nil, nil},
+	MTAttrTrack:           {"Track", "Track title", "Title", false, true, 200, 0, nil, []int{MTAttrName, MTAttrPath}},
+	MTAttrNumber:          {"#", "Track number", "Track", true, true, 50, 1, nil, nil},
+	MTAttrLength:          {"Length", "Track length", "duration", true, false, 60, 1, util.FormatSecondsStr, nil},
+	MTAttrPath:            {"Path", "Directory and file name", "file", false, true, 200, 0, nil, nil},
+	MTAttrDirectory:       {"Directory", "File path", "file", false, false, 200, 0, path.Dir, nil},
+	MTAttrFile:            {"File", "File name", "file", false, false, 200, 0, path.Base, nil},
+	MTAttrYear:            {"Year", "Year", "Date", true, true, 50, 1, nil, nil},
+	MTAttrGenre:           {"Genre", "Genre", "Genre", false, true, 200, 0, nil, nil},
+	MTAttrName:            {"Name", "Stream name", "Name", false, true, 200, 0, nil, nil},
+	MTAttrComposer:        {"Composer", "Composer", "Composer", false, true, 200, 0, nil, nil},
+	MTAttrPerformer:       {"Performer", "Performer", "Performer", false, true, 200, 0, nil, nil},
+	MTAttrConductor:       {"Conductor", "Conductor", "Conductor", false, false, 200, 0, nil, nil},
+	MTAttrWork:            {"Work", "Work", "Work", false, false, 200, 0, nil, nil},
+	MTAttrGrouping:        {"Grouping", "Grouping", "Grouping", false, false, 200, 0, nil, nil},
+	MTAttrComment:         {"Comment", "Comment", "Comment", false, true, 200, 0, nil, nil},
+	MTAttrLabel:           {"Label", "Label", "Label", false, true, 200, 0, nil, nil},
 }
 
 // MpdTrackAttributeIds stores attribute IDs sorted in desired display order

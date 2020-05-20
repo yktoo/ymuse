@@ -264,6 +264,8 @@
       <column type="gchararray"/>
       <!-- column-name Label -->
       <column type="gchararray"/>
+      <!-- column-name Icon -->
+      <column type="gchararray"/>
       <!-- column-name FontWeight -->
       <column type="guint"/>
       <!-- column-name BgColor -->

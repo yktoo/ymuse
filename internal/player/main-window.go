@@ -1920,6 +1920,10 @@ func (w *MainWindow) updatePlaylistsActions() {
 
 // updateQueue updates the current play queue contents
 func (w *MainWindow) updateQueue() {
+	// Lock tree updates
+	w.trvQueue.FreezeChildNotify()
+	defer w.trvQueue.ThawChildNotify()
+
 	// Clear the queue list store
 	w.queueListStore.Clear()
 	w.currentQueueIndex = -1
@@ -1939,6 +1943,7 @@ func (w *MainWindow) updateQueue() {
 	totalSecs := 0.0
 	for _, a := range attrs {
 		rowData := make(map[int]interface{})
+		// Iterate attributes
 		for id, mpdAttr := range config.MpdTrackAttributes {
 			// Fetch the raw attribute value, if any
 			value, ok := a[mpdAttr.AttrName]
@@ -1950,18 +1955,41 @@ func (w *MainWindow) updateQueue() {
 			if mpdAttr.Formatter != nil {
 				value = mpdAttr.Formatter(value)
 			}
-			rowData[id] = value
 
-			// Add the "artificial" column values
-			rowData[config.QueueColumnFontWeight] = fontWeightNormal
-			rowData[config.QueueColumnBgColor] = w.colourBgNormal
-			rowData[config.QueueColumnVisible] = true
+			// Only store non-empty values
+			if value != "" {
+				rowData[id] = value
+			}
 		}
+
+		// Check for possible fallbacks once all values are known
+		for id, mpdAttr := range config.MpdTrackAttributes {
+			// If no value for attribute and there are fallback attributes
+			if _, ok := rowData[id]; !ok && mpdAttr.FallbackAttrIDs != nil {
+				// Pick the first available value from fallback list
+				for _, fbId := range mpdAttr.FallbackAttrIDs {
+					if value, ok := rowData[fbId]; ok {
+						rowData[id] = value
+						break
+					}
+				}
+			}
+		}
+
+		// Add the "artificial" column values
+		iconName := "ymuse-audio-file"
+		if uri, ok := a["file"]; ok && (strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://")) {
+			iconName = "ymuse-stream"
+		}
+		rowData[config.QueueColumnIcon] = iconName
+		rowData[config.QueueColumnFontWeight] = fontWeightNormal
+		rowData[config.QueueColumnBgColor] = w.colourBgNormal
+		rowData[config.QueueColumnVisible] = true
 
 		// Add a row to the list store
 		errCheck(
 			w.queueListStore.SetCols(w.queueListStore.Append(), rowData),
-			"lstQueue.SetCols() failed")
+			"queueListStore.SetCols() failed")
 
 		// Accumulate counters
 		totalSecs += util.ParseFloatDef(a["duration"], 0)
@@ -2001,6 +2029,17 @@ func (w *MainWindow) updateQueueColumns() {
 		w.trvQueue.RemoveColumn(item.(*gtk.TreeViewColumn))
 	})
 
+	// Add an icon renderer
+	if renderer, err := gtk.CellRendererPixbufNew(); !errCheck(err, "CellRendererPixbufNew() failed") {
+		// Add an icon column
+		if col, err := gtk.TreeViewColumnNewWithAttribute("", renderer, "icon-name", config.QueueColumnIcon); !errCheck(err, "TreeViewColumnNewWithAttribute() failed") {
+			col.SetSizing(gtk.TREE_VIEW_COLUMN_FIXED)
+			col.SetFixedWidth(-1)
+			col.AddAttribute(renderer, "cell-background", config.QueueColumnBgColor)
+			w.trvQueue.AppendColumn(col)
+		}
+	}
+
 	// Add selected columns
 	for index, colSpec := range config.GetConfig().QueueColumns {
 		index := index // Make an in-loop copy of index for the closures below
@@ -2033,7 +2072,7 @@ func (w *MainWindow) updateQueueColumns() {
 		col.SetClickable(true)
 		col.SetResizable(true)
 		col.AddAttribute(renderer, "weight", config.QueueColumnFontWeight)
-		col.AddAttribute(renderer, "background", config.QueueColumnBgColor)
+		col.AddAttribute(renderer, "cell-background", config.QueueColumnBgColor)
 
 		// Bind the clicked signal
 		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, index, &attr) })
@@ -2148,10 +2187,10 @@ func (w *MainWindow) updateStyle() {
 
 	// Determine normal background colour
 	var bgNormal, bgActive string
-	if rgba, ok := ctx.LookupColor("theme_bg_color"); ok {
+	if rgba, ok := ctx.LookupColor("theme_base_color"); ok {
 		bgNormal = rgba.String()
 	} else {
-		log.Warning("Unknown colour: theme_bg_color")
+		log.Warning("Unknown colour: theme_base_color")
 		bgNormal = "#ffffff"
 	}
 
