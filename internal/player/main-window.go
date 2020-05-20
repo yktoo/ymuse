@@ -999,7 +999,7 @@ func (w *MainWindow) initQueueWidgets() {
 	w.aQueueSort = w.addAction("queue.sort", "", w.pmnQueueSort.Popup)
 	w.aQueueSortAsc = w.addAction("queue.sort.asc", "", func() { w.queueSortApply(false) })
 	w.aQueueSortDesc = w.addAction("queue.sort.desc", "", func() { w.queueSortApply(true) })
-	w.aQueueSortShuffle = w.addAction("queue.sort.shuffle", "", w.queueShuffle)
+	w.aQueueSortShuffle = w.addAction("queue.sort.shuffle", "<Ctrl><Shift>R", w.queueShuffle)
 	w.aQueueDelete = w.addAction("queue.delete", "", w.queueDelete)
 	w.aQueueSave = w.addAction("queue.save", "", w.queueSave)
 	w.aQueueSaveReplace = w.addAction("queue.save.replace", "", func() { w.queueSaveApply(true) })
