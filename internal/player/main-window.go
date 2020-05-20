@@ -155,6 +155,14 @@ const (
 	librarySearchAllAttrID = "\u0001any"
 )
 
+type triBool int
+
+const (
+	tbNone triBool = iota - 1
+	tbFalse
+	tbTrue
+)
+
 // NewMainWindow creates and returns a new MainWindow instance
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
@@ -340,7 +348,7 @@ func (w *MainWindow) onDelete() {
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
+		w.applyLibrarySelection(tbNone)
 	}
 }
 
@@ -353,13 +361,13 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 		switch state {
 		// Enter: use default mode
 		case 0:
-			w.applyLibrarySelection(config.GetConfig().TrackDefaultReplace)
+			w.applyLibrarySelection(tbNone)
 		// Ctrl+Enter: replace
 		case gdk.GDK_CONTROL_MASK:
-			w.applyLibrarySelection(true)
+			w.applyLibrarySelection(tbTrue)
 		// Shift+Enter: append
 		case gdk.GDK_SHIFT_MASK:
-			w.applyLibrarySelection(false)
+			w.applyLibrarySelection(tbFalse)
 		}
 
 	// Backspace: go level up (not in search mode)
@@ -432,7 +440,7 @@ func (w *MainWindow) onPlaylistDelete() {
 func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
+		w.applyPlaylistSelection(tbNone)
 	}
 }
 
@@ -445,13 +453,13 @@ func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event)
 		switch state {
 		// Enter: use default mode
 		case 0:
-			w.applyPlaylistSelection(config.GetConfig().PlaylistDefaultReplace)
+			w.applyPlaylistSelection(tbNone)
 		// Ctrl+Enter: replace
 		case gdk.GDK_CONTROL_MASK:
-			w.applyPlaylistSelection(true)
+			w.applyPlaylistSelection(tbTrue)
 		// Shift+Enter: append
 		case gdk.GDK_SHIFT_MASK:
-			w.applyPlaylistSelection(false)
+			w.applyPlaylistSelection(tbFalse)
 		}
 	}
 }
@@ -640,7 +648,7 @@ func (w *MainWindow) onStreamEdit() {
 func (w *MainWindow) onStreamListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
 	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
 		// Double click in the list box
-		w.applyStreamSelection(config.GetConfig().StreamDefaultReplace)
+		w.applyStreamSelection(tbNone)
 	}
 }
 
@@ -653,13 +661,13 @@ func (w *MainWindow) onStreamListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
 		switch state {
 		// Enter: use default mode
 		case 0:
-			w.applyStreamSelection(config.GetConfig().StreamDefaultReplace)
+			w.applyStreamSelection(tbNone)
 		// Ctrl+Enter: replace
 		case gdk.GDK_CONTROL_MASK:
-			w.applyStreamSelection(true)
+			w.applyStreamSelection(tbTrue)
 		// Shift+Enter: append
 		case gdk.GDK_SHIFT_MASK:
-			w.applyStreamSelection(false)
+			w.applyStreamSelection(tbFalse)
 		}
 	}
 }
@@ -733,24 +741,30 @@ func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *g
 
 // applyLibrarySelection navigates into the folder or adds or replaces the content of the queue with the currently
 // selected items in the library
-func (w *MainWindow) applyLibrarySelection(replace bool) {
+func (w *MainWindow) applyLibrarySelection(replace triBool) {
 	// Get selected path
-	libPath, isDir := w.getSelectedLibraryPath()
-	if libPath == "" {
-		return
-	}
+	libPath, itemType := w.getSelectedLibraryPath()
+	switch itemType {
+	// Directory: either add/replace or navigate inside it
+	case "d":
+		if replace == tbNone {
+			w.setLibraryPath(libPath)
+		} else {
+			w.queueURI(replace, libPath)
+		}
 
-	// Directory - navigate inside it
-	if isDir {
-		w.setLibraryPath(libPath)
-	} else {
-		// File - append/replace the queue
-		w.queueOne(replace, libPath)
+	// File: append/replace the queue
+	case "f":
+		w.queueURI(replace, libPath)
+
+	// Playlist: append/replace the queue
+	case "p":
+		w.queuePlaylist(replace, libPath)
 	}
 }
 
 // applyPlaylistSelection adds or replaces the content of the queue with the currently selected playlist
-func (w *MainWindow) applyPlaylistSelection(replace bool) {
+func (w *MainWindow) applyPlaylistSelection(replace triBool) {
 	if name := w.getSelectedPlaylistName(); name != "" {
 		w.queuePlaylist(replace, name)
 	}
@@ -772,7 +786,7 @@ func (w *MainWindow) applyQueueSelection() {
 }
 
 // applyStreamSelection adds or replaces the content of the queue with the currently selected stream
-func (w *MainWindow) applyStreamSelection(replace bool) {
+func (w *MainWindow) applyStreamSelection(replace triBool) {
 	if idx := w.getSelectedStreamIndex(); idx >= 0 {
 		w.queueStream(replace, config.GetConfig().Streams[idx].URI)
 	}
@@ -877,19 +891,19 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 	return indices
 }
 
-// getSelectedLibraryPath returns the full path of the currently selected library item and whether it's a directory,
-// or an empty string if there's an error
-func (w *MainWindow) getSelectedLibraryPath() (string, bool) {
+// getSelectedLibraryPath returns the full path of the currently selected library item and its type ("d" for directory,
+// "f" for file or "p" for playlist), or an empty string if there's an error
+func (w *MainWindow) getSelectedLibraryPath() (string, string) {
 	// If there's selection
 	row := w.lbxLibrary.GetSelectedRow()
 	if row == nil {
-		return "", false
+		return "", ""
 	}
 
 	// Extract path, which is stored in the row's name
 	name, err := row.GetName()
 	if errCheck(err, "getSelectedLibraryPath(): row.GetName() failed") {
-		return "", false
+		return "", ""
 	}
 
 	// Calculate final path
@@ -899,8 +913,8 @@ func (w *MainWindow) getSelectedLibraryPath() (string, bool) {
 	}
 	libPath += name[2:]
 
-	// The name prefix defines whether it's a file ("f:") or a directory ("d:")
-	return libPath, strings.HasPrefix(name, "d:")
+	// The name prefix defines whether it's a file ("f:"), playlist ("p:") or a directory ("d:")
+	return libPath, name[:1]
 }
 
 // getSelectedPlaylistName returns the name of the currently selected playlist, or an empty string if there's an error
@@ -957,7 +971,7 @@ func (w *MainWindow) initPlayerWidgets() {
 	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.playerStop)
 	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.playerPlayPause)
 	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.playerNext)
-	// TODO convert to stateful actions once Gotk3 supporting GVariant is released
+	// NB convert to stateful actions once Gotk3 supporting GVariant is released
 	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
 	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
@@ -1049,7 +1063,7 @@ func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		if rescan {
-			// TODO implement once gompd provides support for it, see https://github.com/fhs/gompd/issues/54
+			// NB implement once gompd provides support for it, see https://github.com/fhs/gompd/issues/54
 			err = errors.New("Rescan is not implemented yet")
 		} else {
 			_, err = client.Update(libPath)
@@ -1164,30 +1178,6 @@ func (w *MainWindow) preferences() {
 	PreferencesDialog(w.window, w.connect, w.updateQueueColumns, w.updatePlayerTitleTemplate)
 }
 
-// queue adds or replaces the content of the queue with the specified URIs
-func (w *MainWindow) queue(replace bool, uris []string) {
-	var err error
-	w.connector.IfConnected(func(client *mpd.Client) {
-		commands := client.BeginCommandList()
-
-		// Clear the queue, if needed
-		if replace {
-			commands.Clear()
-		}
-
-		// Add the URIs
-		for _, uri := range uris {
-			commands.Add(uri)
-		}
-
-		// Run the commands
-		err = commands.End()
-	})
-
-	// Check for error
-	w.errCheckDialog(err, "Failed to add track(s) to the queue")
-}
-
 // queueClear empties MPD's play queue
 func (w *MainWindow) queueClear() {
 	var err error
@@ -1279,25 +1269,21 @@ func (w *MainWindow) queueFilter() {
 	w.lblQueueFilter.SetText(fmt.Sprintf("%d tracks displayed", count))
 }
 
-// queueOne adds or replaces the content of the queue with one specified URI
-func (w *MainWindow) queueOne(replace bool, uri string) {
-	w.queue(replace, []string{uri})
-}
-
 // queuePlaylist adds or replaces the content of the queue with the specified playlist
-func (w *MainWindow) queuePlaylist(replace bool, playlistName string) {
-	log.Debugf("queuePlaylist(%v, %v)", replace, playlistName)
+func (w *MainWindow) queuePlaylist(replace triBool, uri string) {
+	log.Debugf("queuePlaylist(%v, %v)", replace, uri)
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 
 		// Clear the queue, if needed
-		if replace {
+		if replace == tbTrue || replace == tbNone && config.GetConfig().PlaylistDefaultReplace {
 			commands.Clear()
 		}
 
 		// Add the content of the playlist
-		commands.PlaylistLoad(playlistName, -1, -1)
+		// NB: extract only playlist name from the URI for now
+		commands.PlaylistLoad(strings.TrimSuffix(path.Base(uri), ".m3u"), -1, -1)
 
 		// Run the commands
 		err = commands.End()
@@ -1443,14 +1429,14 @@ func (w *MainWindow) queueSortApply(descending bool) {
 }
 
 // queueStream adds or replaces the content of the queue with the specified stream
-func (w *MainWindow) queueStream(replace bool, uri string) {
+func (w *MainWindow) queueStream(replace triBool, uri string) {
 	log.Debugf("queueStream(%v, %v)", replace, uri)
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 
 		// Clear the queue, if needed
-		if replace {
+		if replace == tbTrue || replace == tbNone && config.GetConfig().StreamDefaultReplace {
 			commands.Clear()
 		}
 
@@ -1465,9 +1451,38 @@ func (w *MainWindow) queueStream(replace bool, uri string) {
 	w.errCheckDialog(err, "Failed to add stream to the queue")
 }
 
+// queueURI adds or replaces the content of the queue with one specified URI
+func (w *MainWindow) queueURI(replace triBool, uri string) {
+	w.queueURIs(replace, []string{uri})
+}
+
+// queueURIs adds or replaces the content of the queue with the specified URIs
+func (w *MainWindow) queueURIs(replace triBool, uris []string) {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		commands := client.BeginCommandList()
+
+		// Clear the queue, if needed
+		if replace == tbTrue || replace == tbNone && config.GetConfig().TrackDefaultReplace {
+			commands.Clear()
+		}
+
+		// Add the URIs
+		for _, uri := range uris {
+			commands.Add(uri)
+		}
+
+		// Run the commands
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, "Failed to add track(s) to the queue")
+}
+
 // shortcutInfo displays a shortcut info window
 func (w *MainWindow) shortcutInfo() {
-	// TODO update ShortcutsWindow usage once it's properly implemented in gotk3
+	// NB. update ShortcutsWindow usage once it's properly implemented in gotk3
 	builder := NewBuilder(generated.GetShortcutsGlade())
 	sw := builder.getShortcutsWindow("shortcutsWindow")
 	sw.SetTransientFor(w.window)
@@ -1567,20 +1582,32 @@ func (w *MainWindow) updateLibrary() {
 
 	// Repopulate the library list
 	var rowToSelect *gtk.ListBoxRow
-	idxRow, countDirs, countFiles, limited := 0, 0, 0, false
+	idxRow, countDirs, countFiles, countPlaylists, limited := 0, 0, 0, 0, false
 	for _, a := range attrs {
 		// Pick files and directories only
 		uri, iconName, prefix := "", "", ""
+		var appendFunc, replaceFunc func()
 		if dir, ok := a["directory"]; ok {
 			uri = dir
 			iconName = "folder"
 			prefix = "d:"
 			countDirs++
+			appendFunc = func() { w.queueURI(tbFalse, dir) }
+			replaceFunc = func() { w.queueURI(tbTrue, dir) }
 		} else if file, ok := a["file"]; ok {
 			uri = file
 			iconName = "ymuse-audio-file"
 			prefix = "f:"
 			countFiles++
+			appendFunc = func() { w.queueURI(tbFalse, file) }
+			replaceFunc = func() { w.queueURI(tbTrue, file) }
+		} else if playlist, ok := a["playlist"]; ok {
+			uri = playlist
+			iconName = "ymuse-playlist"
+			prefix = "p:"
+			countPlaylists++
+			appendFunc = func() { w.queuePlaylist(tbFalse, playlist) }
+			replaceFunc = func() { w.queuePlaylist(tbTrue, playlist) }
 		} else {
 			continue
 		}
@@ -1593,8 +1620,8 @@ func (w *MainWindow) updateLibrary() {
 			prefix+name,
 			iconName,
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueOne(false, uri) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueOne(true, uri) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", appendFunc),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", replaceFunc))
 
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
@@ -1631,18 +1658,32 @@ func (w *MainWindow) updateLibrary() {
 
 	// Compose info
 	info := ""
-	if countDirs+countFiles == 0 {
+	if countDirs+countFiles+countPlaylists == 0 {
 		info = "No items"
 	} else {
+		// Compose counters
+		infoItems := make([]string, 0, 3)
 		if countDirs > 0 {
-			info += fmt.Sprintf("%d folders", countDirs)
+			infoItems = append(infoItems, fmt.Sprintf("%d folders", countDirs))
 		}
 		if countFiles > 0 {
-			if info != "" {
-				info += " and "
-			}
-			info += fmt.Sprintf("%d files", countFiles)
+			infoItems = append(infoItems, fmt.Sprintf("%d files", countFiles))
 		}
+		if countPlaylists > 0 {
+			infoItems = append(infoItems, fmt.Sprintf("%d playlists", countPlaylists))
+		}
+		for i, item := range infoItems {
+			if info != "" {
+				if i == len(infoItems)-1 {
+					info += " and "
+				} else {
+					info += ", "
+				}
+			}
+			info += item
+		}
+
+		// Add note about limited set, if applicable
 		if limited {
 			info += fmt.Sprintf(" (limited selection of %d items)", len(attrs))
 		}
@@ -1690,7 +1731,7 @@ func (w *MainWindow) updateLibraryPath() {
 				pathCopy := libPath
 
 				// Create a button. The last button must be depressed
-				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "ymuse-folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
+				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
 			}
 		}
 
@@ -1850,8 +1891,8 @@ func (w *MainWindow) updatePlaylists() {
 			name,
 			"ymuse-playlist",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queuePlaylist(false, name) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(true, name) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queuePlaylist(tbFalse, name) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(tbTrue, name) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
@@ -2069,8 +2110,8 @@ func (w *MainWindow) updateStreams() {
 			"",
 			"ymuse-stream",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueStream(false, stream.URI) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueStream(true, stream.URI) }))
+			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueStream(tbFalse, stream.URI) }),
+			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueStream(tbTrue, stream.URI) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
