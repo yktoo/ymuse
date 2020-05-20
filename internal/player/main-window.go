@@ -1573,7 +1573,7 @@ func (w *MainWindow) updateLibrary() {
 		uri, iconName, prefix := "", "", ""
 		if dir, ok := a["directory"]; ok {
 			uri = dir
-			iconName = "ymuse-folder"
+			iconName = "folder"
 			prefix = "d:"
 			countDirs++
 		} else if file, ok := a["file"]; ok {
@@ -2099,8 +2099,6 @@ func (w *MainWindow) updateStreamsActions() {
 
 // updateStyle updates custom colours based on the current theme
 func (w *MainWindow) updateStyle() {
-	log.Debug("updateStyle()")
-
 	// Fetch window's style context
 	ctx, err := w.window.GetStyleContext()
 	if errCheck(err, "updateStyle(): GetStyleContext() failed") {
