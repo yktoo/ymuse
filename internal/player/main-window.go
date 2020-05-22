@@ -1972,6 +1972,9 @@ func (w *MainWindow) updateQueue() {
 	w.trvQueue.FreezeChildNotify()
 	defer w.trvQueue.ThawChildNotify()
 
+	// Detach the tree view from the list model to speed up processing
+	w.trvQueue.SetModel(nil)
+
 	// Clear the queue list store
 	w.queueListStore.Clear()
 	w.currentQueueIndex = -1
@@ -2034,9 +2037,18 @@ func (w *MainWindow) updateQueue() {
 		rowData[config.QueueColumnBgColor] = w.colourBgNormal
 		rowData[config.QueueColumnVisible] = true
 
+		// Create arrays (indices and values)
+		rowIndices, rowValues := make([]int, len(rowData)), make([]interface{}, len(rowData))
+		colIdx := 0
+		for key, value := range rowData {
+			rowIndices[colIdx] = key
+			rowValues[colIdx] = value
+			colIdx++
+		}
+
 		// Add a row to the list store
 		errCheck(
-			w.queueListStore.SetCols(w.queueListStore.Append(), rowData),
+			w.queueListStore.InsertWithValues(nil, -1, rowIndices, rowValues),
 			"queueListStore.SetCols() failed")
 
 		// Accumulate counters
@@ -2063,11 +2075,14 @@ func (w *MainWindow) updateQueue() {
 	// Update the queue info
 	w.lblQueueInfo.SetText(status)
 
-	// Highlight and scroll the tree to the currently played item
-	w.updateQueueNowPlaying()
-
 	// Update queue actions
 	w.updateQueueActions()
+
+	// Restore the tree view model
+	w.trvQueue.SetModel(w.queueListFilter)
+
+	// Highlight and scroll the tree to the currently played item
+	w.updateQueueNowPlaying()
 }
 
 // updateQueueColumns updates the columns in the play queue tree view
