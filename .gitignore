@@ -6,4 +6,5 @@
 
 # Generated content
 /internal/generated/
+/resources/i18n/generated/
 /dist/

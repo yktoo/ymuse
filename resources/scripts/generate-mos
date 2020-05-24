@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Generates .mo compiled language files
+
+set -e
+
+app_id="ymuse"
+root_dir="$(dirname "$(dirname "$(dirname "$(realpath "$0")")")")"
+
+# Remove compiled .mo files, if any
+mo_dir="$root_dir/resources/i18n/generated"
+rm -rf "$mo_dir"
+
+# Iterate through all source .po files
+find "$root_dir" -type f -name '*.po' |
+    while read file; do
+        # Language is the filename without the extension
+        lang="$(basename "$file")"
+        lang="${lang%.*}"
+
+        # Create the target dir if needed
+        target_dir="$mo_dir/$lang/LC_MESSAGES"
+        mkdir -p "$target_dir"
+
+        # Compile the .po into a .mo
+        echo "Compiling $file" into "$target_dir/$app_id.mo"
+        msgfmt "$file" -o "$target_dir/$app_id.mo"
+    done

@@ -443,7 +443,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
-                        <property name="label" translatable="yes">…</property>
                         <property name="ellipsize">end</property>
                         <property name="track_visited_links">False</property>
                       </object>
@@ -459,7 +458,6 @@
                         <property name="margin_right">6</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
-                        <property name="label" translatable="yes">…</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -659,7 +657,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
-                        <property name="label" translatable="yes">...</property>
                         <property name="ellipsize">end</property>
                         <property name="track_visited_links">False</property>
                       </object>
@@ -774,7 +771,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
-                        <property name="label" translatable="yes">...</property>
                         <property name="ellipsize">end</property>
                         <property name="track_visited_links">False</property>
                       </object>
@@ -904,7 +900,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
-                        <property name="label" translatable="yes">...</property>
                         <property name="ellipsize">end</property>
                         <property name="track_visited_links">False</property>
                       </object>

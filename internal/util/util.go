@@ -38,6 +38,7 @@ func ParseFloatDef(s string, def float64) float64 {
 }
 
 // FormatSeconds formats a number seconds as a string
+// TODO i18n
 func FormatSeconds(seconds float64) string {
 	minutes, secs := int(seconds)/60, int(seconds)%60
 	hours, mins := minutes/60, minutes%60

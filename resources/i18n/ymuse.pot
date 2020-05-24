@@ -1,0 +1,799 @@
+# Ymuse MPD client
+# Copyright (C) 2020 Dmitry Kann
+# This file is distributed under the same license as the Ymuse package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-23 19:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:14
+msgid "Application shortcuts"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:17
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:255
+msgid "General"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:20
+msgid "(Re)connect to MPD"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:26
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1171
+msgid "Disconnect from MPD"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:32
+msgid "MPD information"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:38
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:18
+msgid "Preferences"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:44
+msgid "Quit"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:50
+msgid "About"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:56
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:62
+msgid "Switch to Queue tab"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:68
+msgid "Switch to Library tab"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:74
+msgid "Switch to Playlists tab"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:80
+msgid "Switch to Streams tab"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:88
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:483
+msgid "Queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:91
+msgid "Play selection"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:97
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:150
+msgid "Toggle play/pause"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:103
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:42
+msgid "Delete selected"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:109
+msgid "Go to Now playing"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:115
+msgid "Open Filter bar"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:121
+msgid "Shuffle the queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:129
+msgid "Player"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:132
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:974
+msgid "Previous track"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:138
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1019
+msgid "Next track"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:144
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:991
+msgid "Stop"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:156
+msgid "Toggle random mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:162
+msgid "Toggle repeat mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:168
+msgid "Toggle consume mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:18
+msgid "Jump to now playing"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:33
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:298
+msgid "Clear"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:69
+msgid "Stream name:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:95
+msgid "Stream URI:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:129
+msgid "Apply"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:281
+msgid "Jump to the currently played track"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:283
+msgid "Now playing"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:296
+msgid "Clear the play queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:311
+msgid "Sort the play queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:314
+msgid "Sort ▾"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:327
+msgid "Remove selected track(s) from the queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:329
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:720
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:850
+msgid "Delete"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:342
+msgid "Save the play queue as a playlist"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:345
+msgid "Save ▾"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:358
+msgid "Filter the play queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:359
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:521
+msgid "Search"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:389
+msgid "Filter…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:504
+msgid "Update the music library"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:507
+msgid "Update ▾"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:519
+msgid "Search the library"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:556
+msgid "page1"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:573
+msgid "Search…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:587
+msgid "Track attribute(s) to search"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:600
+msgid "page0"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:662
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:777
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:907
+msgid "..."
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:685
+msgid "Library"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:703
+msgid "Rename selected playlist"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:705
+msgid "Rename"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:718
+msgid "Delete selected playlist"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:800
+msgid "Playlists"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:818
+msgid "Add a new stream"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:820
+msgid "Add"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:833
+msgid "Edit the selected stream"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:835
+msgid "Edit"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:848
+msgid "Delete the selected stream"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:930
+msgid "Streams"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:976
+msgid "Previous"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:989
+msgid "Stop playback"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1004
+msgid "Pause or resume playback"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1006
+msgid "Play/Pause"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1021
+msgid "Next"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1044
+msgid "Shuffle mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1046
+msgid "Random"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1059
+msgid "Repeat mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1061
+msgid "Repeat"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1074
+msgid "Consume mode"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1076
+msgid "Consume"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1120
+msgid "Current track time"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1121
+msgid "<big>0:00</big> / 0:00"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1157
+msgid "Connect to MPD"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1185
+msgid "MPD _information…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1210
+msgid "_Preferences…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1235
+msgid "_About…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1249
+msgid "Keyboard shortcuts…"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1263
+msgid "_Quit"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1292
+msgid "Update the entire music database"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1294
+msgid "Update entire library"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1307
+msgid "Update the selected item in music database"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1309
+msgid "Update selected item"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1322
+msgid "Update the entire music database, including unmodified files"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1324
+msgid "Rescan all files"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1337
+msgid "Update the selected item, including unmodified files"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1339
+msgid "Rescan selected item"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1376
+msgid "Save into playlist"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1410
+msgid "Save selected tracks only"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1427
+msgid "New playlist name"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1455
+msgid "Replace playlist"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1470
+msgid "Append tracks"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1512
+msgid "Sort queue by"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1539
+msgid "Ascending"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1554
+msgid "Descending"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/player.glade:1587
+msgid "Shuffle"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:81
+msgid "Host:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:105
+msgid "(leave empty for localhost)"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:117
+msgid "Port:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:141
+msgid "Password:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:164
+msgid "Automatically connect on startup"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:178
+msgid "Automatically reconnect"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:192
+msgid "Reconnect now"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:238
+msgid "<b>MPD connection</b>"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:290
+msgid "On double click / Enter on a track:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:302
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:385
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:468
+msgid "Replace the queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:318
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:401
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:484
+msgid "Append to the queue"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:340
+msgid "<b>Library</b>"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:373
+msgid "On double click / Enter on a playlist:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:423
+msgid "<b>Playlists</b>"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:456
+msgid "On double click / Enter on a stream:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:506
+msgid "<b>Streams</b>"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:540
+msgid "Track title template:"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:580
+msgid "<b>Player</b>"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:600
+msgid "Interface"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:618
+msgid "Select columns to display in the play queue, and their order."
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:662
+msgid "Move the selected column up"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:663
+msgid "Move up"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:677
+msgid "Move the selected column down"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:678
+msgid "Move down"
+msgstr ""
+
+#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:707
+msgid "Columns"
+msgstr ""
+
+msgid "verbose logging"
+msgstr ""
+
+msgid "more verbose logging"
+msgstr ""
+
+msgid "Artist"
+msgstr ""
+
+msgid "Artist (for sorting)"
+msgstr ""
+
+msgid "Album"
+msgstr ""
+
+msgid "Album (for sorting)"
+msgstr ""
+
+msgid "Album artist"
+msgstr ""
+
+msgid "Album artist (for sorting)"
+msgstr ""
+
+msgid "Disc"
+msgstr ""
+
+msgid "Track title"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "#"
+msgstr ""
+
+msgid "Track number"
+msgstr ""
+
+msgid "Track"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Track length"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Directory and file name"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "File path"
+msgstr ""
+
+msgid "File"
+msgstr ""
+
+msgid "File name"
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Genre"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Stream name"
+msgstr ""
+
+msgid "Composer"
+msgstr ""
+
+msgid "Performer"
+msgstr ""
+
+msgid "Conductor"
+msgstr ""
+
+msgid "Work"
+msgstr ""
+
+msgid "Grouping"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Label"
+msgstr ""
+
+msgid "Ymuse version %s; %s; released %s"
+msgstr ""
+
+msgid "No items"
+msgstr ""
+
+msgid " and "
+msgstr ""
+
+msgid "updating database…"
+msgstr ""
+
+msgid "%d folders"
+msgstr ""
+
+msgid "%d files"
+msgstr ""
+
+msgid "%d playlists"
+msgstr ""
+
+msgid "Files"
+msgstr ""
+
+msgid "<i>(not connected)</i>"
+msgstr ""
+
+msgid "Queue is empty"
+msgstr ""
+
+msgid "One track"
+msgstr ""
+
+msgid "%d tracks"
+msgstr ""
+
+msgid "playing time %s"
+msgstr ""
+
+msgid "Failed to delete the playlist"
+msgstr ""
+
+msgid "Rename playlist"
+msgstr ""
+
+msgid "Failed to rename the playlist"
+msgstr ""
+
+msgid "Delete stream"
+msgstr ""
+
+msgid "Are you sure you want to delete stream \"%s\"?"
+msgstr ""
+
+msgid "Failed to play the selected track"
+msgstr ""
+
+msgid "Failed to retrieve information from MPD"
+msgstr ""
+
+msgid "(unknown)"
+msgstr ""
+
+msgid "Daemon version:"
+msgstr ""
+
+msgid "Number of artists:"
+msgstr ""
+
+msgid "Number of albums:"
+msgstr ""
+
+msgid "Number of tracks:"
+msgstr ""
+
+msgid "Total playing time:"
+msgstr ""
+
+msgid "Last database update:"
+msgstr ""
+
+msgid "Daemon uptime:"
+msgstr ""
+
+msgid "Listening time:"
+msgstr ""
+
+msgid "Everywhere"
+msgstr ""
+
+msgid "Failed to update the library"
+msgstr ""
+
+msgid "Failed to skip to previous track"
+msgstr ""
+
+msgid "Failed to stop playback"
+msgstr ""
+
+msgid "Failed to toggle playback"
+msgstr ""
+
+msgid "Failed to skip to next track"
+msgstr ""
+
+msgid "Failed to toggle consume mode"
+msgstr ""
+
+msgid "Failed to toggle random mode"
+msgstr ""
+
+msgid "Failed to toggle repeat mode"
+msgstr ""
+
+msgid "Failed to clear the queue"
+msgstr ""
+
+msgid "Failed to delete tracks from the queue"
+msgstr ""
+
+msgid "%d track(s) displayed"
+msgstr ""
+
+msgid "Failed to add playlist to the queue"
+msgstr ""
+
+msgid "(new playlist)"
+msgstr ""
+
+msgid "Unnamed"
+msgstr ""
+
+msgid "Not connected to MPD"
+msgstr ""
+
+msgid "Failed to create a playlist"
+msgstr ""
+
+msgid "Failed to shuffle the queue"
+msgstr ""
+
+msgid "Failed to sort the queue"
+msgstr ""
+
+msgid "Failed to add stream to the queue"
+msgstr ""
+
+msgid "Release date: %s"
+msgstr ""
+
+msgid "Delete playlist"
+msgstr ""
+
+msgid "No playlists"
+msgstr ""
+
+msgid "Are you sure you want to delete playlist \"%s\"?"
+msgstr ""
+
+msgid "Player title template error, check log"
+msgstr ""
+
+msgid "No streams"
+msgstr ""
+
+msgid "%d streams"
+msgstr ""

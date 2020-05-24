@@ -426,7 +426,7 @@ func (w *MainWindow) onLibraryStopSearch() {
 func (w *MainWindow) onPlaylistDelete() {
 	var err error
 	if name := w.getSelectedPlaylistName(); name != "" {
-		if util.ConfirmDialog(w.window, "Delete playlist", fmt.Sprintf("Are you sure you want to delete playlist \"%s\"?", name)) {
+		if util.ConfirmDialog(w.window, glib.Local("Delete playlist"), fmt.Sprintf(glib.Local("Are you sure you want to delete playlist \"%s\"?"), name)) {
 			w.connector.IfConnected(func(client *mpd.Client) {
 				err = client.PlaylistRemove(name)
 			})
@@ -434,7 +434,7 @@ func (w *MainWindow) onPlaylistDelete() {
 	}
 
 	// Check for error (outside IfConnected() because it would keep the client locked)
-	w.errCheckDialog(err, "Failed to delete the playlist")
+	w.errCheckDialog(err, glib.Local("Failed to delete the playlist"))
 }
 
 func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
@@ -467,7 +467,7 @@ func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event)
 func (w *MainWindow) onPlaylistRename() {
 	var err error
 	if name := w.getSelectedPlaylistName(); name != "" {
-		if newName, ok := util.EditDialog(w.window, "Rename playlist", name, "Rename"); ok {
+		if newName, ok := util.EditDialog(w.window, glib.Local("Rename playlist"), name, glib.Local("Rename")); ok {
 			w.connector.IfConnected(func(client *mpd.Client) {
 				err = client.PlaylistRename(name, newName)
 			})
@@ -475,7 +475,7 @@ func (w *MainWindow) onPlaylistRename() {
 	}
 
 	// Check for error (outside IfConnected() because it would keep the client locked)
-	w.errCheckDialog(err, "Failed to rename the playlist")
+	w.errCheckDialog(err, glib.Local("Failed to rename the playlist"))
 }
 
 func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
@@ -616,7 +616,7 @@ func (w *MainWindow) onStreamDelete() {
 
 	// Ask for a confirmation
 	streams := &config.GetConfig().Streams
-	if util.ConfirmDialog(w.window, "Delete stream", fmt.Sprintf("Are you sure you want to delete stream \"%s\"?", (*streams)[idx].Name)) {
+	if util.ConfirmDialog(w.window, glib.Local("Delete stream"), fmt.Sprintf(glib.Local("Are you sure you want to delete stream \"%s\"?"), (*streams)[idx].Name)) {
 		*streams = append((*streams)[:idx], (*streams)[idx+1:]...)
 	}
 
@@ -714,7 +714,7 @@ func (w *MainWindow) about() {
 	}
 	dlg.SetLogoIconName(config.AppMetadata.Icon)
 	dlg.SetProgramName(config.AppMetadata.Name)
-	dlg.SetComments(fmt.Sprintf("Release date: %s", config.AppMetadata.BuildDate))
+	dlg.SetComments(fmt.Sprintf(glib.Local("Release date: %s"), config.AppMetadata.BuildDate))
 	dlg.SetCopyright(config.AppMetadata.Copyright)
 	dlg.SetLicense(config.AppMetadata.License)
 	dlg.SetVersion(config.AppMetadata.Version)
@@ -782,7 +782,7 @@ func (w *MainWindow) applyQueueSelection() {
 	}
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to play the selected track")
+	w.errCheckDialog(err, glib.Local("Failed to play the selected track"))
 }
 
 // applyStreamSelection adds or replaces the content of the queue with the currently selected stream
@@ -953,12 +953,12 @@ func (w *MainWindow) information() {
 		version = client.Version()
 		stats, err = client.Stats()
 	})
-	if w.errCheckDialog(err, "Failed to retrieve information from MPD") || stats == nil {
+	if w.errCheckDialog(err, glib.Local("Failed to retrieve information from MPD")) || stats == nil {
 		return
 	}
 
 	// Parse DB update time
-	updateTime := "(unknown)"
+	updateTime := glib.Local("(unknown)")
 	if i, err := strconv.ParseInt(stats["db_update"], 10, 64); err == nil {
 		updateTime = time.Unix(i, 0).Format("2006-01-02 15:04:05")
 	}
@@ -967,25 +967,24 @@ func (w *MainWindow) information() {
 	dlg := gtk.MessageDialogNew(w.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "")
 	defer dlg.Destroy()
 	dlg.SetMarkup(fmt.Sprintf(
-		"<big><b>MPD Information</b></big>\n\n"+
-			"<tt>"+
-			"<b>Daemon version:</b>       %20s\n"+
-			"<b>Number of artists:</b>    %20s\n"+
-			"<b>Number of albums:</b>     %20s\n"+
-			"<b>Number of tracks:</b>     %20s\n"+
-			"<b>Total playing time:</b>   %20s\n"+
-			"<b>Last database update:</b> %20s\n"+
-			"<b>Daemon uptime:</b>        %20s\n"+
-			"<b>Listening time:</b>       %20s\n"+
-			"</tt>",
-		version,
-		stats["artists"],
-		stats["albums"],
-		stats["songs"],
-		util.FormatSecondsStr(stats["db_playtime"]),
-		updateTime,
-		util.FormatSecondsStr(stats["uptime"]),
-		util.FormatSecondsStr(stats["playtime"]),
+		"<big><b>%s</b></big>\n\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s\n"+
+			"<b>%s</b> %20s",
+		glib.Local("MPD Information"),
+		glib.Local("Daemon version:"), version,
+		glib.Local("Number of artists:"), stats["artists"],
+		glib.Local("Number of albums:"), stats["albums"],
+		glib.Local("Number of tracks:"), stats["songs"],
+		glib.Local("Total playing time:"), util.FormatSecondsStr(stats["db_playtime"]),
+		glib.Local("Last database update:"), updateTime,
+		glib.Local("Daemon uptime:"), util.FormatSecondsStr(stats["uptime"]),
+		glib.Local("Listening time:"), util.FormatSecondsStr(stats["playtime"]),
 	))
 	dlg.Run()
 }
@@ -1001,10 +1000,10 @@ func (w *MainWindow) initLibraryWidgets() {
 	w.addAction("library.search.toggle", "", w.onLibrarySearchToggle)
 
 	// Populate search attribute combo box
-	w.cbxLibrarySearchAttr.Append(librarySearchAllAttrID, "Everywhere")
+	w.cbxLibrarySearchAttr.Append(librarySearchAllAttrID, glib.Local("Everywhere"))
 	for _, id := range config.MpdTrackAttributeIds {
 		if config.MpdTrackAttributes[id].Searchable {
-			w.cbxLibrarySearchAttr.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
+			w.cbxLibrarySearchAttr.Append(strconv.Itoa(id), glib.Local(config.MpdTrackAttributes[id].LongName))
 		}
 	}
 	w.cbxLibrarySearchAttr.SetActiveID(librarySearchAllAttrID)
@@ -1054,7 +1053,7 @@ func (w *MainWindow) initQueueWidgets() {
 
 	// Populate "Queue sort by" combo box
 	for _, id := range config.MpdTrackAttributeIds {
-		w.cbxQueueSortBy.Append(strconv.Itoa(id), config.MpdTrackAttributes[id].LongName)
+		w.cbxQueueSortBy.Append(strconv.Itoa(id), glib.Local(config.MpdTrackAttributes[id].LongName))
 	}
 	w.cbxQueueSortBy.SetActiveID(strconv.Itoa(config.GetConfig().DefaultSortAttrID))
 
@@ -1119,7 +1118,7 @@ func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to update the library")
+	w.errCheckDialog(err, glib.Local("Failed to update the library"))
 }
 
 // playerPrevious rewinds the player to the previous track
@@ -1130,7 +1129,7 @@ func (w *MainWindow) playerPrevious() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to skip to previous track")
+	w.errCheckDialog(err, glib.Local("Failed to skip to previous track"))
 }
 
 // playerStop stops the playback
@@ -1141,7 +1140,7 @@ func (w *MainWindow) playerStop() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to stop playback")
+	w.errCheckDialog(err, glib.Local("Failed to stop playback"))
 }
 
 // playerPlayPause pauses or resumes the playback
@@ -1159,7 +1158,7 @@ func (w *MainWindow) playerPlayPause() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to toggle playback")
+	w.errCheckDialog(err, glib.Local("Failed to toggle playback"))
 }
 
 // playerNext advances the player to the next track
@@ -1170,7 +1169,7 @@ func (w *MainWindow) playerNext() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to skip to next track")
+	w.errCheckDialog(err, glib.Local("Failed to skip to next track"))
 }
 
 // playerToggleConsume toggles player's consume mode
@@ -1186,7 +1185,7 @@ func (w *MainWindow) playerToggleConsume() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to toggle consume mode")
+	w.errCheckDialog(err, glib.Local("Failed to toggle consume mode"))
 }
 
 // playerToggleRandom toggles player's random mode
@@ -1202,7 +1201,7 @@ func (w *MainWindow) playerToggleRandom() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to toggle random mode")
+	w.errCheckDialog(err, glib.Local("Failed to toggle random mode"))
 }
 
 // playerToggleRepeat toggles player's repeat mode
@@ -1218,7 +1217,7 @@ func (w *MainWindow) playerToggleRepeat() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to toggle repeat mode")
+	w.errCheckDialog(err, glib.Local("Failed to toggle repeat mode"))
 }
 
 // preferences shows the preferences dialog
@@ -1234,7 +1233,7 @@ func (w *MainWindow) queueClear() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to clear the queue")
+	w.errCheckDialog(err, glib.Local("Failed to clear the queue"))
 }
 
 // queueDelete deletes the selected tracks from MPD's play queue
@@ -1259,7 +1258,7 @@ func (w *MainWindow) queueDelete() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to delete tracks from the queue")
+	w.errCheckDialog(err, glib.Local("Failed to delete tracks from the queue"))
 }
 
 // queueFilter applies the currently entered filter substring to the queue
@@ -1314,7 +1313,7 @@ func (w *MainWindow) queueFilter() {
 		return
 	}
 
-	w.lblQueueFilter.SetText(fmt.Sprintf("%d tracks displayed", count))
+	w.lblQueueFilter.SetText(fmt.Sprintf(glib.Local("%d track(s) displayed"), count))
 }
 
 // queuePlaylist adds or replaces the content of the queue with the specified playlist
@@ -1338,7 +1337,7 @@ func (w *MainWindow) queuePlaylist(replace triBool, uri string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to add playlist to the queue")
+	w.errCheckDialog(err, glib.Local("Failed to add playlist to the queue"))
 }
 
 // queueSave shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
@@ -1351,7 +1350,7 @@ func (w *MainWindow) queueSave() {
 
 	// Populate the playlists combo box
 	w.cbxQueueSavePlaylist.RemoveAll()
-	w.cbxQueueSavePlaylist.Append(queueSaveNewPlaylistID, "(new playlist)")
+	w.cbxQueueSavePlaylist.Append(queueSaveNewPlaylistID, glib.Local("(new playlist)"))
 	for _, name := range w.connector.GetPlaylists() {
 		w.cbxQueueSavePlaylist.Append(name, name)
 	}
@@ -1369,10 +1368,10 @@ func (w *MainWindow) queueSaveApply(replace bool) {
 	name := w.cbxQueueSavePlaylist.GetActiveID()
 	isNew := name == queueSaveNewPlaylistID
 	if isNew {
-		name = util.EntryText(w.eQueueSavePlaylistName, "Unnamed")
+		name = util.EntryText(w.eQueueSavePlaylistName, glib.Local("Unnamed"))
 	}
 
-	err := errors.New("Not connected to MPD")
+	err := errors.New(glib.Local("Not connected to MPD"))
 	w.connector.IfConnected(func(client *mpd.Client) {
 		// Fetch the queue
 		var attrs []mpd.Attrs
@@ -1411,7 +1410,7 @@ func (w *MainWindow) queueSaveApply(replace bool) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to create a playlist")
+	w.errCheckDialog(err, glib.Local("Failed to create a playlist"))
 }
 
 // queueShuffle randomises MPD's play queue
@@ -1422,7 +1421,7 @@ func (w *MainWindow) queueShuffle() {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to shuffle the queue")
+	w.errCheckDialog(err, glib.Local("Failed to shuffle the queue"))
 }
 
 // queueSort orders MPD's play queue on the provided attribute
@@ -1464,7 +1463,7 @@ func (w *MainWindow) queueSort(attr *config.MpdTrackAttribute, descending bool) 
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to sort the queue")
+	w.errCheckDialog(err, glib.Local("Failed to sort the queue"))
 
 }
 
@@ -1496,7 +1495,7 @@ func (w *MainWindow) queueStream(replace triBool, uri string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to add stream to the queue")
+	w.errCheckDialog(err, glib.Local("Failed to add stream to the queue"))
 }
 
 // queueURI adds or replaces the content of the queue with one specified URI
@@ -1525,7 +1524,7 @@ func (w *MainWindow) queueURIs(replace triBool, uris []string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, "Failed to add track(s) to the queue")
+	w.errCheckDialog(err, glib.Local("Failed to add track(s) to the queue"))
 }
 
 // shortcutInfo displays a shortcut info window
@@ -1668,8 +1667,8 @@ func (w *MainWindow) updateLibrary() {
 			prefix+name,
 			iconName,
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", appendFunc),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", replaceFunc))
+			util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", appendFunc),
+			util.NewButton("", glib.Local("Replace the queue"), "", "ymuse-replace-queue-symbolic", replaceFunc))
 
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
@@ -1707,23 +1706,23 @@ func (w *MainWindow) updateLibrary() {
 	// Compose info
 	info := ""
 	if countDirs+countFiles+countPlaylists == 0 {
-		info = "No items"
+		info = glib.Local("No items")
 	} else {
 		// Compose counters
 		infoItems := make([]string, 0, 3)
 		if countDirs > 0 {
-			infoItems = append(infoItems, fmt.Sprintf("%d folders", countDirs))
+			infoItems = append(infoItems, fmt.Sprintf(glib.Local("%d folders"), countDirs))
 		}
 		if countFiles > 0 {
-			infoItems = append(infoItems, fmt.Sprintf("%d files", countFiles))
+			infoItems = append(infoItems, fmt.Sprintf(glib.Local("%d files"), countFiles))
 		}
 		if countPlaylists > 0 {
-			infoItems = append(infoItems, fmt.Sprintf("%d playlists", countPlaylists))
+			infoItems = append(infoItems, fmt.Sprintf(glib.Local("%d playlists"), countPlaylists))
 		}
 		for i, item := range infoItems {
 			if info != "" {
 				if i == len(infoItems)-1 {
-					info += " and "
+					info += glib.Local(" and ")
 				} else {
 					info += ", "
 				}
@@ -1738,7 +1737,7 @@ func (w *MainWindow) updateLibrary() {
 	}
 
 	if _, ok := w.connector.Status()["updating_db"]; ok {
-		info += " — updating database…"
+		info += " — " + glib.Local("updating database…")
 	}
 
 	// Update info
@@ -1763,7 +1762,7 @@ func (w *MainWindow) updateLibraryPath() {
 	// Create buttons if there's a connection
 	if w.connector.IsConnected() {
 		// Create a button for "root"
-		util.NewBoxToggleButton(w.bxLibraryPath, "Files", "", "drive-harddisk", w.currentLibPath == "", func() { w.setLibraryPath("") })
+		util.NewBoxToggleButton(w.bxLibraryPath, glib.Local("Files"), "", "drive-harddisk", w.currentLibPath == "", func() { w.setLibraryPath("") })
 
 		// Create buttons for path elements
 		if len(w.currentLibPath) > 0 {
@@ -1801,7 +1800,7 @@ func (w *MainWindow) updateOptions() {
 // updatePlayer updates player control widgets
 func (w *MainWindow) updatePlayer() {
 	connected := false
-	statusText := "<i>(not connected)</i>"
+	statusText := glib.Local("<i>(not connected)</i>")
 	var curSong mpd.Attrs
 	var err error
 
@@ -1913,7 +1912,7 @@ func (w *MainWindow) updatePlayerTitleTemplate() {
 		Parse(config.GetConfig().PlayerTitleTemplate)
 	if errCheck(err, "Template parse error") {
 		w.playerTitleTemplate = template.Must(
-			template.New("error").Parse("<span foreground=\"red\">[Player title template error, check log]</span>"))
+			template.New("error").Parse("<span foreground=\"red\">[" + glib.Local("Player title template error, check log") + "]</span>"))
 	} else {
 		w.playerTitleTemplate = tmpl
 	}
@@ -1939,8 +1938,8 @@ func (w *MainWindow) updatePlaylists() {
 			name,
 			"ymuse-playlist",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queuePlaylist(tbFalse, name) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(tbTrue, name) }))
+			util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", func() { w.queuePlaylist(tbFalse, name) }),
+			util.NewButton("", glib.Local("Replace the queue"), "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(tbTrue, name) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
@@ -1950,9 +1949,11 @@ func (w *MainWindow) updatePlaylists() {
 	w.lbxPlaylists.ShowAll()
 
 	// Compose info
-	info := "No playlists"
+	var info string
 	if cnt := len(playlists); cnt > 0 {
-		info = fmt.Sprintf("%d playlists", cnt)
+		info = fmt.Sprintf(glib.Local("%d playlists"), cnt)
+	} else {
+		info = glib.Local("No playlists")
 	}
 
 	// Update info
@@ -2060,16 +2061,16 @@ func (w *MainWindow) updateQueue() {
 	var status string
 	switch w.currentQueueSize {
 	case 0:
-		status = "Queue is empty"
+		status = glib.Local("Queue is empty")
 	case 1:
-		status = "One track"
+		status = glib.Local("One track")
 	default:
-		status = fmt.Sprintf("%d tracks", len(attrs))
+		status = fmt.Sprintf(glib.Local("%d tracks"), len(attrs))
 	}
 
 	// Add playing time, if any
 	if totalSecs > 0 {
-		status += fmt.Sprintf(", playing time %s", util.FormatSeconds(totalSecs))
+		status += ", " + fmt.Sprintf(glib.Local("playing time %s"), util.FormatSeconds(totalSecs))
 	}
 
 	// Update the queue info
@@ -2122,7 +2123,7 @@ func (w *MainWindow) updateQueueColumns() {
 		errCheck(renderer.SetProperty("xalign", attr.XAlign), "renderer.SetProperty(xalign) failed")
 
 		// Add a new tree column
-		col, err := gtk.TreeViewColumnNewWithAttribute(attr.Name, renderer, "text", colSpec.ID)
+		col, err := gtk.TreeViewColumnNewWithAttribute(glib.Local(attr.Name), renderer, "text", colSpec.ID)
 		if errCheck(err, "TreeViewColumnNewWithAttribute() failed") {
 			continue
 		}
@@ -2212,8 +2213,8 @@ func (w *MainWindow) updateStreams() {
 			"",
 			"ymuse-stream",
 			// Add replace/append buttons
-			util.NewButton("", "Append to the queue", "", "ymuse-add-symbolic", func() { w.queueStream(tbFalse, stream.URI) }),
-			util.NewButton("", "Replace the queue", "", "ymuse-replace-queue-symbolic", func() { w.queueStream(tbTrue, stream.URI) }))
+			util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", func() { w.queueStream(tbFalse, stream.URI) }),
+			util.NewButton("", glib.Local("Replace the queue"), "", "ymuse-replace-queue-symbolic", func() { w.queueStream(tbTrue, stream.URI) }))
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
@@ -2223,9 +2224,11 @@ func (w *MainWindow) updateStreams() {
 	w.lbxStreams.ShowAll()
 
 	// Compose info
-	info := "No streams"
+	var info string
 	if cnt := len(config.GetConfig().Streams); cnt > 0 {
-		info = fmt.Sprintf("%d streams", cnt)
+		info = fmt.Sprintf(glib.Local("%d streams"), cnt)
+	} else {
+		info = glib.Local("No streams")
 	}
 
 	// Update info

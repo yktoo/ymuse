@@ -16,6 +16,7 @@
 package player
 
 import (
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
@@ -162,7 +163,7 @@ func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
 	hbx.PackStart(cb, false, false, 0)
 
 	// Add a label
-	lbl, err := gtk.LabelNew(config.MpdTrackAttributes[attrID].LongName)
+	lbl, err := gtk.LabelNew(glib.Local(config.MpdTrackAttributes[attrID].LongName))
 	if errCheck(err, "LabelNew() failed") {
 		return
 	}

@@ -69,6 +69,7 @@ nfpms:
     files:
         "resources/icons/**/*": "/usr/share/icons"
         "resources/*.desktop": "/usr/share/applications/"
+        "resources/i18n/generated/**/*": "/usr/share/locale/"
     scripts:
         postinstall: "resources/scripts/postinst"
         postremove:  "resources/scripts/postrm"

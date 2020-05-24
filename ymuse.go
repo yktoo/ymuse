@@ -14,6 +14,7 @@
  */
 
 //go:generate resources/scripts/generate-resources
+//go:generate resources/scripts/generate-mos
 
 package main
 
@@ -36,9 +37,12 @@ var (
 )
 
 func main() {
+	// Initialise the gettext engine
+	glib.InitI18n("ymuse", "/usr/share/locale/")
+
 	// Process command line
-	verbInfo := flag.Bool("v", false, "verbose logging")
-	verbDebug := flag.Bool("vv", false, "more verbose logging")
+	verbInfo := flag.Bool("v", false, glib.Local("verbose logging"))
+	verbDebug := flag.Bool("vv", false, glib.Local("more verbose logging"))
 	flag.Parse()
 
 	// Init logging
@@ -57,7 +61,7 @@ func main() {
 	config.AppMetadata.BuildDate = date
 
 	// Start the app
-	log.Infof("Ymuse version %s; %s; released %s", version, commit, date)
+	log.Infof(glib.Local("Ymuse version %s; %s; released %s"), version, commit, date)
 
 	// Create Gtk Application, change appID to your application domain name reversed.
 	application, err := gtk.ApplicationNew(config.AppMetadata.ID, glib.APPLICATION_FLAGS_NONE)
