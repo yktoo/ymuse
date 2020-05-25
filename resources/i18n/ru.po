@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-23 19:34+0200\n"
-"PO-Revision-Date: 2020-05-24 18:12+0200\n"
-"Last-Translator: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2020-05-25 11:57+0200\n"
+"Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -18,574 +18,182 @@ msgstr ""
 "X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:14
-msgid "Application shortcuts"
-msgstr "Горячие клавиши"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:17
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:255
-msgid "General"
-msgstr "Общие"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:20
-msgid "(Re)connect to MPD"
-msgstr "(Пере)подключиться к MPD"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:26
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1171
-msgid "Disconnect from MPD"
-msgstr "Отключиться от MPD"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:32
-msgid "MPD information"
-msgstr "Информация об MPD"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:38
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:18
-msgid "Preferences"
-msgstr "Настройки"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:44
-msgid "Quit"
-msgstr "Выход"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:50
-msgid "About"
-msgstr "О программе"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:56
-msgid "Keyboard Shortcuts"
-msgstr "Сочетания клавиш"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:62
-msgid "Switch to Queue tab"
-msgstr "Переключиться во вкладку «Очередь»"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:68
-msgid "Switch to Library tab"
-msgstr "Переключиться во вкладку «Библиотека»"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:74
-msgid "Switch to Playlists tab"
-msgstr "Переключиться во вкладку «Плейлисты»"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:80
-msgid "Switch to Streams tab"
-msgstr "Переключиться во вкладку «Потоки»"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:88
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:483
-msgid "Queue"
-msgstr "Очередь"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:91
-msgid "Play selection"
-msgstr "Воспроизвести выделенное"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:97
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:150
-msgid "Toggle play/pause"
-msgstr "Воспроизведение или пауза"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:103
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:42
-msgid "Delete selected"
-msgstr "Удалить выделенное"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:109
-msgid "Go to Now playing"
-msgstr "Перейти к текущему треку"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:115
-msgid "Open Filter bar"
-msgstr "Открыть панель фильтра"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:121
-msgid "Shuffle the queue"
-msgstr "Перемешать очередь"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:129
-msgid "Player"
-msgstr "Плеер"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:132
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:974
-msgid "Previous track"
-msgstr "Предыдущий трек"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:138
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1019
-msgid "Next track"
-msgstr "Следующий трек"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:144
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:991
-msgid "Stop"
-msgstr "Стоп"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:156
-msgid "Toggle random mode"
-msgstr "Переключить режим случайного порядка"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:162
-msgid "Toggle repeat mode"
-msgstr "Переключить режим повтора"
-
-#: /home/dk/code/GitHub/ymuse/resources/shortcuts.glade:168
-msgid "Toggle consume mode"
-msgstr "Переключить режим удаления проигранного"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:18
-msgid "Jump to now playing"
-msgstr "Перейти к текущему треку"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:33
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:298
-msgid "Clear"
-msgstr "Очистить"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:69
-msgid "Stream name:"
-msgstr "Название потока:"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:95
-msgid "Stream URI:"
-msgstr "URI потока:"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:129
-msgid "Apply"
-msgstr "Применить"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:281
-msgid "Jump to the currently played track"
-msgstr "Перейти к текущему воспроизводимому треку"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:283
-msgid "Now playing"
-msgstr "Сейчас играет"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:296
-msgid "Clear the play queue"
-msgstr "Стереть очередь"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:311
-msgid "Sort the play queue"
-msgstr "Сортировка очереди"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:314
-msgid "Sort ▾"
-msgstr "Сортировка ▾"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:327
-msgid "Remove selected track(s) from the queue"
-msgstr "Удалить отмеченное из очереди"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:329
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:720
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:850
-msgid "Delete"
-msgstr "Удалить"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:342
-msgid "Save the play queue as a playlist"
-msgstr "Сохранить очередь в плейлист"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:345
-msgid "Save ▾"
-msgstr "Сохранить ▾"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:358
-msgid "Filter the play queue"
-msgstr "Фильтрация очереди"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:359
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:521
-msgid "Search"
-msgstr "Поиск"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:389
-msgid "Filter…"
-msgstr "Фильтр…"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:504
-msgid "Update the music library"
-msgstr "Обновить библиотеку"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:507
-msgid "Update ▾"
-msgstr "Обновить ▾"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:519
-msgid "Search the library"
-msgstr "Поиск по библиотеке"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:556
-msgid "page1"
-msgstr ""
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:573
-msgid "Search…"
-msgstr "Поиск…"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:587
-msgid "Track attribute(s) to search"
-msgstr "Искать в атрибутах трека"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:600
-msgid "page0"
-msgstr ""
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:662
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:777
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:907
-msgid "..."
-msgstr ""
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:685
-msgid "Library"
-msgstr "Библиотека"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:703
-msgid "Rename selected playlist"
-msgstr "Переименовать выделенный плейлист"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:705
-msgid "Rename"
-msgstr "Переименовать"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:718
-msgid "Delete selected playlist"
-msgstr "Удалить выделенный плейлист"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:800
-msgid "Playlists"
-msgstr "Плейлисты"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:818
-msgid "Add a new stream"
-msgstr "Добавить новый поток"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:820
-msgid "Add"
-msgstr "Добавить"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:833
-msgid "Edit the selected stream"
-msgstr "Редактировать выделенный поток"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:835
-msgid "Edit"
-msgstr "Редактировать"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:848
-msgid "Delete the selected stream"
-msgstr "Удалить выделенный поток"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:930
-msgid "Streams"
-msgstr "Потоки"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:976
-msgid "Previous"
-msgstr "Предыдущий"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:989
-msgid "Stop playback"
-msgstr "Остановить воспроизведение"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1004
-msgid "Pause or resume playback"
-msgstr "Приостановить или возобновить воспроизведение"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1006
-msgid "Play/Pause"
-msgstr "Играть/Пауза"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1021
-msgid "Next"
-msgstr "Следующий"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1044
-msgid "Shuffle mode"
-msgstr "Режим случайного порядка"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1046
-msgid "Random"
-msgstr "Вразброс"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1059
-msgid "Repeat mode"
-msgstr "Режим повтора"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1061
-msgid "Repeat"
-msgstr "Повтор"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1074
-msgid "Consume mode"
-msgstr "Режим удаления проигранного"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1076
-msgid "Consume"
-msgstr "Удалять проигранное"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1120
-msgid "Current track time"
-msgstr "Время текущего трека"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1121
-msgid "<big>0:00</big> / 0:00"
-msgstr ""
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1157
-msgid "Connect to MPD"
-msgstr "Подключиться к MPD"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1185
-msgid "MPD _information…"
-msgstr "Информация об _MPD"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1210
-msgid "_Preferences…"
-msgstr "_Настройки…"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1235
-msgid "_About…"
-msgstr "_О программе…"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1249
-msgid "Keyboard shortcuts…"
-msgstr "Горячие клавиши…"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1263
-msgid "_Quit"
-msgstr "В_ыход"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1292
-msgid "Update the entire music database"
-msgstr "Обновить всю музыкальную библиотеку"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1294
-msgid "Update entire library"
-msgstr "Обновить всю библиотеку"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1307
-msgid "Update the selected item in music database"
-msgstr "Обновить выделенный элемент в музыкальной библиотеке"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1309
-msgid "Update selected item"
-msgstr "Обновить выделенное в библиотеке"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1322
-msgid "Update the entire music database, including unmodified files"
-msgstr "Обновить всю музыкальную библиотеку, включая неизменённые файлы"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1324
-msgid "Rescan all files"
-msgstr "Принудительно обновить всё"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1337
-msgid "Update the selected item, including unmodified files"
-msgstr ""
-"Обновить выделенный элемент в музыкальной библиотеке, включая неизменённые "
-"файлы"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1339
-msgid "Rescan selected item"
-msgstr "Принудительно обновить выделенное"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1376
-msgid "Save into playlist"
-msgstr "Сохранить в плейлист"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1410
-msgid "Save selected tracks only"
-msgstr "Только выделенные треки"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1427
-msgid "New playlist name"
-msgstr "Название нового плейлиста"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1455
-msgid "Replace playlist"
-msgstr "Заменить плейлист"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1470
-msgid "Append tracks"
-msgstr "Добавить треки"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1512
-msgid "Sort queue by"
-msgstr "Сортировать очередь по"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1539
-msgid "Ascending"
-msgstr "По возрастанию"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1554
-msgid "Descending"
-msgstr "По убыванию"
-
-#: /home/dk/code/GitHub/ymuse/resources/player.glade:1587
-msgid "Shuffle"
-msgstr "Перемешать"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:81
-msgid "Host:"
-msgstr "Хост:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:105
-msgid "(leave empty for localhost)"
-msgstr "(оставить пустым для localhost)"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:117
-msgid "Port:"
-msgstr "Порт:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:141
-msgid "Password:"
-msgstr "Пароль:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:164
-msgid "Automatically connect on startup"
-msgstr "Автоматически подключаться при запуске"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:178
-msgid "Automatically reconnect"
-msgstr "Автоматически восстанавливать подключение"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:192
-msgid "Reconnect now"
-msgstr "Подключиться заново сейчас"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:238
-msgid "<b>MPD connection</b>"
-msgstr "<b>Подключение к MPD</b>"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:290
-msgid "On double click / Enter on a track:"
-msgstr "По двойному клику или Enter по треку:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:302
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:385
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:468
-msgid "Replace the queue"
-msgstr "Заменить очередь"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:318
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:401
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:484
-msgid "Append to the queue"
-msgstr "Добавить в конец очереди"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:340
-msgid "<b>Library</b>"
-msgstr "<b>Библиотека</b>"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:373
-msgid "On double click / Enter on a playlist:"
-msgstr "По двойному клику или Enter по плейлисту:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:423
-msgid "<b>Playlists</b>"
-msgstr "<b>Плейлисты</b>"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:456
-msgid "On double click / Enter on a stream:"
-msgstr "По двойному клику или Enter по потоку:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:506
-msgid "<b>Streams</b>"
-msgstr "<b>Потоки</b>"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:540
-msgid "Track title template:"
-msgstr "Шаблон заголовка трека:"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:580
-msgid "<b>Player</b>"
-msgstr "<b>Плеер</b>"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:600
-msgid "Interface"
-msgstr "Интерфейс"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:618
-msgid "Select columns to display in the play queue, and their order."
-msgstr "Выберите столбцы для отображения и их порядок."
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:662
-msgid "Move the selected column up"
-msgstr "Передвинуть выделенный столбец вверх"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:663
-msgid "Move up"
-msgstr "Передвинуть вверх"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:677
-msgid "Move the selected column down"
-msgstr "Передвинуть выделенный столбец вниз"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:678
-msgid "Move down"
-msgstr "Передвинуть вниз"
-
-#: /home/dk/code/GitHub/ymuse/resources/prefs.glade:707
-msgid "Columns"
-msgstr "Столбцы"
-
-msgid "verbose logging"
-msgstr "подробное журналирование"
-
-msgid "more verbose logging"
-msgstr "ещё более подробное журналирование"
-
-msgid "Artist"
-msgstr "Исполнитель"
-
-msgid "Artist (for sorting)"
-msgstr "Исполнитель (для сортировки)"
-
-msgid "Album"
-msgstr "Альбом"
-
-msgid "Album (for sorting)"
-msgstr "Альбом (для сортировки)"
-
-msgid "Album artist"
-msgstr "Исполнитель альбома"
-
-msgid "Album artist (for sorting)"
-msgstr "Исполнитель альбома (для сортировки)"
-
-msgid "Disc"
-msgstr "Диск"
-
-msgid "Track title"
-msgstr "Название трека"
-
-msgid "Title"
-msgstr "Название"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
 
 msgid "#"
 msgstr "№"
 
-msgid "Track number"
-msgstr "Номер трека"
+msgid "%d files"
+msgstr "%d файлов"
 
-msgid "Track"
-msgstr "Трек"
+msgid "%d folders"
+msgstr "%d папок"
 
-msgid "Length"
-msgstr "Длина"
+msgid "%d playlists"
+msgstr "%d плейлистов"
 
-msgid "Track length"
-msgstr "Длительность трека"
+msgid "%d streams"
+msgstr "%d потоков"
 
-msgid "Path"
-msgstr "Путь"
+msgid "%d track(s) displayed"
+msgstr "Отображается %d треков"
+
+msgid "%d tracks"
+msgstr "%d треков"
+
+msgid "(leave empty for localhost)"
+msgstr "(оставить пустым для localhost)"
+
+msgid "(new playlist)"
+msgstr "(новый плейлист)"
+
+msgid "(Re)connect to MPD"
+msgstr "(Пере)подключиться к MPD"
+
+msgid "(unknown)"
+msgstr "(неизвестно)"
+
+msgid "<b>Library</b>"
+msgstr "<b>Библиотека</b>"
+
+msgid "<b>MPD connection</b>"
+msgstr "<b>Подключение к MPD</b>"
+
+msgid "<b>Player</b>"
+msgstr "<b>Плеер</b>"
+
+msgid "<b>Playlists</b>"
+msgstr "<b>Плейлисты</b>"
+
+msgid "<b>Streams</b>"
+msgstr "<b>Потоки</b>"
+
+msgid "<i>(not connected)</i>"
+msgstr "<i>(нет подключения)</i>"
+
+msgid "_About…"
+msgstr "_О программе…"
+
+msgid "_Preferences…"
+msgstr "_Настройки…"
+
+msgid "_Quit"
+msgstr "В_ыход"
+
+msgid "About"
+msgstr "О программе"
+
+msgid "Add a new stream"
+msgstr "Добавить новый поток"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Album (for sorting)"
+msgstr "Альбом (для сортировки)"
+
+msgid "Album artist (for sorting)"
+msgstr "Исполнитель альбома (для сортировки)"
+
+msgid "Album artist"
+msgstr "Исполнитель альбома"
+
+msgid "Album"
+msgstr "Альбом"
+
+msgid "and"
+msgstr "и"
+
+msgid "Append to the queue"
+msgstr "Добавить в конец очереди"
+
+msgid "Append tracks"
+msgstr "Добавить треки"
+
+msgid "Application shortcuts"
+msgstr "Горячие клавиши"
+
+msgid "Apply"
+msgstr "Применить"
+
+msgid "Are you sure you want to delete playlist \"%s\"?"
+msgstr "Вы уверены, что хотите удалить плейлист «%s»?"
+
+msgid "Are you sure you want to delete stream \"%s\"?"
+msgstr "Вы уверены, что хотите удалить поток «%s»?"
+
+msgid "Artist (for sorting)"
+msgstr "Исполнитель (для сортировки)"
+
+msgid "Artist"
+msgstr "Исполнитель"
+
+msgid "Ascending"
+msgstr "По возрастанию"
+
+msgid "Automatically connect on startup"
+msgstr "Автоматически подключаться при запуске"
+
+msgid "Automatically reconnect"
+msgstr "Автоматически восстанавливать подключение"
+
+msgid "Clear the play queue"
+msgstr "Стереть очередь"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "Columns"
+msgstr "Столбцы"
+
+msgid "Comment"
+msgstr "Комментарий"
+
+msgid "Composer"
+msgstr "Композитор"
+
+msgid "Conductor"
+msgstr "Дирижёр"
+
+msgid "Connect to MPD"
+msgstr "Подключиться к MPD"
+
+msgid "Consume mode"
+msgstr "Режим удаления проигранного"
+
+msgid "Consume"
+msgstr "Удалять проигранное"
+
+msgid "Current track time"
+msgstr "Время текущего трека"
+
+msgid "Daemon uptime:"
+msgstr "Демон работает:"
+
+msgid "Daemon version:"
+msgstr "Версия демона:"
+
+msgid "Delete playlist"
+msgstr "Удалить плейлист"
+
+msgid "Delete selected playlist"
+msgstr "Удалить выделенный плейлист"
+
+msgid "Delete selected"
+msgstr "Удалить выделенное"
+
+msgid "Delete stream"
+msgstr "Удалить поток"
+
+msgid "Delete the selected stream"
+msgstr "Удалить выделенный поток"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Descending"
+msgstr "По убыванию"
 
 msgid "Directory and file name"
 msgstr "Папка и имя файла"
@@ -593,155 +201,68 @@ msgstr "Папка и имя файла"
 msgid "Directory"
 msgstr "Папка"
 
-msgid "File path"
-msgstr "Путь к файлу"
+msgid "Disc"
+msgstr "Диск"
 
-msgid "File"
-msgstr "Файл"
+msgid "Disconnect from MPD"
+msgstr "Отключиться от MPD"
 
-msgid "File name"
-msgstr "Имя файла"
+msgid "Edit the selected stream"
+msgstr "Редактировать выделенный поток"
 
-msgid "Year"
-msgstr "Год"
-
-msgid "Genre"
-msgstr "Жанр"
-
-msgid "Name"
-msgstr "Наименование"
-
-msgid "Stream name"
-msgstr "Название потока"
-
-msgid "Composer"
-msgstr "Композитор"
-
-msgid "Performer"
-msgstr "Исполнитель произведения"
-
-msgid "Conductor"
-msgstr "Дирижёр"
-
-msgid "Work"
-msgstr "Произведение искусства"
-
-msgid "Grouping"
-msgstr "Группировка"
-
-msgid "Comment"
-msgstr "Комментарий"
-
-msgid "Label"
-msgstr "Лейбл"
-
-msgid "Ymuse version %s; %s; released %s"
-msgstr "Ymuse версии %s; %s; выпущен %s"
-
-msgid "No items"
-msgstr "Элементы отсутствуют"
-
-msgid " and "
-msgstr " и "
-
-msgid "updating database…"
-msgstr "обновление базы данных…"
-
-msgid "%d folders"
-msgstr "%d папок"
-
-msgid "%d files"
-msgstr "%d файлов"
-
-msgid "%d playlists"
-msgstr "%d плейлистов"
-
-msgid "Files"
-msgstr "Файлы"
-
-msgid "<i>(not connected)</i>"
-msgstr "<i>(нет подключения)</i>"
-
-msgid "Queue is empty"
-msgstr "Очередь пуста"
-
-msgid "One track"
-msgstr "Один трек"
-
-msgid "%d tracks"
-msgstr "%d треков"
-
-msgid "playing time %s"
-msgstr "время воспроизведения %s"
-
-msgid "Failed to delete the playlist"
-msgstr "Не удалось удалить плейлист"
-
-msgid "Rename playlist"
-msgstr "Переименовать плейлист"
-
-msgid "Failed to rename the playlist"
-msgstr "Не удалось переименовать плейлист"
-
-msgid "Delete stream"
-msgstr "Удалить поток"
-
-msgid "Are you sure you want to delete stream \"%s\"?"
-msgstr "Вы уверены, что хотите удалить поток «%s»?"
-
-msgid "Failed to play the selected track"
-msgstr "Не удалось воспроизвести выделенный трек"
-
-msgid "Failed to retrieve information from MPD"
-msgstr "Не удалось получить информацию от MPD"
-
-msgid "(unknown)"
-msgstr "(неизвестно)"
-
-msgid "Daemon version:"
-msgstr "Версия демона:"
-
-msgid "Number of artists:"
-msgstr "Количество исполнителей:"
-
-msgid "Number of albums:"
-msgstr "Количество альбомов:"
-
-msgid "Number of tracks:"
-msgstr "Количество треков:"
-
-msgid "Total playing time:"
-msgstr "Общее время воспроизведения:"
-
-msgid "Last database update:"
-msgstr "Последнее обновление БД:"
-
-msgid "Daemon uptime:"
-msgstr "Демон работает:"
-
-msgid "Listening time:"
-msgstr "Время прослушивания:"
+msgid "Edit"
+msgstr "Редактировать"
 
 msgid "Everywhere"
 msgstr "Везде"
 
-msgid "Failed to update the library"
-msgstr "Не удалось обновить библиотеку"
+msgid "Failed to add playlist to the queue"
+msgstr "Не удалось добавить плейлист к очереди"
 
-msgid "Failed to skip to previous track"
-msgstr "Не удалось перейти к предыдущему треку"
+msgid "Failed to add stream to the queue"
+msgstr "Не удалось добавить поток к очереди"
 
-msgid "Failed to stop playback"
-msgstr "Не удалось остановить воспроизведение"
+msgid "Failed to clear the queue"
+msgstr "Не удалось очистить очередь"
 
-msgid "Failed to toggle playback"
-msgstr "Не удалось приостановить или возобновить воспроизведение"
+msgid "Failed to create a playlist"
+msgstr "Не удалось создать плейлист"
+
+msgid "Failed to delete the playlist"
+msgstr "Не удалось удалить плейлист"
+
+msgid "Failed to delete tracks from the queue"
+msgstr "Не удалось удалить треки из очереди"
+
+msgid "Failed to play the selected track"
+msgstr "Не удалось воспроизвести выделенный трек"
+
+msgid "Failed to rename the playlist"
+msgstr "Не удалось переименовать плейлист"
+
+msgid "Failed to retrieve information from MPD"
+msgstr "Не удалось получить информацию от MPD"
+
+msgid "Failed to shuffle the queue"
+msgstr "Не удалось перемешать очередь"
 
 msgid "Failed to skip to next track"
 msgstr "Не удалось перейти к следующему треку"
 
+msgid "Failed to skip to previous track"
+msgstr "Не удалось перейти к предыдущему треку"
+
+msgid "Failed to sort the queue"
+msgstr "Не удалось сортировать очередь"
+
+msgid "Failed to stop playback"
+msgstr "Не удалось остановить воспроизведение"
+
 msgid "Failed to toggle consume mode"
 msgstr "Не удалось переключить режим удаления проигранного"
+
+msgid "Failed to toggle playback"
+msgstr "Не удалось приостановить или возобновить воспроизведение"
 
 msgid "Failed to toggle random mode"
 msgstr "Не удалось переключить режим случайного порядка"
@@ -749,58 +270,384 @@ msgstr "Не удалось переключить режим случайног
 msgid "Failed to toggle repeat mode"
 msgstr "Не удалось переключить режим повтора"
 
-msgid "Failed to clear the queue"
-msgstr "Не удалось очистить очередь"
+msgid "Failed to update the library"
+msgstr "Не удалось обновить библиотеку"
 
-msgid "Failed to delete tracks from the queue"
-msgstr "Не удалось удалить треки из очереди"
+msgid "File name"
+msgstr "Имя файла"
 
-msgid "%d track(s) displayed"
-msgstr "Отображается %d треков"
+msgid "File path"
+msgstr "Путь к файлу"
 
-msgid "Failed to add playlist to the queue"
-msgstr "Не удалось добавить плейлист к очереди"
+msgid "File"
+msgstr "Файл"
 
-msgid "(new playlist)"
-msgstr "(новый плейлист)"
+msgid "Files"
+msgstr "Файлы"
 
-msgid "Unnamed"
-msgstr "Безымянный"
+msgid "Filter the play queue"
+msgstr "Фильтрация очереди"
+
+msgid "Filter…"
+msgstr "Фильтр…"
+
+msgid "General"
+msgstr "Общие"
+
+msgid "Genre"
+msgstr "Жанр"
+
+msgid "Grouping"
+msgstr "Группировка"
+
+msgid "Host:"
+msgstr "Хост:"
+
+msgid "Interface"
+msgstr "Интерфейс"
+
+msgid "Jump to the currently played track"
+msgstr "Перейти к текущему воспроизводимому треку"
+
+msgid "Keyboard Shortcuts"
+msgstr "Сочетания клавиш"
+
+msgid "Keyboard shortcuts…"
+msgstr "Горячие клавиши…"
+
+msgid "Label"
+msgstr "Лейбл"
+
+msgid "Last database update:"
+msgstr "Последнее обновление БД:"
+
+msgid "Length"
+msgstr "Длина"
+
+msgid "Library"
+msgstr "Библиотека"
+
+msgid "Listening time:"
+msgstr "Время прослушивания:"
+
+msgid "more verbose logging"
+msgstr "ещё более подробное журналирование"
+
+msgid "Move down"
+msgstr "Передвинуть вниз"
+
+msgid "Move the selected column down"
+msgstr "Передвинуть выделенный столбец вниз"
+
+msgid "Move the selected column up"
+msgstr "Передвинуть выделенный столбец вверх"
+
+msgid "Move up"
+msgstr "Передвинуть вверх"
+
+msgid "MPD _information…"
+msgstr "Информация об _MPD"
+
+msgid "MPD information"
+msgstr "Информация об MPD"
+
+msgid "Name"
+msgstr "Наименование"
+
+msgid "New playlist name"
+msgstr "Название нового плейлиста"
+
+msgid "Next track"
+msgstr "Следующий трек"
+
+msgid "Next"
+msgstr "Следующий"
+
+msgid "No items"
+msgstr "Элементы отсутствуют"
+
+msgid "No playlists"
+msgstr "Нет плейлистов"
+
+msgid "No streams"
+msgstr "Нет потоков"
 
 msgid "Not connected to MPD"
 msgstr ""
 "Нет подключения к M\n"
 "PD"
 
-msgid "Failed to create a playlist"
-msgstr "Не удалось создать плейлист"
+msgid "Now playing"
+msgstr "Сейчас играет"
 
-msgid "Failed to shuffle the queue"
-msgstr "Не удалось перемешать очередь"
+msgid "Number of albums:"
+msgstr "Количество альбомов:"
 
-msgid "Failed to sort the queue"
-msgstr "Не удалось сортировать очередь"
+msgid "Number of artists:"
+msgstr "Количество исполнителей:"
 
-msgid "Failed to add stream to the queue"
-msgstr "Не удалось добавить поток к очереди"
+msgid "Number of tracks:"
+msgstr "Количество треков:"
 
-msgid "Release date: %s"
-msgstr "Дата выпуска: %s"
+msgid "On double click / Enter on a playlist:"
+msgstr "По двойному клику или Enter по плейлисту:"
 
-msgid "Delete playlist"
-msgstr "Удалить плейлист"
+msgid "On double click / Enter on a stream:"
+msgstr "По двойному клику или Enter по потоку:"
 
-msgid "No playlists"
-msgstr "Нет плейлистов"
+msgid "On double click / Enter on a track:"
+msgstr "По двойному клику или Enter по треку:"
 
-msgid "Are you sure you want to delete playlist \"%s\"?"
-msgstr "Вы уверены, что хотите удалить плейлист «%s»?"
+msgid "One track"
+msgstr "Один трек"
+
+msgid "Open Filter bar"
+msgstr "Открыть панель фильтра"
+
+msgid "Password:"
+msgstr "Пароль:"
+
+msgid "Path"
+msgstr "Путь"
+
+msgid "Pause or resume playback"
+msgstr "Приостановить или возобновить воспроизведение"
+
+msgid "Performer"
+msgstr "Исполнитель произведения"
+
+msgid "Play selection"
+msgstr "Воспроизвести выделенное"
+
+msgid "Play/Pause"
+msgstr "Играть/Пауза"
 
 msgid "Player title template error, check log"
 msgstr "Ошибка в шаблоне заголовка, проверьте журнал"
 
-msgid "No streams"
-msgstr "Нет потоков"
+msgid "Player"
+msgstr "Плеер"
 
-msgid "%d streams"
-msgstr "%d потоков"
+msgid "playing time %s"
+msgstr "время воспроизведения %s"
+
+msgid "Playlists"
+msgstr "Плейлисты"
+
+msgid "Port:"
+msgstr "Порт:"
+
+msgid "Preferences"
+msgstr "Настройки"
+
+msgid "Previous track"
+msgstr "Предыдущий трек"
+
+msgid "Previous"
+msgstr "Предыдущий"
+
+msgid "Queue is empty"
+msgstr "Очередь пуста"
+
+msgid "Queue"
+msgstr "Очередь"
+
+msgid "Quit"
+msgstr "Выход"
+
+msgid "Random"
+msgstr "Вразброс"
+
+msgid "Reconnect now"
+msgstr "Подключиться заново сейчас"
+
+msgid "Release date: %s"
+msgstr "Дата выпуска: %s"
+
+msgid "Remove selected track(s) from the queue"
+msgstr "Удалить отмеченное из очереди"
+
+msgid "Rename playlist"
+msgstr "Переименовать плейлист"
+
+msgid "Rename selected playlist"
+msgstr "Переименовать выделенный плейлист"
+
+msgid "Rename"
+msgstr "Переименовать"
+
+msgid "Repeat mode"
+msgstr "Режим повтора"
+
+msgid "Repeat"
+msgstr "Повтор"
+
+msgid "Replace playlist"
+msgstr "Заменить плейлист"
+
+msgid "Replace the queue"
+msgstr "Заменить очередь"
+
+msgid "Rescan all files"
+msgstr "Принудительно обновить всё"
+
+msgid "Rescan selected item"
+msgstr "Принудительно обновить выделенное"
+
+msgid "Save into playlist"
+msgstr "Сохранить в плейлист"
+
+msgid "Save selected tracks only"
+msgstr "Только выделенные треки"
+
+msgid "Save the play queue as a playlist"
+msgstr "Сохранить очередь в плейлист"
+
+msgid "Save ▾"
+msgstr "Сохранить ▾"
+
+msgid "Search the library"
+msgstr "Поиск по библиотеке"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Search…"
+msgstr "Поиск…"
+
+msgid "Select columns to display in the play queue, and their order."
+msgstr "Выберите столбцы для отображения и их порядок."
+
+msgid "Shuffle mode"
+msgstr "Режим случайного порядка"
+
+msgid "Shuffle the queue"
+msgstr "Перемешать очередь"
+
+msgid "Shuffle"
+msgstr "Перемешать"
+
+msgid "Sort queue by"
+msgstr "Сортировать очередь по"
+
+msgid "Sort the play queue"
+msgstr "Сортировка очереди"
+
+msgid "Sort ▾"
+msgstr "Сортировка ▾"
+
+msgid "Stop playback"
+msgstr "Остановить воспроизведение"
+
+msgid "Stop"
+msgstr "Стоп"
+
+msgid "Stream name"
+msgstr "Название потока"
+
+msgid "Stream name:"
+msgstr "Название потока:"
+
+msgid "Stream URI:"
+msgstr "URI потока:"
+
+msgid "Streams"
+msgstr "Потоки"
+
+msgid "Switch to Library tab"
+msgstr "Переключиться во вкладку «Библиотека»"
+
+msgid "Switch to Playlists tab"
+msgstr "Переключиться во вкладку «Плейлисты»"
+
+msgid "Switch to Queue tab"
+msgstr "Переключиться во вкладку «Очередь»"
+
+msgid "Switch to Streams tab"
+msgstr "Переключиться во вкладку «Потоки»"
+
+msgid "Title"
+msgstr "Название"
+
+msgid "Toggle consume mode"
+msgstr "Переключить режим удаления проигранного"
+
+msgid "Toggle play/pause"
+msgstr "Воспроизведение или пауза"
+
+msgid "Toggle random mode"
+msgstr "Переключить режим случайного порядка"
+
+msgid "Toggle repeat mode"
+msgstr "Переключить режим повтора"
+
+msgid "Total playing time:"
+msgstr "Общее время воспроизведения:"
+
+msgid "Track attribute(s) to search"
+msgstr "Искать в атрибутах трека"
+
+msgid "Track length"
+msgstr "Длительность трека"
+
+msgid "Track number"
+msgstr "Номер трека"
+
+msgid "Track title template:"
+msgstr "Шаблон заголовка трека:"
+
+msgid "Track title"
+msgstr "Название трека"
+
+msgid "Track"
+msgstr "Трек"
+
+msgid "Unnamed"
+msgstr "Безымянный"
+
+msgid "Update entire library"
+msgstr "Обновить всю библиотеку"
+
+msgid "Update selected item"
+msgstr "Обновить выделенное в библиотеке"
+
+msgid "Update the entire music database"
+msgstr "Обновить всю музыкальную библиотеку"
+
+msgid "Update the entire music database, including unmodified files"
+msgstr "Обновить всю музыкальную библиотеку, включая неизменённые файлы"
+
+msgid "Update the music library"
+msgstr "Обновить библиотеку"
+
+msgid "Update the selected item in music database"
+msgstr "Обновить выделенный элемент в музыкальной библиотеке"
+
+msgid "Update the selected item, including unmodified files"
+msgstr ""
+"Обновить выделенный элемент в музыкальной библиотеке, включая неизменённые "
+"файлы"
+
+msgid "Update ▾"
+msgstr "Обновить ▾"
+
+msgid "updating database…"
+msgstr "обновление базы данных…"
+
+msgid "verbose logging"
+msgstr "подробное журналирование"
+
+msgid "Work"
+msgstr "Произведение искусства"
+
+msgid "Year"
+msgstr "Год"
+
+msgid "Ymuse version %s; %s; released %s"
+msgstr "Ymuse версии %s; %s; выпущен %s"
+
+#~ msgid "Go to Now playing"
+#~ msgstr "Перейти к текущему треку"
+
+#~ msgid "Jump to now playing"
+#~ msgstr "Перейти к текущему треку"

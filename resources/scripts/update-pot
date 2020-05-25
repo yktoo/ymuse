@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Updates the .pot file from the available .glade files
+
+set -e
+
+root_dir="$(dirname "$(dirname "$(dirname "$(realpath "$0")")")")"
+
+find "$root_dir" -name '*.glade' | xargs xgettext --from-code=UTF-8 --join-existing --output="$root_dir/resources/i18n/ymuse.pot"

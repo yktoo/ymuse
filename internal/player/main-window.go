@@ -1722,7 +1722,7 @@ func (w *MainWindow) updateLibrary() {
 		for i, item := range infoItems {
 			if info != "" {
 				if i == len(infoItems)-1 {
-					info += glib.Local(" and ")
+					info += " " + glib.Local("and") + " "
 				} else {
 					info += ", "
 				}

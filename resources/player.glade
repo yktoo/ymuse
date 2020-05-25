@@ -15,7 +15,7 @@
       <object class="GtkMenuItem" id="miQueueNowPlaying">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Jump to now playing</property>
+        <property name="label" translatable="yes">Now playing</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_miQueueNowPlaying_activate" swapped="no"/>
       </object>
@@ -550,8 +550,8 @@
                             </style>
                           </object>
                           <packing>
-                            <property name="name">page1</property>
-                            <property name="title" translatable="yes">page1</property>
+                            <property name="name">path</property>
+                            <property name="title" translatable="yes">Path</property>
                           </packing>
                         </child>
                         <child>
@@ -594,8 +594,8 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="name">page0</property>
-                            <property name="title" translatable="yes">page0</property>
+                            <property name="name">search</property>
+                            <property name="title" translatable="yes">Search</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -1113,7 +1113,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Current track time</property>
-                <property name="label" translatable="yes">&lt;big&gt;0:00&lt;/big&gt; / 0:00</property>
+                <property name="label">&lt;big&gt;0:00&lt;/big&gt; / 0:00</property>
                 <property name="use_markup">True</property>
                 <property name="track_visited_links">False</property>
               </object>

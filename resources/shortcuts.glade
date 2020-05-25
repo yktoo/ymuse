@@ -106,7 +106,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Go to Now playing</property>
+                <property name="title" translatable="yes">Now playing</property>
                 <property name="accelerator">&lt;ctrl&gt;J</property>
               </object>
             </child>

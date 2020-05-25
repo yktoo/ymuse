@@ -1,0 +1,645 @@
+# Ymuse MPD client
+# Copyright (C) 2020 Dmitry Kann
+# This file is distributed under the same license as the Ymuse package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2020-05-25 12:01+0200\n"
+"Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "#"
+msgstr "Nr"
+
+msgid "%d files"
+msgstr "%d bestanden"
+
+msgid "%d folders"
+msgstr "%d mappen"
+
+msgid "%d playlists"
+msgstr "%d afspeellijsten"
+
+msgid "%d streams"
+msgstr "%d streams"
+
+msgid "%d track(s) displayed"
+msgstr "%d track(s) zichtbaar"
+
+msgid "%d tracks"
+msgstr "%d tracks"
+
+msgid "(leave empty for localhost)"
+msgstr "(leeglaten voor localhost)"
+
+msgid "(new playlist)"
+msgstr "(nieuwe afspeellijst)"
+
+msgid "(Re)connect to MPD"
+msgstr "Verbinding met MPD (opnieuw) maken"
+
+msgid "(unknown)"
+msgstr "(onbekend)"
+
+msgid "<b>Library</b>"
+msgstr "<b>Mediatheek</b>"
+
+msgid "<b>MPD connection</b>"
+msgstr "<b>MPD verbinding</b>"
+
+msgid "<b>Player</b>"
+msgstr "<b>Speler</b>"
+
+msgid "<b>Playlists</b>"
+msgstr "<b>Afspeellijsten</b>"
+
+msgid "<b>Streams</b>"
+msgstr "<b>Streams</b>"
+
+msgid "<i>(not connected)</i>"
+msgstr "<i>(geen verbinding)</i>"
+
+msgid "_About…"
+msgstr "_Over…"
+
+msgid "_Preferences…"
+msgstr "I_nstellingen…"
+
+msgid "_Quit"
+msgstr "A_fsluiten"
+
+msgid "About"
+msgstr "Over"
+
+msgid "Add a new stream"
+msgstr "Nieuwe stream toevoegen"
+
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "Album (for sorting)"
+msgstr "Album (voor het sorteren)"
+
+msgid "Album artist (for sorting)"
+msgstr "Album artiest (voor het sorteren)"
+
+msgid "Album artist"
+msgstr "Album artiest"
+
+msgid "Album"
+msgstr "Album"
+
+msgid "and"
+msgstr "en"
+
+msgid "Append to the queue"
+msgstr "Aan de wachtrij toevoegen"
+
+msgid "Append tracks"
+msgstr "Tracks toevoegen"
+
+msgid "Application shortcuts"
+msgstr "Applicatie snelkoppelingen"
+
+msgid "Apply"
+msgstr "Opslaan"
+
+msgid "Are you sure you want to delete playlist \"%s\"?"
+msgstr "Weet je zeker dat je de afspeellijst \"%s\" wilt verwijderen?"
+
+msgid "Are you sure you want to delete stream \"%s\"?"
+msgstr "Weet je zeker dat je de stream \"%s\" wilt verwijderen?"
+
+msgid "Artist (for sorting)"
+msgstr "Artiest (voor het sorteren)"
+
+msgid "Artist"
+msgstr "Artiest"
+
+msgid "Ascending"
+msgstr "Oplopend"
+
+msgid "Automatically connect on startup"
+msgstr "Automatisch verbinden bij opstarten"
+
+msgid "Automatically reconnect"
+msgstr "Automatisch verbinding herstellen"
+
+msgid "Clear the play queue"
+msgstr "De wachtrij legen"
+
+msgid "Clear"
+msgstr "Legen"
+
+msgid "Columns"
+msgstr "Kolommen"
+
+msgid "Comment"
+msgstr "Commentaar"
+
+msgid "Composer"
+msgstr "Componist"
+
+msgid "Conductor"
+msgstr "Dirigent"
+
+msgid "Connect to MPD"
+msgstr "Verbinden met MPD"
+
+msgid "Consume mode"
+msgstr "Wegwerpmodus"
+
+msgid "Consume"
+msgstr "Wegwerpen"
+
+msgid "Current track time"
+msgstr "Huidige track tijd"
+
+msgid "Daemon uptime:"
+msgstr "Daemon werktijd:"
+
+msgid "Daemon version:"
+msgstr "Daemon versie:"
+
+msgid "Delete playlist"
+msgstr "Afspeellijst verwijderen"
+
+msgid "Delete selected playlist"
+msgstr "Geselecteerde afspeellijst verwijderen"
+
+msgid "Delete selected"
+msgstr "Geselecteerde items verwijderen"
+
+msgid "Delete stream"
+msgstr "Stream verwijderen"
+
+msgid "Delete the selected stream"
+msgstr "Geselecteerde stream verwijderen"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Descending"
+msgstr "Aflopend"
+
+msgid "Directory and file name"
+msgstr "Map- en bestandsnaam"
+
+msgid "Directory"
+msgstr "Map"
+
+msgid "Disc"
+msgstr "Disc"
+
+msgid "Disconnect from MPD"
+msgstr "Verbinding met MPD verbreken"
+
+msgid "Edit the selected stream"
+msgstr "Geselecteerde stream bijwerken"
+
+msgid "Edit"
+msgstr "Bijwerken"
+
+msgid "Everywhere"
+msgstr "Overal"
+
+msgid "Failed to add playlist to the queue"
+msgstr "Het is niet gelukt om de afspeellijst aan de wachtrij toe te voegen"
+
+msgid "Failed to add stream to the queue"
+msgstr "Het is niet gelukt om de stream aan de wachtrij toe te voegen"
+
+msgid "Failed to clear the queue"
+msgstr "Het is niet gelukt om de wachtrij te legen"
+
+msgid "Failed to create a playlist"
+msgstr "Het is niet gelukt om een afspeellijst aan te maken"
+
+msgid "Failed to delete the playlist"
+msgstr "Het is niet gelukt om de afspeellijst te verwijderen"
+
+msgid "Failed to delete tracks from the queue"
+msgstr "Het is niet gelukt om tracks uit de wachtrij te halen"
+
+msgid "Failed to play the selected track"
+msgstr "Het is niet gelukt om de geselecteerde track af te spelen"
+
+msgid "Failed to rename the playlist"
+msgstr "Het is niet gelukt om de afspeellijst te hernoemen"
+
+msgid "Failed to retrieve information from MPD"
+msgstr "Het is niet gelukt om gegevens bij MPD op te halen"
+
+msgid "Failed to shuffle the queue"
+msgstr "Het is niet gelukt om de wachtrij te schudden"
+
+msgid "Failed to skip to next track"
+msgstr "Het is niet gelukt om naar de volgende track te schakelen"
+
+msgid "Failed to skip to previous track"
+msgstr "Het is niet gelukt om naar de vorige track te schakelen"
+
+msgid "Failed to sort the queue"
+msgstr "Het is niet gelukt om de wachtrij te sorteren"
+
+msgid "Failed to stop playback"
+msgstr "Het is niet gelukt om het afspelen te stoppen"
+
+msgid "Failed to toggle consume mode"
+msgstr "Het is niet gelukt om de wegwerpmodus om te schakelen"
+
+msgid "Failed to toggle playback"
+msgstr "Het is niet gelukt om het afspelen om te schakelen"
+
+msgid "Failed to toggle random mode"
+msgstr "Het is niet gelukt om de willekeurigmodus om te schakelen"
+
+msgid "Failed to toggle repeat mode"
+msgstr "Het is niet gelukt om de herhaalmodus om te schakelen"
+
+msgid "Failed to update the library"
+msgstr "Het is niet gelukt om de mediatheek bij te werken"
+
+msgid "File name"
+msgstr "Bestandsnaam"
+
+msgid "File path"
+msgstr "Bestandspad"
+
+msgid "File"
+msgstr "Bestand"
+
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "Filter the play queue"
+msgstr "De wachtrij filteren"
+
+msgid "Filter…"
+msgstr "Filter…"
+
+msgid "General"
+msgstr "Algemeen"
+
+msgid "Genre"
+msgstr "Genre"
+
+msgid "Grouping"
+msgstr "Groepering"
+
+msgid "Host:"
+msgstr "Host:"
+
+msgid "Interface"
+msgstr "Interface"
+
+msgid "Jump to the currently played track"
+msgstr "Naar het momenteel afgespeelde item gaan"
+
+msgid "Keyboard Shortcuts"
+msgstr "Toetsenbord sneltoetsen"
+
+msgid "Keyboard shortcuts…"
+msgstr "Toetsenbord sneltoetsen…"
+
+msgid "Label"
+msgstr "Label"
+
+msgid "Last database update:"
+msgstr "Laatste update van database:"
+
+msgid "Length"
+msgstr "Lengte"
+
+msgid "Library"
+msgstr "Mediatheek"
+
+msgid "Listening time:"
+msgstr "Luisterduur:"
+
+msgid "more verbose logging"
+msgstr "gedetailleerdere logging"
+
+msgid "Move down"
+msgstr "Omlaag"
+
+msgid "Move the selected column down"
+msgstr "Geselecteerde kolom omlaag verschuiven"
+
+msgid "Move the selected column up"
+msgstr "Geselecteerde kolom omhoog verschuiven"
+
+msgid "Move up"
+msgstr "Omhoog"
+
+msgid "MPD _information…"
+msgstr "MPD _informatie…"
+
+msgid "MPD information"
+msgstr "MPD informatie"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "New playlist name"
+msgstr "Nieuwe afspeellijst naam"
+
+msgid "Next track"
+msgstr "Volgende track"
+
+msgid "Next"
+msgstr "Volgend item"
+
+msgid "No items"
+msgstr "Geen items"
+
+msgid "No playlists"
+msgstr "Geen afspeellijst"
+
+msgid "No streams"
+msgstr "Geen streams"
+
+msgid "Not connected to MPD"
+msgstr "Geen verbinding met MPD"
+
+msgid "Now playing"
+msgstr "Nu aan het afspelen"
+
+msgid "Number of albums:"
+msgstr "Aantal albums:"
+
+msgid "Number of artists:"
+msgstr "Aantal artiesten:"
+
+msgid "Number of tracks:"
+msgstr "Aantal tracks:"
+
+msgid "On double click / Enter on a playlist:"
+msgstr "Bij dubbelklik / Enter op een afspeellijst:"
+
+msgid "On double click / Enter on a stream:"
+msgstr "Bij dubbelklik / Enter op een stream:"
+
+msgid "On double click / Enter on a track:"
+msgstr "Bij dubbelklik / Enter op een track:"
+
+msgid "One track"
+msgstr "Eén track"
+
+msgid "Open Filter bar"
+msgstr "Filterbalk openen"
+
+msgid "Password:"
+msgstr "Wachtwoord:"
+
+msgid "Path"
+msgstr "Pad"
+
+msgid "Pause or resume playback"
+msgstr "Afspelen pauzeren of hervatten"
+
+msgid "Performer"
+msgstr "Uitvoerder"
+
+msgid "Play selection"
+msgstr "Geselecteerde items afspelen"
+
+msgid "Play/Pause"
+msgstr "Afspelen/Pauzeren"
+
+msgid "Player title template error, check log"
+msgstr "Tracktitel template fout, check de log"
+
+msgid "Player"
+msgstr "Speler"
+
+msgid "playing time %s"
+msgstr "afspeeltijd %s"
+
+msgid "Playlists"
+msgstr "Afspeellijsten"
+
+msgid "Port:"
+msgstr "Port:"
+
+msgid "Preferences"
+msgstr "Instellingen"
+
+msgid "Previous track"
+msgstr "Vorige track"
+
+msgid "Previous"
+msgstr "Vorig item"
+
+msgid "Queue is empty"
+msgstr "Wachtrij is leeg"
+
+msgid "Queue"
+msgstr "Wachtrij"
+
+msgid "Quit"
+msgstr "Afsluiten"
+
+msgid "Random"
+msgstr "Willekeurig"
+
+msgid "Reconnect now"
+msgstr "Nu opnieuw verbinden"
+
+msgid "Release date: %s"
+msgstr "Releasedatum: %s"
+
+msgid "Remove selected track(s) from the queue"
+msgstr "Geselecteerde track(s) uit de wachtrij verwijderen"
+
+msgid "Rename playlist"
+msgstr "Afspeellijst hernoemen"
+
+msgid "Rename selected playlist"
+msgstr "Geselecteerde afspeellijst hernoemen"
+
+msgid "Rename"
+msgstr "Hernoemen"
+
+msgid "Repeat mode"
+msgstr "Herhaalmodus"
+
+msgid "Repeat"
+msgstr "Herhalen"
+
+msgid "Replace playlist"
+msgstr "Afspeellijst vervangen"
+
+msgid "Replace the queue"
+msgstr "De wachtrij vervangen"
+
+msgid "Rescan all files"
+msgstr "Alles opnieuw scannen"
+
+msgid "Rescan selected item"
+msgstr "Geselecteerd item bijwerken"
+
+msgid "Save into playlist"
+msgstr "Opslaan in afspeellijst"
+
+msgid "Save selected tracks only"
+msgstr "Alleen geselecteerde tracks"
+
+msgid "Save the play queue as a playlist"
+msgstr "De wachtrij als een afspeellijst opslaan"
+
+msgid "Save ▾"
+msgstr "Opslaan ▾"
+
+msgid "Search the library"
+msgstr "De mediatheek doorzoeken"
+
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Search…"
+msgstr "Doorzoeken…"
+
+msgid "Select columns to display in the play queue, and their order."
+msgstr "Selecteer kolommen om weer te geven in de wachtrij, en hun volgorde."
+
+msgid "Shuffle mode"
+msgstr "Willekeurigmodus"
+
+msgid "Shuffle the queue"
+msgstr "Wachtrij schudden"
+
+msgid "Shuffle"
+msgstr "Schudden"
+
+msgid "Sort queue by"
+msgstr "Wachtrij sorteren op"
+
+msgid "Sort the play queue"
+msgstr "De wachtrij sorteren"
+
+msgid "Sort ▾"
+msgstr "Sorteren ▾"
+
+msgid "Stop playback"
+msgstr "Afspelen stoppen"
+
+msgid "Stop"
+msgstr "Stoppen"
+
+msgid "Stream name"
+msgstr "Streamnaam"
+
+msgid "Stream name:"
+msgstr "Streamnaam:"
+
+msgid "Stream URI:"
+msgstr "Stream URI:"
+
+msgid "Streams"
+msgstr "Streams"
+
+msgid "Switch to Library tab"
+msgstr "Naar het Mediatheek tabblad"
+
+msgid "Switch to Playlists tab"
+msgstr "Naar het Afspeellijsten tabblad"
+
+msgid "Switch to Queue tab"
+msgstr "Naar het Wachtrij tabblad"
+
+msgid "Switch to Streams tab"
+msgstr "Naar het Streams tabblad"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Toggle consume mode"
+msgstr "Schakel de wegwerpmodus aan/uit"
+
+msgid "Toggle play/pause"
+msgstr "Afspelen/pauzeren schakelen"
+
+msgid "Toggle random mode"
+msgstr "Schakel de willekeurigmodus aan/uit"
+
+msgid "Toggle repeat mode"
+msgstr "Schakel de herhaalmodus aan/uit"
+
+msgid "Total playing time:"
+msgstr "Totale afspeelduur:"
+
+msgid "Track attribute(s) to search"
+msgstr "Trackseigenschappen om te zoeken"
+
+msgid "Track length"
+msgstr "Tracklengte"
+
+msgid "Track number"
+msgstr "Tracknummer"
+
+msgid "Track title template:"
+msgstr "Tracktitel template:"
+
+msgid "Track title"
+msgstr "Tracktitel"
+
+msgid "Track"
+msgstr "Track"
+
+msgid "Unnamed"
+msgstr "Zonder naam"
+
+msgid "Update entire library"
+msgstr "Gehele mediatheek bijwerken"
+
+msgid "Update selected item"
+msgstr "Geselecteerde items bijwerken"
+
+msgid "Update the entire music database"
+msgstr "De gehele mediatheek bijwerken"
+
+msgid "Update the entire music database, including unmodified files"
+msgstr "De gehele mediatheek bijwerken, inclusief ongewijzigde bestanden"
+
+msgid "Update the music library"
+msgstr "De mediatheek bijwerken"
+
+msgid "Update the selected item in music database"
+msgstr "De geselecteerde items in de mediatheek bijwerken"
+
+msgid "Update the selected item, including unmodified files"
+msgstr "De geselecteerde item bijwerken, inclusief ongewijzigde bestanden"
+
+msgid "Update ▾"
+msgstr "Bijwerken ▾"
+
+msgid "updating database…"
+msgstr "database aan het bijwerken…"
+
+msgid "verbose logging"
+msgstr "gedetailleerde logging"
+
+msgid "Work"
+msgstr "Kunstwerk"
+
+msgid "Year"
+msgstr "Jaar"
+
+msgid "Ymuse version %s; %s; released %s"
+msgstr "Ymuse versie %s; %s; gereleased %s"
+
+#~ msgid "Go to Now playing"
+#~ msgstr "Naar het huidige item gaan"
+
+#~ msgid "Jump to now playing"
+#~ msgstr "Naar het huidige item gaan"
