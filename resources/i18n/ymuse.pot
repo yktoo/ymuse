@@ -40,6 +40,9 @@ msgstr ""
 msgid "(leave empty for localhost)"
 msgstr ""
 
+msgid "(limited selection of %d items)"
+msgstr ""
+
 msgid "(new playlist)"
 msgstr ""
 

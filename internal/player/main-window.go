@@ -1732,7 +1732,7 @@ func (w *MainWindow) updateLibrary() {
 
 		// Add note about limited set, if applicable
 		if limited {
-			info += fmt.Sprintf(" (limited selection of %d items)", len(attrs))
+			info += " " + fmt.Sprintf(glib.Local("(limited selection of %d items)"), len(attrs))
 		}
 	}
 
