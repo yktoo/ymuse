@@ -36,14 +36,22 @@ import (
 	"time"
 )
 
+// Type of library path
+type libPathType int
+
+const (
+	libPathTypeFile libPathType = iota
+	libPathTypeArtist
+	libPathTypeAlbum
+	libPathTypeGenre
+)
+
 // MainWindow represents the main application window
 type MainWindow struct {
-	// Application reference
-	app *gtk.Application
-	// Connector instance
-	connector *Connector
-	// Main window
-	window *gtk.ApplicationWindow
+	app       *gtk.Application       // Application reference
+	connector *Connector             // Connector instance
+	window    *gtk.ApplicationWindow // Main window
+	mapped    bool                   // Whether the main window is mapped (~visible)
 	// Control widgets
 	mainStack       *gtk.Stack
 	lblStatus       *gtk.Label
@@ -137,7 +145,8 @@ type MainWindow struct {
 	currentQueueSize  int // Number of items in the play queue
 	currentQueueIndex int // Queue's track index (last) marked as current
 
-	currentLibPath string // Current library path, separated by slashes
+	currentLibPathType libPathType // Current library path type
+	currentLibPath     string      // Current library path, separated by libraryPathSep
 
 	playerTitleTemplate *template.Template // Compiled template for player's track title
 
@@ -153,6 +162,7 @@ const (
 
 	queueSaveNewPlaylistID = "\u0001new"
 	librarySearchAllAttrID = "\u0001any"
+	libraryPathSep         = "\u0001"
 )
 
 type triBool int
@@ -162,6 +172,14 @@ const (
 	tbFalse
 	tbTrue
 )
+
+// Library path type properties
+var libraryPathTypeProps = map[libPathType]struct{ name, attrName, icon string }{
+	libPathTypeFile:   {"Files", "", "folder"},
+	libPathTypeArtist: {"Artists", "artist", "ymuse-artist"},
+	libPathTypeAlbum:  {"Albums", "album", "ymuse-album"},
+	libPathTypeGenre:  {"Genres", "genre", "ymuse-genre"},
+}
 
 // NewMainWindow creates and returns a new MainWindow instance
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
@@ -288,15 +306,26 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 }
 
 func (w *MainWindow) onConnectorStatusChange() {
-	util.WhenIdle("onConnectorStatusChange()", w.updateAll)
+	// Ignore when not mapped
+	if w.mapped {
+		util.WhenIdle("onConnectorStatusChange()", w.updateAll)
+	}
 }
 
 func (w *MainWindow) onConnectorHeartbeat() {
-	util.WhenIdle("onConnectorHeartbeat()", w.updatePlayerSeekBar)
+	// Ignore when not mapped
+	if w.mapped {
+		util.WhenIdle("onConnectorHeartbeat()", w.updatePlayerSeekBar)
+	}
 }
 
 func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	log.Debugf("onSubsystemChange(%v)", subsystem)
+	// Ignore when not mapped
+	if !w.mapped {
+		return
+	}
+
 	switch subsystem {
 	case "database", "update":
 		util.WhenIdle("updateLibrary()", w.updateLibrary)
@@ -327,10 +356,12 @@ func (w *MainWindow) onMap() {
 	if config.GetConfig().MpdAutoConnect {
 		w.connect()
 	}
+	w.mapped = true
 }
 
 func (w *MainWindow) onDelete() {
 	log.Debug("MainWindow.onDelete()")
+	w.mapped = false
 
 	// Disconnect from MPD
 	w.disconnect()
@@ -373,12 +404,12 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 	// Backspace: go level up (not in search mode)
 	case gdk.KEY_BackSpace:
 		if state == 0 && !w.btnLibrarySearch.GetActive() {
-			idx := strings.LastIndexByte(w.currentLibPath, '/')
-			if idx < 0 {
-				w.setLibraryPath("")
-			} else {
-				w.setLibraryPath(w.currentLibPath[:idx])
+			idx := strings.LastIndex(w.currentLibPath, libraryPathSep)
+			s := ""
+			if idx >= 0 {
+				s = w.currentLibPath[:idx]
 			}
+			w.setLibraryPath(w.currentLibPathType, s)
 		}
 
 	// Escape: deactivate search mode
@@ -748,18 +779,36 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 	// Directory: either add/replace or navigate inside it
 	case "d":
 		if replace == tbNone {
-			w.setLibraryPath(libPath)
+			w.setLibraryPath(w.currentLibPathType, libPath)
 		} else {
-			w.queueURI(replace, libPath)
+			w.queueURIs(replace, libPath)
 		}
 
 	// File: append/replace the queue
 	case "f":
-		w.queueURI(replace, libPath)
+		w.queueURIs(replace, libPath)
 
 	// Playlist: append/replace the queue
 	case "p":
 		w.queuePlaylist(replace, libPath)
+
+	// Tag: either add/replace or navigate inside it
+	case "t":
+		// Force queuing
+		if replace != tbNone {
+			w.queueTag(replace, libPath)
+
+		} else {
+			// If the selected item is a track, then queue it
+			lastTag := libPath[strings.LastIndex(libPath, libraryPathSep)+1:]
+			if name, _ := util.Partition(lastTag, ':'); name == "title" {
+				w.queueTag(replace, libPath)
+
+			} else {
+				// Otherwise navigate inside it
+				w.setLibraryPath(w.currentLibPathType, libPath)
+			}
+		}
 	}
 }
 
@@ -892,7 +941,7 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 }
 
 // getSelectedLibraryPath returns the full path of the currently selected library item and its type ("d" for directory,
-// "f" for file or "p" for playlist), or an empty string if there's an error
+// "f" for file, "p" for playlist, or "t:" for tag), or an empty string if there's an error
 func (w *MainWindow) getSelectedLibraryPath() (string, string) {
 	// If there's selection
 	row := w.lbxLibrary.GetSelectedRow()
@@ -909,11 +958,11 @@ func (w *MainWindow) getSelectedLibraryPath() (string, string) {
 	// Calculate final path
 	libPath := w.currentLibPath
 	if len(libPath) > 0 {
-		libPath += "/"
+		libPath += libraryPathSep
 	}
 	libPath += name[2:]
 
-	// The name prefix defines whether it's a file ("f:"), playlist ("p:") or a directory ("d:")
+	// The name prefix defines what kind of item that is
 	return libPath, name[:1]
 }
 
@@ -998,6 +1047,10 @@ func (w *MainWindow) initLibraryWidgets() {
 	w.aLibraryRescanAll = w.addAction("library.rescan.all", "", func() { w.libraryUpdate(true, false) })
 	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
 	w.addAction("library.search.toggle", "", w.onLibrarySearchToggle)
+	w.addAction("library.path.type.file", "", func() { w.setLibraryPath(libPathTypeFile, "") })
+	w.addAction("library.path.type.artist", "", func() { w.setLibraryPath(libPathTypeArtist, "") })
+	w.addAction("library.path.type.album", "", func() { w.setLibraryPath(libPathTypeAlbum, "") })
+	w.addAction("library.path.type.genre", "", func() { w.setLibraryPath(libPathTypeGenre, "") })
 
 	// Populate search attribute combo box
 	w.cbxLibrarySearchAttr.Append(librarySearchAllAttrID, glib.Local("Everywhere"))
@@ -1007,7 +1060,6 @@ func (w *MainWindow) initLibraryWidgets() {
 		}
 	}
 	w.cbxLibrarySearchAttr.SetActiveID(librarySearchAllAttrID)
-
 }
 
 // initPlayerWidgets initialises player widgets and actions
@@ -1096,12 +1148,27 @@ func (w *MainWindow) initWidgets() {
 	w.initPlayerWidgets()
 }
 
+// libraryPathToFilter parses the provided library path and returns a slice of arguments for Find() or List() commands
+func (w *MainWindow) libraryPathToFilter(libPath string) (args []string) {
+	// Split the path into components if it's not empty
+	if libPath != "" {
+		for _, tag := range strings.Split(libPath, libraryPathSep) {
+			// For each tag, add two elements to the slice: the tag's name and the tag's value
+			name, val := util.Partition(tag, ':')
+			args = append(args, name, val)
+		}
+	}
+	return
+}
+
 // libraryUpdate updates or rescans the library
 func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	// Determine the update path
 	libPath := ""
 	if selectedOnly {
-		if libPath, _ = w.getSelectedLibraryPath(); libPath == "" {
+		var prefix string
+		// TODO updating non-file items not supported yet
+		if libPath, prefix = w.getSelectedLibraryPath(); libPath == "" || prefix == "t:" {
 			return
 		}
 	}
@@ -1498,13 +1565,32 @@ func (w *MainWindow) queueStream(replace triBool, uri string) {
 	w.errCheckDialog(err, glib.Local("Failed to add stream to the queue"))
 }
 
-// queueURI adds or replaces the content of the queue with one specified URI
-func (w *MainWindow) queueURI(replace triBool, uri string) {
-	w.queueURIs(replace, []string{uri})
+// queueTag adds or replaces the content of the queue with the specified tag
+func (w *MainWindow) queueTag(replace triBool, libPath string) {
+	var attrs []mpd.Attrs
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		// For the lack of FindAdd() command in gompd, we need to query tracks first
+		attrs, err = client.Find(w.libraryPathToFilter(libPath)...)
+	})
+
+	// Check for error
+	if w.errCheckDialog(err, glib.Local("Failed to add tag to the queue")) {
+		return
+	}
+
+	// Convert attrs to list of URIs
+	uris := make([]string, len(attrs))
+	for i, a := range attrs {
+		uris[i] = a["file"]
+	}
+
+	// Queue the URIs
+	w.queueURIs(replace, uris...)
 }
 
 // queueURIs adds or replaces the content of the queue with the specified URIs
-func (w *MainWindow) queueURIs(replace triBool, uris []string) {
+func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
@@ -1544,7 +1630,8 @@ func (w *MainWindow) Show() {
 }
 
 // setLibraryPath sets the current library path selector and updates its widget and the current library list
-func (w *MainWindow) setLibraryPath(path string) {
+func (w *MainWindow) setLibraryPath(pathType libPathType, path string) {
+	w.currentLibPathType = pathType
 	w.currentLibPath = path
 	w.updateLibraryPath()
 	w.updateLibrary()
@@ -1588,12 +1675,15 @@ func (w *MainWindow) updateLibrary() {
 	// Clear the library list
 	util.ClearChildren(w.lbxLibrary.Container)
 
-	var attrs []mpd.Attrs
-	var err error
-	pattern := ""
+	var (
+		attrs               []mpd.Attrs
+		err                 error
+		pattern, pathPrefix string
+	)
 	maxResultRows := -1
-	// pathPrefix will need to be removed from element names
-	pathPrefix := ""
+	typeProps := libraryPathTypeProps[w.currentLibPathType]
+	browseBy := typeProps.attrName
+	iconName := typeProps.icon
 
 	// If search mode activated
 	if w.btnLibrarySearch.GetActive() {
@@ -1603,12 +1693,48 @@ func (w *MainWindow) updateLibrary() {
 	// No pattern means browse mode: load the library list for the current path if there's a connection
 	if pattern == "" {
 		w.connector.IfConnected(func(client *mpd.Client) {
-			attrs, err = client.ListInfo(w.currentLibPath)
+			// Browsing directories/files
+			if browseBy == "" {
+				// Replacing path separators with slashes (that's the way MPD presents file URIs)
+				uri := strings.ReplaceAll(w.currentLibPath, libraryPathSep, "/")
+				attrs, err = client.ListInfo(uri)
+				// Make a removable prefix from the path by adding a slash
+				pathPrefix = uri + "/"
+
+			} else {
+				// Browsing by a tag
+				// The last tag determines what we're browsing by. By default (path is empty): browse by root path type
+				lastTag := w.currentLibPath[strings.LastIndex(w.currentLibPath, libraryPathSep)+1:]
+				name, _ := util.Partition(lastTag, ':')
+				switch name {
+				case "genre":
+					browseBy = "artist"
+					iconName = "ymuse-artist"
+				case "artist":
+					browseBy = "album"
+					iconName = "ymuse-album"
+				case "album":
+					browseBy = "title"
+					iconName = "ymuse-audio-file"
+				}
+
+				// Determine criteria for listing
+				args := append([]string{browseBy}, w.libraryPathToFilter(w.currentLibPath)...)
+
+				// Load the list of tags
+				var list []string
+				list, err = client.List(args...)
+
+				// Convert names to attributes
+				attrs = make([]mpd.Attrs, len(list))
+				for i, s := range list {
+					attrs[i] = mpd.Attrs{"tag": s}
+				}
+			}
 		})
 		if errCheck(err, "updateLibrary(): ListInfo() failed") {
 			return
 		}
-		pathPrefix = w.currentLibPath + "/"
 
 	} else {
 		// Search mode. Fetch selected attribute
@@ -1629,42 +1755,63 @@ func (w *MainWindow) updateLibrary() {
 
 	// Repopulate the library list
 	var rowToSelect *gtk.ListBoxRow
-	idxRow, countDirs, countFiles, countPlaylists, limited := 0, 0, 0, 0, false
+	idxRow, countDirs, countFiles, countPlaylists, countItems, limited := 0, 0, 0, 0, 0, false
 	for _, a := range attrs {
 		// Pick files and directories only
-		uri, iconName, prefix := "", "", ""
+		var uri, label string
 		var appendFunc, replaceFunc func()
 		if dir, ok := a["directory"]; ok {
-			uri = dir
+			label = strings.TrimPrefix(dir, pathPrefix)
+			uri = "d:" + label
 			iconName = "folder"
-			prefix = "d:"
 			countDirs++
-			appendFunc = func() { w.queueURI(tbFalse, dir) }
-			replaceFunc = func() { w.queueURI(tbTrue, dir) }
+			appendFunc = func() { w.queueURIs(tbFalse, dir) }
+			replaceFunc = func() { w.queueURIs(tbTrue, dir) }
+
 		} else if file, ok := a["file"]; ok {
-			uri = file
+			label = strings.TrimPrefix(file, pathPrefix)
+			uri = "f:" + label
 			iconName = "ymuse-audio-file"
-			prefix = "f:"
 			countFiles++
-			appendFunc = func() { w.queueURI(tbFalse, file) }
-			replaceFunc = func() { w.queueURI(tbTrue, file) }
+			appendFunc = func() { w.queueURIs(tbFalse, file) }
+			replaceFunc = func() { w.queueURIs(tbTrue, file) }
+
 		} else if playlist, ok := a["playlist"]; ok {
-			uri = playlist
+			label = strings.TrimPrefix(playlist, pathPrefix)
+			uri = "p:" + label
 			iconName = "ymuse-playlist"
-			prefix = "p:"
 			countPlaylists++
 			appendFunc = func() { w.queuePlaylist(tbFalse, playlist) }
 			replaceFunc = func() { w.queuePlaylist(tbTrue, playlist) }
+
+		} else if tag, ok := a["tag"]; ok {
+			// When in non-file browsing mode we make a pseudo-uri up as "t:<tag_name>:<tag_value>"
+			label = tag
+			uri = "t:" + browseBy + ":" + tag
+			countItems++
+			// Construct the full library path for the buttons
+			fullLibPath := w.currentLibPath
+			if fullLibPath != "" {
+				fullLibPath += libraryPathSep
+			}
+			fullLibPath += browseBy + ":" + tag
+			appendFunc = func() { w.queueTag(tbFalse, fullLibPath) }
+			replaceFunc = func() { w.queueTag(tbTrue, fullLibPath) }
+
 		} else {
 			continue
 		}
 
+		// Convert empty values into "(unknown)"
+		if label == "" {
+			label = glib.Local("(unknown)")
+		}
+
 		// Add a new list box row
-		name := strings.TrimPrefix(uri, pathPrefix)
 		row, hbx, err := util.NewListBoxRow(
 			w.lbxLibrary,
-			name,
-			prefix+name,
+			label,
+			uri,
 			iconName,
 			// Add replace/append buttons
 			util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", appendFunc),
@@ -1705,7 +1852,7 @@ func (w *MainWindow) updateLibrary() {
 
 	// Compose info
 	info := ""
-	if countDirs+countFiles+countPlaylists == 0 {
+	if countDirs+countFiles+countPlaylists+countItems == 0 {
 		info = glib.Local("No items")
 	} else {
 		// Compose counters
@@ -1718,6 +1865,9 @@ func (w *MainWindow) updateLibrary() {
 		}
 		if countPlaylists > 0 {
 			infoItems = append(infoItems, fmt.Sprintf(glib.Local("%d playlists"), countPlaylists))
+		}
+		if countItems > 0 {
+			infoItems = append(infoItems, fmt.Sprintf(glib.Local("%d items"), countItems))
 		}
 		for i, item := range infoItems {
 			if info != "" {
@@ -1756,29 +1906,65 @@ func (w *MainWindow) updateLibraryActions() {
 
 // updateLibraryPath updates the current library path selector
 func (w *MainWindow) updateLibraryPath() {
-	// Remove all buttons from the box
-	util.ClearChildren(w.bxLibraryPath.Container)
+	// Remove all buttons from the box except the first (dropdown menu) one
+	for l := w.bxLibraryPath.GetChildren().Next(); l != nil; l = l.Next() {
+		w.bxLibraryPath.Remove(l.Data().(gtk.IWidget))
+	}
 
 	// Create buttons if there's a connection
+	typeProps := libraryPathTypeProps[w.currentLibPathType]
 	if w.connector.IsConnected() {
 		// Create a button for "root"
-		util.NewBoxToggleButton(w.bxLibraryPath, glib.Local("Files"), "", "drive-harddisk", w.currentLibPath == "", func() { w.setLibraryPath("") })
+		util.NewBoxToggleButton(
+			w.bxLibraryPath,
+			glib.Local(typeProps.name),
+			"",
+			"",
+			w.currentLibPath == "",
+			func() { w.setLibraryPath(w.currentLibPathType, "") })
 
 		// Create buttons for path elements
 		if len(w.currentLibPath) > 0 {
 			libPath := ""
-			for i, s := range strings.Split(w.currentLibPath, "/") {
+			for i, element := range strings.Split(w.currentLibPath, libraryPathSep) {
 				// Accumulate path
 				if i > 0 {
-					libPath += "/"
+					libPath += libraryPathSep
 				}
-				libPath += s
+				libPath += element
+
+				// Determine the label and the icon to use on the button
+				label, icon := element, typeProps.icon
+				if w.currentLibPathType != libPathTypeFile {
+					// If browsing by tag, split the element into the tag's name and the tag's value on a ':'
+					var name string
+					name, label = util.Partition(element, ':')
+					switch name {
+					case "genre":
+						icon = "ymuse-genre"
+					case "artist":
+						icon = "ymuse-artist"
+					case "album":
+						icon = "ymuse-album"
+					}
+
+					// Fallback for empty values
+					if label == "" {
+						label = glib.Local("(unknown)")
+					}
+				}
 
 				// Create a local (in-loop) copy of libPath to use in the click event closure below
 				pathCopy := libPath
 
 				// Create a button. The last button must be depressed
-				util.NewBoxToggleButton(w.bxLibraryPath, s, "", "folder", libPath == w.currentLibPath, func() { w.setLibraryPath(pathCopy) })
+				util.NewBoxToggleButton(
+					w.bxLibraryPath,
+					label,
+					"",
+					icon,
+					libPath == w.currentLibPath,
+					func() { w.setLibraryPath(w.currentLibPathType, pathCopy) })
 			}
 		}
 

@@ -543,6 +543,26 @@
                             <property name="can_focus">False</property>
                             <property name="border_width">6</property>
                             <child>
+                              <object class="GtkMenuButton" id="mbtnLibraryPathType">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="popover">pmnLibraryPathType</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">go-down</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
                               <placeholder/>
                             </child>
                             <style>
@@ -1267,6 +1287,77 @@
       <packing>
         <property name="submenu">main</property>
         <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkPopoverMenu" id="pmnLibraryPathType">
+    <property name="can_focus">False</property>
+    <property name="relative_to">mbtnLibraryPathType</property>
+    <child>
+      <object class="GtkBox" id="bxLibraryPathTypeMenu">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">12</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryPathTypeFile">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.library.path.type.file</property>
+            <property name="text" translatable="yes">Files</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryPathTypeArtist">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.library.path.type.artist</property>
+            <property name="text" translatable="yes">Artists</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryPathTypeAlbum">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.library.path.type.album</property>
+            <property name="text" translatable="yes">Albums</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="mbtnLibraryPathTypeGenre">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.library.path.type.genre</property>
+            <property name="text" translatable="yes">Genres</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">main</property>
       </packing>
     </child>
   </object>

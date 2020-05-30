@@ -19,6 +19,9 @@ msgstr ""
 msgid "#"
 msgstr ""
 
+msgid "%d items"
+msgstr ""
+
 msgid "%d files"
 msgstr ""
 
@@ -100,6 +103,9 @@ msgstr ""
 msgid "Album"
 msgstr ""
 
+msgid "Albums"
+msgstr ""
+
 msgid "and"
 msgstr ""
 
@@ -125,6 +131,9 @@ msgid "Artist (for sorting)"
 msgstr ""
 
 msgid "Artist"
+msgstr ""
+
+msgid "Artists"
 msgstr ""
 
 msgid "Ascending"
@@ -293,6 +302,9 @@ msgid "General"
 msgstr ""
 
 msgid "Genre"
+msgstr ""
+
+msgid "Genres"
 msgstr ""
 
 msgid "Grouping"

@@ -19,7 +19,17 @@ import (
 	"fmt"
 	"html/template"
 	"strconv"
+	"strings"
 )
+
+// Partition splits the given string on the provided delimiter and returns the parts before and after the delimiter. If
+// no delimiter present in s, the first returned string equals to s and the second is empty.
+func Partition(s string, delimiter byte) (string, string) {
+	if i := strings.IndexByte(s, delimiter); i >= 0 {
+		return s[:i], s[i+1:]
+	}
+	return s, ""
+}
 
 // AtoiDef converts a string into an int, returning the given default value if conversion failed
 func AtoiDef(s string, def int) int {
