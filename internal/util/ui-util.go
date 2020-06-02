@@ -92,11 +92,12 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 
 // NewListBoxRow adds a new row to the list box, a horizontal box, an image and a label to it
 // listBox: list box instance
+// useMarkup: whether label is markup
 // label: text for the row
 // name: name of the row
 // icon: optional icon name for the row
 // widgets: extra widgets to insert into the beginning of the row
-func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string, widgets ...gtk.IWidget) (*gtk.ListBoxRow, *gtk.Box, error) {
+func NewListBoxRow(listBox *gtk.ListBox, useMarkup bool, label, name, icon string, widgets ...gtk.IWidget) (*gtk.ListBoxRow, *gtk.Box, error) {
 	// Add a new list box row
 	row, err := gtk.ListBoxRowNew()
 	if err != nil {
@@ -127,12 +128,17 @@ func NewListBoxRow(listBox *gtk.ListBox, label, name, icon string, widgets ...gt
 	}
 
 	// Insert label with directory/file name
-	lbl, err := gtk.LabelNew(label)
+	lbl, err := gtk.LabelNew("")
 	if err != nil {
 		return nil, nil, err
 	}
 	lbl.SetXAlign(0)
 	lbl.SetEllipsize(pango.ELLIPSIZE_END)
+	if useMarkup {
+		lbl.SetMarkup(label)
+	} else {
+		lbl.SetText(label)
+	}
 	hbx.PackStart(lbl, true, true, 0)
 
 	// Add the row to the list box

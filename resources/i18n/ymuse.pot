@@ -22,12 +22,6 @@ msgstr ""
 msgid "%d items"
 msgstr ""
 
-msgid "%d files"
-msgstr ""
-
-msgid "%d folders"
-msgstr ""
-
 msgid "%d playlists"
 msgstr ""
 
@@ -221,6 +215,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Everywhere"
+msgstr ""
+
+msgid "Failed to add item to the queue"
 msgstr ""
 
 msgid "Failed to add playlist to the queue"
