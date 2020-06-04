@@ -22,9 +22,6 @@ msgstr ""
 msgid "%d items"
 msgstr ""
 
-msgid "%d playlists"
-msgstr ""
-
 msgid "%d streams"
 msgstr ""
 
@@ -178,13 +175,13 @@ msgstr ""
 msgid "Delete playlist"
 msgstr ""
 
-msgid "Delete selected playlist"
-msgstr ""
-
 msgid "Delete selected"
 msgstr ""
 
 msgid "Delete stream"
+msgstr ""
+
+msgid "Delete the selected item"
 msgstr ""
 
 msgid "Delete the selected stream"
@@ -373,9 +370,6 @@ msgstr ""
 msgid "No items"
 msgstr ""
 
-msgid "No playlists"
-msgstr ""
-
 msgid "No streams"
 msgstr ""
 
@@ -475,7 +469,7 @@ msgstr ""
 msgid "Rename playlist"
 msgstr ""
 
-msgid "Rename selected playlist"
+msgid "Rename the selected item"
 msgstr ""
 
 msgid "Rename"
@@ -560,9 +554,6 @@ msgid "Streams"
 msgstr ""
 
 msgid "Switch to Library tab"
-msgstr ""
-
-msgid "Switch to Playlists tab"
 msgstr ""
 
 msgid "Switch to Queue tab"

@@ -534,7 +534,7 @@
                           <object class="GtkToolButton" id="btnLibraryRename">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Rename the selected element</property>
+                            <property name="tooltip_text" translatable="yes">Rename the selected item</property>
                             <property name="action_name">app.library.rename</property>
                             <property name="label" translatable="yes">Rename</property>
                             <property name="use_underline">True</property>
@@ -549,7 +549,7 @@
                           <object class="GtkToolButton" id="btnLibraryDelete">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Delete the selected element</property>
+                            <property name="tooltip_text" translatable="yes">Delete the selected item</property>
                             <property name="action_name">app.library.delete</property>
                             <property name="label" translatable="yes">Delete</property>
                             <property name="use_underline">True</property>

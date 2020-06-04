@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-05-28 17:23+0200\n"
+"PO-Revision-Date: 2020-06-04 19:12+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -20,14 +20,8 @@ msgstr ""
 msgid "#"
 msgstr "Nr"
 
-msgid "%d files"
-msgstr "%d bestanden"
-
-msgid "%d folders"
-msgstr "%d mappen"
-
-msgid "%d playlists"
-msgstr "%d afspeellijsten"
+msgid "%d items"
+msgstr "%d items"
 
 msgid "%d streams"
 msgstr "%d streams"
@@ -101,6 +95,9 @@ msgstr "Album artiest"
 msgid "Album"
 msgstr "Album"
 
+msgid "Albums"
+msgstr "Albums"
+
 msgid "and"
 msgstr "en"
 
@@ -127,6 +124,9 @@ msgstr "Artiest (voor het sorteren)"
 
 msgid "Artist"
 msgstr "Artiest"
+
+msgid "Artists"
+msgstr "Artiesten"
 
 msgid "Ascending"
 msgstr "Oplopend"
@@ -176,14 +176,14 @@ msgstr "Daemon versie:"
 msgid "Delete playlist"
 msgstr "Afspeellijst verwijderen"
 
-msgid "Delete selected playlist"
-msgstr "Geselecteerde afspeellijst verwijderen"
-
 msgid "Delete selected"
 msgstr "Geselecteerde items verwijderen"
 
 msgid "Delete stream"
 msgstr "Stream verwijderen"
+
+msgid "Delete the selected item"
+msgstr "Geselecteerd item verwijderen"
 
 msgid "Delete the selected stream"
 msgstr "Geselecteerde stream verwijderen"
@@ -214,6 +214,9 @@ msgstr "Bijwerken"
 
 msgid "Everywhere"
 msgstr "Overal"
+
+msgid "Failed to add item to the queue"
+msgstr "Het is niet gelukt om het item aan de wachtrij toe te voegen"
 
 msgid "Failed to add playlist to the queue"
 msgstr "Het is niet gelukt om de afspeellijst aan de wachtrij toe te voegen"
@@ -296,6 +299,9 @@ msgstr "Algemeen"
 msgid "Genre"
 msgstr "Genre"
 
+msgid "Genres"
+msgstr "Genres"
+
 msgid "Grouping"
 msgstr "Groepering"
 
@@ -364,9 +370,6 @@ msgstr "Volgend item"
 
 msgid "No items"
 msgstr "Geen items"
-
-msgid "No playlists"
-msgstr "Geen afspeellijst"
 
 msgid "No streams"
 msgstr "Geen streams"
@@ -467,8 +470,8 @@ msgstr "Geselecteerde track(s) uit de wachtrij verwijderen"
 msgid "Rename playlist"
 msgstr "Afspeellijst hernoemen"
 
-msgid "Rename selected playlist"
-msgstr "Geselecteerde afspeellijst hernoemen"
+msgid "Rename the selected item"
+msgstr "Geselecteerd item hernoemen"
 
 msgid "Rename"
 msgstr "Hernoemen"
@@ -554,9 +557,6 @@ msgstr "Streams"
 msgid "Switch to Library tab"
 msgstr "Naar het Mediatheek tabblad"
 
-msgid "Switch to Playlists tab"
-msgstr "Naar het Afspeellijsten tabblad"
-
 msgid "Switch to Queue tab"
 msgstr "Naar het Wachtrij tabblad"
 
@@ -640,6 +640,27 @@ msgstr "Jaar"
 
 msgid "Ymuse version %s; %s; released %s"
 msgstr "Ymuse versie %s; %s; gereleased %s"
+
+#~ msgid "%d files"
+#~ msgstr "%d bestanden"
+
+#~ msgid "%d folders"
+#~ msgstr "%d mappen"
+
+#~ msgid "%d playlists"
+#~ msgstr "%d afspeellijsten"
+
+#~ msgid "Delete selected playlist"
+#~ msgstr "Geselecteerde afspeellijst verwijderen"
+
+#~ msgid "No playlists"
+#~ msgstr "Geen afspeellijst"
+
+#~ msgid "Rename selected playlist"
+#~ msgstr "Geselecteerde afspeellijst hernoemen"
+
+#~ msgid "Switch to Playlists tab"
+#~ msgstr "Naar het Afspeellijsten tabblad"
 
 #~ msgid "Go to Now playing"
 #~ msgstr "Naar het huidige item gaan"

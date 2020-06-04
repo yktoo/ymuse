@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-05-28 17:22+0200\n"
+"PO-Revision-Date: 2020-06-04 19:11+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -24,14 +24,8 @@ msgstr ""
 msgid "#"
 msgstr "№"
 
-msgid "%d files"
-msgstr "%d файлов"
-
-msgid "%d folders"
-msgstr "%d папок"
-
-msgid "%d playlists"
-msgstr "%d плейлистов"
+msgid "%d items"
+msgstr "%d элементов"
 
 msgid "%d streams"
 msgstr "%d потоков"
@@ -105,6 +99,9 @@ msgstr "Исполнитель альбома"
 msgid "Album"
 msgstr "Альбом"
 
+msgid "Albums"
+msgstr "Альбомы"
+
 msgid "and"
 msgstr "и"
 
@@ -131,6 +128,9 @@ msgstr "Исполнитель (для сортировки)"
 
 msgid "Artist"
 msgstr "Исполнитель"
+
+msgid "Artists"
+msgstr "Исполнители"
 
 msgid "Ascending"
 msgstr "По возрастанию"
@@ -180,14 +180,14 @@ msgstr "Версия демона:"
 msgid "Delete playlist"
 msgstr "Удалить плейлист"
 
-msgid "Delete selected playlist"
-msgstr "Удалить выделенный плейлист"
-
 msgid "Delete selected"
 msgstr "Удалить выделенное"
 
 msgid "Delete stream"
 msgstr "Удалить поток"
+
+msgid "Delete the selected item"
+msgstr "Удалить выделенный элемент"
 
 msgid "Delete the selected stream"
 msgstr "Удалить выделенный поток"
@@ -218,6 +218,9 @@ msgstr "Редактировать"
 
 msgid "Everywhere"
 msgstr "Везде"
+
+msgid "Failed to add item to the queue"
+msgstr "Не удалось добавить элемент к очереди"
 
 msgid "Failed to add playlist to the queue"
 msgstr "Не удалось добавить плейлист к очереди"
@@ -300,6 +303,9 @@ msgstr "Общие"
 msgid "Genre"
 msgstr "Жанр"
 
+msgid "Genres"
+msgstr "Жанры"
+
 msgid "Grouping"
 msgstr "Группировка"
 
@@ -368,9 +374,6 @@ msgstr "Следующий"
 
 msgid "No items"
 msgstr "Элементы отсутствуют"
-
-msgid "No playlists"
-msgstr "Нет плейлистов"
 
 msgid "No streams"
 msgstr "Нет потоков"
@@ -473,8 +476,8 @@ msgstr "Удалить отмеченное из очереди"
 msgid "Rename playlist"
 msgstr "Переименовать плейлист"
 
-msgid "Rename selected playlist"
-msgstr "Переименовать выделенный плейлист"
+msgid "Rename the selected item"
+msgstr "Переименовать выделенный элемент"
 
 msgid "Rename"
 msgstr "Переименовать"
@@ -559,9 +562,6 @@ msgstr "Потоки"
 
 msgid "Switch to Library tab"
 msgstr "Переключиться во вкладку «Библиотека»"
-
-msgid "Switch to Playlists tab"
-msgstr "Переключиться во вкладку «Плейлисты»"
 
 msgid "Switch to Queue tab"
 msgstr "Переключиться во вкладку «Очередь»"
@@ -648,6 +648,24 @@ msgstr "Год"
 
 msgid "Ymuse version %s; %s; released %s"
 msgstr "Ymuse версии %s; %s; выпущен %s"
+
+#~ msgid "Delete selected playlist"
+#~ msgstr "Удалить выделенный плейлист"
+
+#~ msgid "Switch to Playlists tab"
+#~ msgstr "Переключиться во вкладку «Плейлисты»"
+
+#~ msgid "No playlists"
+#~ msgstr "Нет плейлистов"
+
+#~ msgid "%d playlists"
+#~ msgstr "%d плейлистов"
+
+#~ msgid "%d files"
+#~ msgstr "%d файлов"
+
+#~ msgid "%d folders"
+#~ msgstr "%d папок"
 
 #~ msgid "Go to Now playing"
 #~ msgstr "Перейти к текущему треку"
