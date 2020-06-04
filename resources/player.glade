@@ -8,6 +8,26 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkMenu" id="mnLibrary">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="miLibraryRename">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Rename</property>
+        <signal name="activate" handler="on_miLibraryRename_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miLibraryDelete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+        <signal name="activate" handler="on_miLibraryDelete_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="mnQueue">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -511,6 +531,36 @@
                           </packing>
                         </child>
                         <child>
+                          <object class="GtkToolButton" id="btnLibraryRename">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Rename the selected element</property>
+                            <property name="action_name">app.library.rename</property>
+                            <property name="label" translatable="yes">Rename</property>
+                            <property name="use_underline">True</property>
+                            <property name="icon_name">ymuse-edit-symbolic</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="btnLibraryDelete">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Delete the selected element</property>
+                            <property name="action_name">app.library.delete</property>
+                            <property name="label" translatable="yes">Delete</property>
+                            <property name="use_underline">True</property>
+                            <property name="icon_name">ymuse-delete-symbolic</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkToggleToolButton" id="btnLibrarySearch">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -687,120 +737,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="bxPlaylists">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkToolbar" id="tbPlaylists">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_size">2</property>
-                    <child>
-                      <object class="GtkToolButton" id="btnPlaylistsRename">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Rename selected playlist</property>
-                        <property name="action_name">app.playlist.rename</property>
-                        <property name="label" translatable="yes">Rename</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-edit-symbolic</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">True</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkToolButton" id="btnPlaylistsDelete">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Delete selected playlist</property>
-                        <property name="action_name">app.playlist.delete</property>
-                        <property name="label" translatable="yes">Delete</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete-symbolic</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">True</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow" id="swPlaylists">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <property name="shadow_type">in</property>
-                    <child>
-                      <object class="GtkViewport" id="vwpPlaylists">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkListBox" id="lbxPlaylists">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="selection_mode">browse</property>
-                            <signal name="button-press-event" handler="on_lbxPlaylists_buttonPress" swapped="no"/>
-                            <signal name="key-press-event" handler="on_lbxPlaylists_keyPress" swapped="no"/>
-                            <signal name="selected-rows-changed" handler="on_lbxPlaylists_selectionChange" swapped="no"/>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="bxPlaylistsInfo">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkLabel" id="lblPlaylistsInfo">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">3</property>
-                        <property name="margin_bottom">3</property>
-                        <property name="ellipsize">end</property>
-                        <property name="track_visited_links">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <style>
-                      <class name="inline-toolbar"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="name">playlists</property>
-                <property name="title" translatable="yes">Playlists</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkBox" id="bxStreams">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -926,7 +862,7 @@
               <packing>
                 <property name="name">streams</property>
                 <property name="title" translatable="yes">Streams</property>
-                <property name="position">3</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

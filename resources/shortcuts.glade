@@ -71,14 +71,8 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Switch to Playlists tab</property>
-                <property name="accelerator">&lt;ctrl&gt;3</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Switch to Streams tab</property>
-                <property name="accelerator">&lt;ctrl&gt;4</property>
+                <property name="accelerator">&lt;ctrl&gt;3</property>
               </object>
             </child>
           </object>

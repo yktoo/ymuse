@@ -53,18 +53,21 @@ type MainWindow struct {
 	scPlayPosition  *gtk.Scale
 	adjPlayPosition *gtk.Adjustment
 	// Queue widgets
-	bxQueue          *gtk.Box
-	lblQueueInfo     *gtk.Label
-	trvQueue         *gtk.TreeView
-	pmnQueueSort     *gtk.PopoverMenu
-	pmnQueueSave     *gtk.PopoverMenu
-	mnQueue          *gtk.Menu
-	btnQueueFilter   *gtk.ToggleToolButton
-	queueSearchBar   *gtk.SearchBar
-	queueSearchEntry *gtk.SearchEntry
-	lblQueueFilter   *gtk.Label
-	queueListStore   *gtk.ListStore
-	queueListFilter  *gtk.TreeModelFilter
+	bxQueue           *gtk.Box
+	lblQueueInfo      *gtk.Label
+	trvQueue          *gtk.TreeView
+	pmnQueueSort      *gtk.PopoverMenu
+	pmnQueueSave      *gtk.PopoverMenu
+	mnQueue           *gtk.Menu
+	miQueueNowPlaying *gtk.MenuItem
+	miQueueClear      *gtk.MenuItem
+	miQueueDelete     *gtk.MenuItem
+	btnQueueFilter    *gtk.ToggleToolButton
+	queueSearchBar    *gtk.SearchBar
+	queueSearchEntry  *gtk.SearchEntry
+	lblQueueFilter    *gtk.Label
+	queueListStore    *gtk.ListStore
+	queueListFilter   *gtk.TreeModelFilter
 	// Queue sort popup
 	cbxQueueSortBy *gtk.ComboBoxText
 	// Queue save popup
@@ -83,10 +86,9 @@ type MainWindow struct {
 	cbxLibrarySearchAttr *gtk.ComboBoxText
 	lbxLibrary           *gtk.ListBox
 	lblLibraryInfo       *gtk.Label
-	// Playlists widgets
-	bxPlaylists      *gtk.Box
-	lbxPlaylists     *gtk.ListBox
-	lblPlaylistsInfo *gtk.Label
+	mnLibrary            *gtk.Menu
+	miLibraryRename      *gtk.MenuItem
+	miLibraryDelete      *gtk.MenuItem
 	// Streams widgets
 	bxStreams      *gtk.Box
 	btnStreamsAdd  *gtk.ToolButton
@@ -114,8 +116,8 @@ type MainWindow struct {
 	aLibraryUpdateSel *glib.SimpleAction
 	aLibraryRescanAll *glib.SimpleAction
 	aLibraryRescanSel *glib.SimpleAction
-	aPlaylistRename   *glib.SimpleAction
-	aPlaylistDelete   *glib.SimpleAction
+	aLibraryRename    *glib.SimpleAction
+	aLibraryDelete    *glib.SimpleAction
 	aStreamAdd        *glib.SimpleAction
 	aStreamEdit       *glib.SimpleAction
 	aStreamDelete     *glib.SimpleAction
@@ -180,18 +182,21 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		scPlayPosition:  builder.getScale("scPlayPosition"),
 		adjPlayPosition: builder.getAdjustment("adjPlayPosition"),
 		// Queue
-		bxQueue:          builder.getBox("bxQueue"),
-		lblQueueInfo:     builder.getLabel("lblQueueInfo"),
-		trvQueue:         builder.getTreeView("trvQueue"),
-		pmnQueueSort:     builder.getPopoverMenu("pmnQueueSort"),
-		pmnQueueSave:     builder.getPopoverMenu("pmnQueueSave"),
-		mnQueue:          builder.getMenu("mnQueue"),
-		btnQueueFilter:   builder.getToggleToolButton("btnQueueFilter"),
-		queueSearchBar:   builder.getSearchBar("queueSearchBar"),
-		queueSearchEntry: builder.getSearchEntry("queueSearchEntry"),
-		lblQueueFilter:   builder.getLabel("lblQueueFilter"),
-		queueListStore:   builder.getListStore("queueListStore"),
-		queueListFilter:  builder.getTreeModelFilter("queueListFilter"),
+		bxQueue:           builder.getBox("bxQueue"),
+		lblQueueInfo:      builder.getLabel("lblQueueInfo"),
+		trvQueue:          builder.getTreeView("trvQueue"),
+		pmnQueueSort:      builder.getPopoverMenu("pmnQueueSort"),
+		pmnQueueSave:      builder.getPopoverMenu("pmnQueueSave"),
+		mnQueue:           builder.getMenu("mnQueue"),
+		miQueueNowPlaying: builder.getMenuItem("miQueueNowPlaying"),
+		miQueueClear:      builder.getMenuItem("miQueueClear"),
+		miQueueDelete:     builder.getMenuItem("miQueueDelete"),
+		btnQueueFilter:    builder.getToggleToolButton("btnQueueFilter"),
+		queueSearchBar:    builder.getSearchBar("queueSearchBar"),
+		queueSearchEntry:  builder.getSearchEntry("queueSearchEntry"),
+		lblQueueFilter:    builder.getLabel("lblQueueFilter"),
+		queueListStore:    builder.getListStore("queueListStore"),
+		queueListFilter:   builder.getTreeModelFilter("queueListFilter"),
 		// Queue sort popup
 		cbxQueueSortBy: builder.getComboBoxText("cbxQueueSortBy"),
 		// Queue save popup
@@ -210,10 +215,9 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		cbxLibrarySearchAttr: builder.getComboBoxText("cbxLibrarySearchAttr"),
 		lbxLibrary:           builder.getListBox("lbxLibrary"),
 		lblLibraryInfo:       builder.getLabel("lblLibraryInfo"),
-		// Playlists
-		bxPlaylists:      builder.getBox("bxPlaylists"),
-		lbxPlaylists:     builder.getListBox("lbxPlaylists"),
-		lblPlaylistsInfo: builder.getLabel("lblPlaylistsInfo"),
+		mnLibrary:            builder.getMenu("mnLibrary"),
+		miLibraryRename:      builder.getMenuItem("miLibraryRename"),
+		miLibraryDelete:      builder.getMenuItem("miLibraryDelete"),
 		// Streams
 		bxStreams:      builder.getBox("bxStreams"),
 		btnStreamsAdd:  builder.getToolButton("btnStreamsAdd"),
@@ -251,9 +255,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_lbxLibrary_selectionChange":     w.updateLibraryActions,
 		"on_librarySearchChanged":           w.updateLibrary,
 		"on_librarySearchStop":              w.onLibraryStopSearch,
-		"on_lbxPlaylists_buttonPress":       w.onPlaylistListBoxButtonPress,
-		"on_lbxPlaylists_keyPress":          w.onPlaylistListBoxKeyPress,
-		"on_lbxPlaylists_selectionChange":   w.updatePlaylistsActions,
 		"on_lbxStreams_buttonPress":         w.onStreamListBoxButtonPress,
 		"on_lbxStreams_keyPress":            w.onStreamListBoxKeyPress,
 		"on_lbxStreams_selectionChange":     w.updateStreamsActions,
@@ -266,6 +267,8 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_miQueueNowPlaying_activate": w.updateQueueNowPlaying,
 		"on_miQueueClear_activate":      w.queueClear,
 		"on_miQueueDelete_activate":     w.queueDelete,
+		"on_miLibraryRename_activate":   w.libraryRename,
+		"on_miLibraryDelete_activate":   w.libraryDelete,
 	})
 
 	// Register the main window with the app
@@ -319,7 +322,9 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 			w.updatePlayer()
 		})
 	case "stored_playlist":
-		util.WhenIdle("updatePlaylists()", w.updatePlaylists)
+		if _, ok := w.libPath.Last().(*PlaylistsLibElement); ok {
+			util.WhenIdle("updateLibrary()", w.updateLibrary)
+		}
 	}
 }
 
@@ -357,8 +362,16 @@ func (w *MainWindow) onDelete() {
 }
 
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the list box
+	switch btn := gdk.EventButtonNewFromEvent(event); btn.Type() {
+	// Mouse click
+	case gdk.EVENT_BUTTON_PRESS:
+		// Right click
+		if btn.Button() == 3 {
+			w.lbxLibrary.SelectRow(w.lbxLibrary.GetRowAtY(int(btn.Y())))
+			w.mnLibrary.PopupAtPointer(event)
+		}
+	// Double click
+	case gdk.EVENT_DOUBLE_BUTTON_PRESS:
 		w.applyLibrarySelection(tbNone)
 	}
 }
@@ -433,61 +446,6 @@ func (w *MainWindow) onLibraryPathChanged() {
 	w.updateLibraryPath()
 	w.updateLibrary()
 	w.focusMainList()
-}
-
-func (w *MainWindow) onPlaylistDelete() {
-	var err error
-	if name := w.getSelectedPlaylistName(); name != "" {
-		if util.ConfirmDialog(w.window, glib.Local("Delete playlist"), fmt.Sprintf(glib.Local("Are you sure you want to delete playlist \"%s\"?"), name)) {
-			w.connector.IfConnected(func(client *mpd.Client) {
-				err = client.PlaylistRemove(name)
-			})
-		}
-	}
-
-	// Check for error (outside IfConnected() because it would keep the client locked)
-	w.errCheckDialog(err, glib.Local("Failed to delete the playlist"))
-}
-
-func (w *MainWindow) onPlaylistListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the list box
-		w.applyPlaylistSelection(tbNone)
-	}
-}
-
-func (w *MainWindow) onPlaylistListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
-	evt := gdk.EventKeyNewFromEvent(event)
-	state := gdk.ModifierType(evt.State()) & gtk.AcceleratorGetDefaultModMask()
-	switch evt.KeyVal() {
-	// Enter: apply selection
-	case gdk.KEY_Return:
-		switch state {
-		// Enter: use default mode
-		case 0:
-			w.applyPlaylistSelection(tbNone)
-		// Ctrl+Enter: replace
-		case gdk.GDK_CONTROL_MASK:
-			w.applyPlaylistSelection(tbTrue)
-		// Shift+Enter: append
-		case gdk.GDK_SHIFT_MASK:
-			w.applyPlaylistSelection(tbFalse)
-		}
-	}
-}
-
-func (w *MainWindow) onPlaylistRename() {
-	var err error
-	if name := w.getSelectedPlaylistName(); name != "" {
-		if newName, ok := util.EditDialog(w.window, glib.Local("Rename playlist"), name, glib.Local("Rename")); ok {
-			w.connector.IfConnected(func(client *mpd.Client) {
-				err = client.PlaylistRename(name, newName)
-			})
-		}
-	}
-
-	// Check for error (outside IfConnected() because it would keep the client locked)
-	w.errCheckDialog(err, glib.Local("Failed to rename the playlist"))
 }
 
 func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {
@@ -769,13 +727,6 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 	}
 }
 
-// applyPlaylistSelection adds or replaces the content of the queue with the currently selected playlist
-func (w *MainWindow) applyPlaylistSelection(replace triBool) {
-	if name := w.getSelectedPlaylistName(); name != "" {
-		w.queuePlaylist(replace, name)
-	}
-}
-
 // applyQueueSelection starts playing from the currently selected track
 func (w *MainWindow) applyQueueSelection() {
 	// Get the tree's selection
@@ -839,14 +790,6 @@ func (w *MainWindow) focusMainList() {
 			widget = &row.Widget
 		} else {
 			widget = &w.lbxLibrary.Widget
-		}
-
-	// Playlists: move focus to the selected row, if any
-	case "playlists":
-		if row := w.lbxPlaylists.GetSelectedRow(); row != nil {
-			widget = &row.Widget
-		} else {
-			widget = &w.lbxPlaylists.Widget
 		}
 
 	// Streams: move focus to the selected row, if any
@@ -918,22 +861,6 @@ func (w *MainWindow) getSelectedLibraryElement() LibraryPathElement {
 	return nil
 }
 
-// getSelectedPlaylistName returns the name of the currently selected playlist, or an empty string if there's an error
-func (w *MainWindow) getSelectedPlaylistName() string {
-	// If there's selection
-	row := w.lbxPlaylists.GetSelectedRow()
-	if row == nil {
-		return ""
-	}
-
-	// Extract playlist's name, which is stored in the row's name
-	name, err := row.GetName()
-	if errCheck(err, "getSelectedPlaylistName(): row.GetName() failed") {
-		return ""
-	}
-	return name
-}
-
 // getSelectedStreamIndex returns the index of the currently selected stream, or -1 if there's an error
 func (w *MainWindow) getSelectedStreamIndex() int {
 	// If there's selection
@@ -998,6 +925,8 @@ func (w *MainWindow) initLibraryWidgets() {
 	w.aLibraryUpdateSel = w.addAction("library.update.selected", "", func() { w.libraryUpdate(false, true) })
 	w.aLibraryRescanAll = w.addAction("library.rescan.all", "", func() { w.libraryUpdate(true, false) })
 	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
+	w.aLibraryRename = w.addAction("library.rename", "", w.libraryRename)
+	w.aLibraryDelete = w.addAction("library.delete", "", w.libraryDelete)
 	w.addAction("library.search.toggle", "", w.onLibrarySearchToggle)
 
 	// Create a library path instance
@@ -1024,13 +953,6 @@ func (w *MainWindow) initPlayerWidgets() {
 	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
 	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
-}
-
-// initPlaylistsWidgets initialises playlists widgets and actions
-func (w *MainWindow) initPlaylistsWidgets() {
-	// Create actions
-	w.aPlaylistRename = w.addAction("playlist.rename", "", w.onPlaylistRename)
-	w.aPlaylistDelete = w.addAction("playlist.delete", "", w.onPlaylistDelete)
 }
 
 // initQueueWidgets initialises queue widgets and actions
@@ -1088,15 +1010,43 @@ func (w *MainWindow) initWidgets() {
 	w.addAction("quit", "<Ctrl>Q", w.window.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.mainStack.SetVisibleChild(w.bxQueue) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.mainStack.SetVisibleChild(w.bxLibrary) })
-	w.addAction("page.playlists", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxPlaylists) })
-	w.addAction("page.streams", "<Ctrl>4", func() { w.mainStack.SetVisibleChild(w.bxStreams) })
+	w.addAction("page.streams", "<Ctrl>3", func() { w.mainStack.SetVisibleChild(w.bxStreams) })
 
 	// Init other widgets and actions
 	w.initQueueWidgets()
 	w.initLibraryWidgets()
-	w.initPlaylistsWidgets()
 	w.initStreamsWidgets()
 	w.initPlayerWidgets()
+}
+
+// libraryDelete allows to delete the selected library element
+func (w *MainWindow) libraryDelete() {
+	element := w.getSelectedLibraryElement()
+	if ph, ok := element.(PlaylistHolder); ok {
+		if util.ConfirmDialog(w.window, glib.Local("Delete playlist"), fmt.Sprintf(glib.Local("Are you sure you want to delete playlist \"%s\"?"), ph.PlaylistName())) {
+			var err error
+			w.connector.IfConnected(func(client *mpd.Client) {
+				err = client.PlaylistRemove(ph.PlaylistName())
+			})
+			// Check for error (outside IfConnected() because it would keep the client locked)
+			w.errCheckDialog(err, glib.Local("Failed to delete the playlist"))
+		}
+	}
+}
+
+// libraryRename allows to rename the selected library element
+func (w *MainWindow) libraryRename() {
+	element := w.getSelectedLibraryElement()
+	if ph, ok := element.(PlaylistHolder); ok {
+		if newName, ok := util.EditDialog(w.window, glib.Local("Rename playlist"), ph.PlaylistName(), glib.Local("Rename")); ok {
+			var err error
+			w.connector.IfConnected(func(client *mpd.Client) {
+				err = client.PlaylistRename(ph.PlaylistName(), newName)
+			})
+			// Check for error (outside IfConnected() because it would keep the client locked)
+			w.errCheckDialog(err, glib.Local("Failed to rename the playlist"))
+		}
+	}
 }
 
 // libraryUpdate updates or rescans the library
@@ -1541,7 +1491,7 @@ func (w *MainWindow) queueStream(replace triBool, uri string) {
 			commands.Clear()
 		}
 
-		// Add the content of the playlist
+		// Add the URI of the stream
 		commands.Add(uri)
 
 		// Run the commands
@@ -1618,8 +1568,6 @@ func (w *MainWindow) updateAll() {
 	w.updateLibraryPath()
 	w.updateLibrary()
 	w.updateLibraryActions()
-	w.updatePlaylists()
-	w.updatePlaylistsActions()
 	w.updateOptions()
 	w.updatePlayer()
 }
@@ -1813,11 +1761,19 @@ func (w *MainWindow) updateLibrary() {
 // updateLibraryActions updates the widgets for library list
 func (w *MainWindow) updateLibraryActions() {
 	connected, selected := w.connector.IsConnected(), w.lbxLibrary.GetSelectedRow() != nil
+	_, playlist := w.getSelectedLibraryElement().(PlaylistHolder)
+	editable := playlist && connected && selected
+	// Actions
 	w.aLibraryUpdate.SetEnabled(connected)
 	w.aLibraryUpdateAll.SetEnabled(connected)
 	w.aLibraryUpdateSel.SetEnabled(connected && selected)
 	w.aLibraryRescanAll.SetEnabled(connected)
 	w.aLibraryRescanSel.SetEnabled(connected && selected)
+	w.aLibraryRename.SetEnabled(editable)
+	w.aLibraryDelete.SetEnabled(editable)
+	// Menu items
+	w.miLibraryRename.SetSensitive(editable)
+	w.miLibraryDelete.SetSensitive(editable)
 }
 
 // updateLibraryPath updates the current library path selector
@@ -1988,51 +1944,6 @@ func (w *MainWindow) updatePlayerTitleTemplate() {
 	if w.connector != nil {
 		w.updatePlayer()
 	}
-}
-
-// updatePlaylists updates the current playlists list contents
-func (w *MainWindow) updatePlaylists() {
-	// Clear the playlists list
-	util.ClearChildren(w.lbxPlaylists.Container)
-
-	// Repopulate the playlists list
-	playlists := w.connector.GetPlaylists()
-	for _, name := range playlists {
-		name := name // Make an in-loop copy of the var
-		_, _, err := util.NewListBoxRow(
-			w.lbxPlaylists,
-			false,
-			name,
-			name,
-			"ymuse-playlist",
-			// Add replace/append buttons
-			util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", func() { w.queuePlaylist(tbFalse, name) }),
-			util.NewButton("", glib.Local("Replace the queue"), "", "ymuse-replace-queue-symbolic", func() { w.queuePlaylist(tbTrue, name) }))
-		if errCheck(err, "NewListBoxRow() failed") {
-			return
-		}
-	}
-
-	// Show all rows
-	w.lbxPlaylists.ShowAll()
-
-	// Compose info
-	var info string
-	if cnt := len(playlists); cnt > 0 {
-		info = fmt.Sprintf(glib.Local("%d playlists"), cnt)
-	} else {
-		info = glib.Local("No playlists")
-	}
-
-	// Update info
-	w.lblPlaylistsInfo.SetText(info)
-}
-
-// updatePlaylistsActions updates the widgets for playlists list
-func (w *MainWindow) updatePlaylistsActions() {
-	connected, selected := w.connector.IsConnected(), w.getSelectedPlaylistName() != ""
-	w.aPlaylistRename.SetEnabled(connected && selected)
-	w.aPlaylistDelete.SetEnabled(connected && selected)
 }
 
 // updateQueue updates the current play queue contents
@@ -2229,6 +2140,7 @@ func (w *MainWindow) updateQueueActions() {
 	connected := w.connector.IsConnected()
 	notEmpty := connected && w.currentQueueSize > 0
 	selection := notEmpty && w.getQueueHasSelection()
+	// Actions
 	w.aQueueNowPlaying.SetEnabled(notEmpty)
 	w.aQueueClear.SetEnabled(notEmpty)
 	w.aQueueSort.SetEnabled(notEmpty)
@@ -2237,6 +2149,10 @@ func (w *MainWindow) updateQueueActions() {
 	w.aQueueSortShuffle.SetEnabled(notEmpty)
 	w.aQueueDelete.SetEnabled(selection)
 	w.aQueueSave.SetEnabled(notEmpty)
+	// Menu items
+	w.miQueueNowPlaying.SetSensitive(notEmpty)
+	w.miQueueClear.SetSensitive(notEmpty)
+	w.miQueueDelete.SetSensitive(selection)
 }
 
 // updateQueueNowPlaying scrolls the queue tree view to the currently played track
