@@ -27,6 +27,16 @@
         <signal name="activate" handler="on_miLibraryDelete_activate" swapped="no"/>
       </object>
     </child>
+    <child>
+      <object class="GtkMenuItem" id="miLibraryUpdateSel">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
+        <property name="label" translatable="yes">Update selected item</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miLibraryUpdateSel_activate" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkMenu" id="mnQueue">
     <property name="visible">True</property>

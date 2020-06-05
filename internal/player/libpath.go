@@ -43,10 +43,14 @@ type URIHolder interface {
 
 // AttributeHolder represents an object that possesses an MPD attribute and the corresponding value
 type AttributeHolder interface {
-	AttributeID() int                         // Attribute's ID or -1 if not applicable
-	AttributeValue() string                   // Attribute's value
-	ChildAttributeID() int                    // Child attribute's ID or -1 if not applicable
-	NewChild(value string) LibraryPathElement // Instantiates and returns a new child element with the given value or nil if not applicable
+	AttributeID() int       // Attribute's ID
+	AttributeValue() string // Attribute's value
+}
+
+// AttributeHolderParent represents an object that can be a parent for AttributeHolder
+type AttributeHolderParent interface {
+	ChildAttributeID() int                    // Child attribute's ID
+	NewChild(value string) LibraryPathElement // Instantiates and returns a new child element with the given value
 }
 
 // DetailsHolder represents an object that can provide additional details
@@ -154,16 +158,16 @@ func (p *LibraryPath) Append(e LibraryPathElement) {
 }
 
 // AsFilter converts the path (with optional additions) into a slice of arguments for MPD's filter function
-func (p *LibraryPath) AsFilter(extraElements ...LibraryPathElement) (result []string, ok bool) {
+func (p *LibraryPath) AsFilter(extraElements ...LibraryPathElement) (result []string) {
 	// Iterate all elements, including extras
 	for _, e := range append(p.elements, extraElements...) {
 		// Select only those associated with attributes
 		if ah, oka := e.(AttributeHolder); oka {
 			// For each element, add two elements to the slice: the name and the value
-			if id := ah.AttributeID(); id >= 0 {
-				result = append(result, config.MpdTrackAttributes[id].AttrName, ah.AttributeValue())
-			}
-			ok = true
+			result = append(
+				result,
+				config.MpdTrackAttributes[ah.AttributeID()].AttrName,
+				ah.AttributeValue())
 		}
 	}
 	return
@@ -209,9 +213,8 @@ func (p *LibraryPath) SetLength(length int) {
 //----------------------------------------------------------------------------------------------------------------------
 
 type BaseAttrHolder struct {
-	attrID      int
-	childAttrID int
-	attrValue   string
+	attrID    int
+	attrValue string
 }
 
 func (h *BaseAttrHolder) AttributeID() int {
@@ -220,10 +223,6 @@ func (h *BaseAttrHolder) AttributeID() int {
 
 func (h *BaseAttrHolder) AttributeValue() string {
 	return h.attrValue
-}
-
-func (h *BaseAttrHolder) ChildAttributeID() int {
-	return h.childAttrID
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -508,14 +507,6 @@ func (e *GenresLibElement) Unmarshal(string) error {
 	return nil
 }
 
-func (e *GenresLibElement) AttributeID() int {
-	return -1
-}
-
-func (e *GenresLibElement) AttributeValue() string {
-	return ""
-}
-
 func (e *GenresLibElement) ChildAttributeID() int {
 	return config.MTAttrGenre
 }
@@ -535,9 +526,7 @@ type GenreLibElement struct {
 }
 
 func NewGenreLibElement() LibraryPathElement {
-	return &GenreLibElement{
-		BaseAttrHolder{attrID: config.MTAttrGenre, childAttrID: config.MTAttrArtist},
-	}
+	return &GenreLibElement{BaseAttrHolder{attrID: config.MTAttrGenre}}
 }
 
 func (e *GenreLibElement) Icon() string {
@@ -574,6 +563,10 @@ func (e *GenreLibElement) Unmarshal(data string) error {
 	}
 	e.attrValue = fields[0]
 	return nil
+}
+
+func (e *GenreLibElement) ChildAttributeID() int {
+	return config.MTAttrArtist
 }
 
 func (e *GenreLibElement) NewChild(value string) LibraryPathElement {
@@ -620,14 +613,6 @@ func (e *ArtistsLibElement) Unmarshal(string) error {
 	return nil
 }
 
-func (e *ArtistsLibElement) AttributeID() int {
-	return -1
-}
-
-func (e *ArtistsLibElement) AttributeValue() string {
-	return ""
-}
-
 func (e *ArtistsLibElement) ChildAttributeID() int {
 	return config.MTAttrArtist
 }
@@ -647,9 +632,7 @@ type ArtistLibElement struct {
 }
 
 func NewArtistLibElement() LibraryPathElement {
-	return &ArtistLibElement{
-		BaseAttrHolder{attrID: config.MTAttrArtist, childAttrID: config.MTAttrAlbum},
-	}
+	return &ArtistLibElement{BaseAttrHolder{attrID: config.MTAttrArtist}}
 }
 
 func (e *ArtistLibElement) Icon() string {
@@ -686,6 +669,10 @@ func (e *ArtistLibElement) Unmarshal(data string) error {
 	}
 	e.attrValue = fields[0]
 	return nil
+}
+
+func (e *ArtistLibElement) ChildAttributeID() int {
+	return config.MTAttrAlbum
 }
 
 func (e *ArtistLibElement) NewChild(value string) LibraryPathElement {
@@ -732,14 +719,6 @@ func (e *AlbumsLibElement) Unmarshal(string) error {
 	return nil
 }
 
-func (e *AlbumsLibElement) AttributeID() int {
-	return -1
-}
-
-func (e *AlbumsLibElement) AttributeValue() string {
-	return ""
-}
-
 func (e *AlbumsLibElement) ChildAttributeID() int {
 	return config.MTAttrAlbum
 }
@@ -759,9 +738,7 @@ type AlbumLibElement struct {
 }
 
 func NewAlbumLibElement() LibraryPathElement {
-	return &AlbumLibElement{
-		BaseAttrHolder{attrID: config.MTAttrAlbum, childAttrID: config.MTAttrTrack},
-	}
+	return &AlbumLibElement{BaseAttrHolder{attrID: config.MTAttrAlbum}}
 }
 
 func (e *AlbumLibElement) Icon() string {
@@ -800,6 +777,10 @@ func (e *AlbumLibElement) Unmarshal(data string) error {
 	return nil
 }
 
+func (e *AlbumLibElement) ChildAttributeID() int {
+	return config.MTAttrTrack
+}
+
 func (e *AlbumLibElement) NewChild(value string) LibraryPathElement {
 	c := NewTrackLibElement()
 	c.(*TrackLibElement).attrValue = value
@@ -815,9 +796,7 @@ type TrackLibElement struct {
 }
 
 func NewTrackLibElement() LibraryPathElement {
-	return &TrackLibElement{
-		BaseAttrHolder{attrID: config.MTAttrTrack, childAttrID: -1},
-	}
+	return &TrackLibElement{BaseAttrHolder{attrID: config.MTAttrTrack}}
 }
 
 func (e *TrackLibElement) Icon() string {
@@ -853,9 +832,5 @@ func (e *TrackLibElement) Unmarshal(data string) error {
 		return fmt.Errorf("failed to unmarshal TrackLibElement: want 1 field, got %d", len(fields))
 	}
 	e.attrValue = fields[0]
-	return nil
-}
-
-func (e *TrackLibElement) NewChild(string) LibraryPathElement {
 	return nil
 }

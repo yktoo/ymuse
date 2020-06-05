@@ -89,6 +89,7 @@ type MainWindow struct {
 	mnLibrary            *gtk.Menu
 	miLibraryRename      *gtk.MenuItem
 	miLibraryDelete      *gtk.MenuItem
+	miLibraryUpdateSel   *gtk.MenuItem
 	// Streams widgets
 	bxStreams      *gtk.Box
 	btnStreamsAdd  *gtk.ToolButton
@@ -218,6 +219,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		mnLibrary:            builder.getMenu("mnLibrary"),
 		miLibraryRename:      builder.getMenuItem("miLibraryRename"),
 		miLibraryDelete:      builder.getMenuItem("miLibraryDelete"),
+		miLibraryUpdateSel:   builder.getMenuItem("miLibraryUpdateSel"),
 		// Streams
 		bxStreams:      builder.getBox("bxStreams"),
 		btnStreamsAdd:  builder.getToolButton("btnStreamsAdd"),
@@ -264,11 +266,12 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_scPlayPosition_valueChanged":    w.updatePlayerSeekBar,
 
 		// For some reason binding actions to menu items keeps them grayed out, so old-school signals are used here
-		"on_miQueueNowPlaying_activate": w.updateQueueNowPlaying,
-		"on_miQueueClear_activate":      w.queueClear,
-		"on_miQueueDelete_activate":     w.queueDelete,
-		"on_miLibraryRename_activate":   w.libraryRename,
-		"on_miLibraryDelete_activate":   w.libraryDelete,
+		"on_miQueueNowPlaying_activate":  w.updateQueueNowPlaying,
+		"on_miQueueClear_activate":       w.queueClear,
+		"on_miQueueDelete_activate":      w.queueDelete,
+		"on_miLibraryRename_activate":    w.libraryRename,
+		"on_miLibraryDelete_activate":    w.libraryDelete,
+		"on_miLibraryUpdateSel_activate": func() { w.libraryUpdate(false, true) },
 	})
 
 	// Register the main window with the app
@@ -1292,7 +1295,7 @@ func (w *MainWindow) queueLibraryElement(replace triBool, element LibraryPathEle
 	}
 
 	// Attribute-enabled path: extend the current path filter with the element
-	if filter, ok := w.libPath.AsFilter(element); ok {
+	if filter := w.libPath.AsFilter(element); len(filter) > 0 {
 		var attrs []mpd.Attrs
 		var err error
 		w.connector.IfConnected(func(client *mpd.Client) {
@@ -1633,22 +1636,13 @@ func (w *MainWindow) updateLibrary() {
 		// Convert the list into elements
 		elements = AttrsToElements(attrs, uh.URI()+"/")
 
-	} else if filter, ok := w.libPath.AsFilter(); ok {
+	} else if browseBy, ok := lastElement.(AttributeHolderParent); ok {
 		// Attribute-enabled path: determine the attribute we're browsing by
-		browseBy, ok := lastElement.(AttributeHolder)
-		if !ok {
-			log.Errorf("Failed to determine attribute of last library path: %T is no AttributeHolder", lastElement)
-			return
-		}
-		if browseBy.ChildAttributeID() < 0 {
-			log.Errorf("Failed to browse for child attribute: %T doesn't provide any", lastElement)
-			return
-		}
 		args := append(
 			// First element is the attribute we're browsing by
 			[]string{config.MpdTrackAttributes[browseBy.ChildAttributeID()].AttrName},
-			// After that follow the filter arguments
-			filter...)
+			// Then the filter arguments follow
+			w.libPath.AsFilter()...)
 
 		// Load the list of tags
 		var list []string
@@ -1761,19 +1755,23 @@ func (w *MainWindow) updateLibrary() {
 // updateLibraryActions updates the widgets for library list
 func (w *MainWindow) updateLibraryActions() {
 	connected, selected := w.connector.IsConnected(), w.lbxLibrary.GetSelectedRow() != nil
-	_, playlist := w.getSelectedLibraryElement().(PlaylistHolder)
+	element := w.getSelectedLibraryElement()
+	_, playlist := element.(PlaylistHolder)
+	_, filesystem := element.(URIHolder)
 	editable := playlist && connected && selected
+	updatable := connected && selected && filesystem
 	// Actions
 	w.aLibraryUpdate.SetEnabled(connected)
 	w.aLibraryUpdateAll.SetEnabled(connected)
-	w.aLibraryUpdateSel.SetEnabled(connected && selected)
+	w.aLibraryUpdateSel.SetEnabled(updatable)
 	w.aLibraryRescanAll.SetEnabled(connected)
-	w.aLibraryRescanSel.SetEnabled(connected && selected)
+	w.aLibraryRescanSel.SetEnabled(updatable)
 	w.aLibraryRename.SetEnabled(editable)
 	w.aLibraryDelete.SetEnabled(editable)
 	// Menu items
 	w.miLibraryRename.SetSensitive(editable)
 	w.miLibraryDelete.SetSensitive(editable)
+	w.miLibraryUpdateSel.SetSensitive(updatable)
 }
 
 // updateLibraryPath updates the current library path selector
