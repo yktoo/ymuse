@@ -85,6 +85,11 @@ func (c *Connector) Status() mpd.Attrs {
 
 // Stop signals the connector to shut down
 func (c *Connector) Stop() {
+	// Ignore if not connected
+	if !c.IsConnected() {
+		return
+	}
+
 	// Quit connector and watcher
 	c.chConnectorQuit <- true
 	c.chWatcherStop <- true

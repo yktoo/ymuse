@@ -334,11 +334,12 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 func (w *MainWindow) onMap() {
 	log.Debug("MainWindow.onMap()")
 
+	// Update all lists
+	w.updateAll()
+	w.updateStreams()
+
 	// Activate the Queue tree view
 	w.focusMainList()
-
-	// Update stream list
-	w.updateStreams()
 
 	// Start connecting if needed
 	if config.GetConfig().MpdAutoConnect {
@@ -755,9 +756,7 @@ func (w *MainWindow) applyStreamSelection(replace triBool) {
 // connect starts connecting to MPD
 func (w *MainWindow) connect() {
 	// First disconnect, if connected
-	if w.connector.IsConnected() {
-		w.disconnect()
-	}
+	w.disconnect()
 
 	// Start connecting
 	cfg := config.GetConfig()
@@ -1779,33 +1778,30 @@ func (w *MainWindow) updateLibraryPath() {
 	// Remove all buttons from the box
 	util.ClearChildren(w.bxLibraryPath.Container)
 
-	// Create buttons if there's a connection
-	if w.connector.IsConnected() {
-		// Create a button for "root"
+	// Create a button for "root"
+	util.NewBoxToggleButton(
+		w.bxLibraryPath,
+		"",
+		"",
+		"ymuse-home-symbolic",
+		w.libPath.IsRoot(),
+		func() { w.libPath.SetLength(0) })
+
+	// Create buttons for path elements
+	for i, element := range w.libPath.Elements() {
+		// Create a button. The last button must be depressed
+		i := i // Make an in-loop copy of i
 		util.NewBoxToggleButton(
 			w.bxLibraryPath,
+			element.Label(),
 			"",
-			"",
-			"ymuse-home-symbolic",
-			w.libPath.IsRoot(),
-			func() { w.libPath.SetLength(0) })
-
-		// Create buttons for path elements
-		for i, element := range w.libPath.Elements() {
-			// Create a button. The last button must be depressed
-			i := i // Make an in-loop copy of i
-			util.NewBoxToggleButton(
-				w.bxLibraryPath,
-				element.Label(),
-				"",
-				element.Icon(),
-				element == w.libPath.Last(),
-				func() { w.libPath.SetLength(i + 1) })
-		}
-
-		// Show all buttons
-		w.bxLibraryPath.ShowAll()
+			element.Icon(),
+			element == w.libPath.Last(),
+			func() { w.libPath.SetLength(i + 1) })
 	}
+
+	// Show all buttons
+	w.bxLibraryPath.ShowAll()
 }
 
 // updateOptions updates player options widgets
