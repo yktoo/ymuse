@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-06-04 19:11+0200\n"
+"PO-Revision-Date: 2020-06-06 19:18+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -176,6 +176,9 @@ msgstr "Демон работает:"
 
 msgid "Daemon version:"
 msgstr "Версия демона:"
+
+msgid "days"
+msgstr "дней"
 
 msgid "Delete playlist"
 msgstr "Удалить плейлист"
@@ -403,6 +406,9 @@ msgstr "По двойному клику или Enter по потоку:"
 
 msgid "On double click / Enter on a track:"
 msgstr "По двойному клику или Enter по треку:"
+
+msgid "one day"
+msgstr "один день"
 
 msgid "One track"
 msgstr "Один трек"

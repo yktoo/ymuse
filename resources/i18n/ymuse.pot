@@ -172,6 +172,9 @@ msgstr ""
 msgid "Daemon version:"
 msgstr ""
 
+msgid "days"
+msgstr ""
+
 msgid "Delete playlist"
 msgstr ""
 
@@ -395,6 +398,9 @@ msgid "On double click / Enter on a stream:"
 msgstr ""
 
 msgid "On double click / Enter on a track:"
+msgstr ""
+
+msgid "one day"
 msgstr ""
 
 msgid "One track"

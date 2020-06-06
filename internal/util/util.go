@@ -17,19 +17,17 @@ package util
 
 import (
 	"fmt"
+	"github.com/gotk3/gotk3/glib"
 	"html/template"
 	"strconv"
-	"strings"
+	"sync"
 )
 
-// Partition splits the given string on the provided delimiter and returns the parts before and after the delimiter. If
-// no delimiter present in s, the first returned string equals to s and the second is empty.
-func Partition(s string, delimiter byte) (string, string) {
-	if i := strings.IndexByte(s, delimiter); i >= 0 {
-		return s[:i], s[i+1:]
-	}
-	return s, ""
-}
+var (
+	locDay  string
+	locDays string
+	locOnce sync.Once
+)
 
 // AtoiDef converts a string into an int, returning the given default value if conversion failed
 func AtoiDef(s string, def int) int {
@@ -48,16 +46,21 @@ func ParseFloatDef(s string, def float64) float64 {
 }
 
 // FormatSeconds formats a number seconds as a string
-// TODO i18n
 func FormatSeconds(seconds float64) string {
+	// Make sure localised strings are fetched
+	locOnce.Do(func() {
+		locDay = glib.Local("one day")
+		locDays = glib.Local("days")
+	})
+
 	minutes, secs := int(seconds)/60, int(seconds)%60
 	hours, mins := minutes/60, minutes%60
 	days, hrs := hours/24, hours%24
 	switch {
 	case days > 1:
-		return fmt.Sprintf("%d days %d:%02d:%02d", days, hrs, mins, secs)
+		return fmt.Sprintf("%d %s %d:%02d:%02d", days, locDays, hrs, mins, secs)
 	case days == 1:
-		return fmt.Sprintf("one day %d:%02d:%02d", hrs, mins, secs)
+		return fmt.Sprintf("%s %d:%02d:%02d", locDay, hrs, mins, secs)
 	case hours >= 1:
 		return fmt.Sprintf("%d:%02d:%02d", hrs, mins, secs)
 	default:

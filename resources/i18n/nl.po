@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-06-04 19:12+0200\n"
+"PO-Revision-Date: 2020-06-06 19:19+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -172,6 +172,9 @@ msgstr "Daemon werktijd:"
 
 msgid "Daemon version:"
 msgstr "Daemon versie:"
+
+msgid "days"
+msgstr "dagen"
 
 msgid "Delete playlist"
 msgstr "Afspeellijst verwijderen"
@@ -397,6 +400,9 @@ msgstr "Bij dubbelklik / Enter op een stream:"
 
 msgid "On double click / Enter on a track:"
 msgstr "Bij dubbelklik / Enter op een track:"
+
+msgid "one day"
+msgstr "één dag"
 
 msgid "One track"
 msgstr "Eén track"
