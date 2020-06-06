@@ -20,6 +20,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/gotk3/gotk3/pango"
+	"html"
 )
 
 // WhenIdle schedules a function call on GLib's main loop thread
@@ -149,7 +150,7 @@ func NewListBoxRow(listBox *gtk.ListBox, useMarkup bool, label, name, icon strin
 // ConfirmDialog shows a confirmation message dialog
 func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
 	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")
-	dlg.SetMarkup(fmt.Sprintf("<big><b>%v</b></big>\n\n%v", title, text))
+	dlg.SetMarkup(fmt.Sprintf("<big><b>%v</b></big>\n\n%v", html.EscapeString(title), html.EscapeString(text)))
 	defer dlg.Destroy()
 	return dlg.Run() == gtk.RESPONSE_OK
 }

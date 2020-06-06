@@ -608,6 +608,9 @@ msgstr "Трек"
 msgid "Unnamed"
 msgstr "Безымянный"
 
+msgid "Update"
+msgstr "Обновить"
+
 msgid "Update entire library"
 msgstr "Обновить всю библиотеку"
 

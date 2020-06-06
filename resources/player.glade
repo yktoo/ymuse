@@ -12,10 +12,35 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
+      <object class="GtkMenuItem" id="miLibraryAppend">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Append to the queue</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miLibraryAppend_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miLibraryReplace">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Replace the queue</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miLibraryReplace_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="miLibraryRename">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Rename</property>
+        <property name="use_underline">True</property>
         <signal name="activate" handler="on_miLibraryRename_activate" swapped="no"/>
       </object>
     </child>
@@ -24,6 +49,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Delete</property>
+        <property name="use_underline">True</property>
         <signal name="activate" handler="on_miLibraryDelete_activate" swapped="no"/>
       </object>
     </child>
@@ -31,8 +57,7 @@
       <object class="GtkMenuItem" id="miLibraryUpdateSel">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
-        <property name="label" translatable="yes">Update selected item</property>
+        <property name="label" translatable="yes">Update</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_miLibraryUpdateSel_activate" swapped="no"/>
       </object>
@@ -72,6 +97,52 @@
         <property name="label" translatable="yes">Delete selected</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_miQueueDelete_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="mnStreams">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="miStreamsAppend">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Append to the queue</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miStreamsAppend_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miStreamsReplace">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Replace the queue</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miStreamsReplace_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miStreamsEdit">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Edit</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miStreamsEdit_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="miStreamsDelete">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Delete</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_miStreamsDelete_activate" swapped="no"/>
       </object>
     </child>
   </object>

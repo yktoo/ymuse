@@ -601,6 +601,9 @@ msgstr ""
 msgid "Unnamed"
 msgstr ""
 
+msgid "Update"
+msgstr ""
+
 msgid "Update entire library"
 msgstr ""
 

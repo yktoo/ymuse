@@ -87,21 +87,30 @@ type MainWindow struct {
 	lbxLibrary           *gtk.ListBox
 	lblLibraryInfo       *gtk.Label
 	mnLibrary            *gtk.Menu
+	miLibraryAppend      *gtk.MenuItem
+	miLibraryReplace     *gtk.MenuItem
 	miLibraryRename      *gtk.MenuItem
 	miLibraryDelete      *gtk.MenuItem
 	miLibraryUpdateSel   *gtk.MenuItem
 	// Streams widgets
-	bxStreams      *gtk.Box
-	btnStreamsAdd  *gtk.ToolButton
-	btnStreamsEdit *gtk.ToolButton
-	lbxStreams     *gtk.ListBox
-	lblStreamsInfo *gtk.Label
+	bxStreams        *gtk.Box
+	btnStreamsAdd    *gtk.ToolButton
+	btnStreamsEdit   *gtk.ToolButton
+	lbxStreams       *gtk.ListBox
+	lblStreamsInfo   *gtk.Label
+	mnStreams        *gtk.Menu
+	miStreamsAppend  *gtk.MenuItem
+	miStreamsReplace *gtk.MenuItem
+	miStreamsEdit    *gtk.MenuItem
+	miStreamsDelete  *gtk.MenuItem
 	// Streams props popup
 	pmnStreamProps   *gtk.PopoverMenu
 	eStreamPropsName *gtk.Entry
 	eStreamPropsUri  *gtk.Entry
 
 	// Actions
+	aMPDDisconnect    *glib.SimpleAction
+	aMPDInfo          *glib.SimpleAction
 	aQueueNowPlaying  *glib.SimpleAction
 	aQueueClear       *glib.SimpleAction
 	aQueueSort        *glib.SimpleAction
@@ -217,15 +226,22 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		lbxLibrary:           builder.getListBox("lbxLibrary"),
 		lblLibraryInfo:       builder.getLabel("lblLibraryInfo"),
 		mnLibrary:            builder.getMenu("mnLibrary"),
+		miLibraryAppend:      builder.getMenuItem("miLibraryAppend"),
+		miLibraryReplace:     builder.getMenuItem("miLibraryReplace"),
 		miLibraryRename:      builder.getMenuItem("miLibraryRename"),
 		miLibraryDelete:      builder.getMenuItem("miLibraryDelete"),
 		miLibraryUpdateSel:   builder.getMenuItem("miLibraryUpdateSel"),
 		// Streams
-		bxStreams:      builder.getBox("bxStreams"),
-		btnStreamsAdd:  builder.getToolButton("btnStreamsAdd"),
-		btnStreamsEdit: builder.getToolButton("btnStreamsEdit"),
-		lbxStreams:     builder.getListBox("lbxStreams"),
-		lblStreamsInfo: builder.getLabel("lblStreamsInfo"),
+		bxStreams:        builder.getBox("bxStreams"),
+		btnStreamsAdd:    builder.getToolButton("btnStreamsAdd"),
+		btnStreamsEdit:   builder.getToolButton("btnStreamsEdit"),
+		lbxStreams:       builder.getListBox("lbxStreams"),
+		lblStreamsInfo:   builder.getLabel("lblStreamsInfo"),
+		mnStreams:        builder.getMenu("mnStreams"),
+		miStreamsAppend:  builder.getMenuItem("miStreamsAppend"),
+		miStreamsReplace: builder.getMenuItem("miStreamsReplace"),
+		miStreamsEdit:    builder.getMenuItem("miStreamsEdit"),
+		miStreamsDelete:  builder.getMenuItem("miStreamsDelete"),
 		// Streams props popup
 		pmnStreamProps:   builder.getPopoverMenu("pmnStreamProps"),
 		eStreamPropsName: builder.getEntry("eStreamPropsName"),
@@ -269,9 +285,15 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_miQueueNowPlaying_activate":  w.updateQueueNowPlaying,
 		"on_miQueueClear_activate":       w.queueClear,
 		"on_miQueueDelete_activate":      w.queueDelete,
+		"on_miLibraryAppend_activate":    func() { w.applyLibrarySelection(tbFalse) },
+		"on_miLibraryReplace_activate":   func() { w.applyLibrarySelection(tbTrue) },
 		"on_miLibraryRename_activate":    w.libraryRename,
 		"on_miLibraryDelete_activate":    w.libraryDelete,
 		"on_miLibraryUpdateSel_activate": func() { w.libraryUpdate(false, true) },
+		"on_miStreamsAppend_activate":    func() { w.applyStreamSelection(tbFalse) },
+		"on_miStreamsReplace_activate":   func() { w.applyStreamSelection(tbTrue) },
+		"on_miStreamsEdit_activate":      w.onStreamEdit,
+		"on_miStreamsDelete_activate":    w.onStreamDelete,
 	})
 
 	// Register the main window with the app
@@ -591,11 +613,13 @@ func (w *MainWindow) onStreamDelete() {
 	// Ask for a confirmation
 	streams := &config.GetConfig().Streams
 	if util.ConfirmDialog(w.window, glib.Local("Delete stream"), fmt.Sprintf(glib.Local("Are you sure you want to delete stream \"%s\"?"), (*streams)[idx].Name)) {
+		// Delete the selected stream from the slice
 		*streams = append((*streams)[:idx], (*streams)[idx+1:]...)
-	}
 
-	// Update stream list
-	w.updateStreams()
+		// Update stream list
+		w.updateStreams()
+		w.focusMainList()
+	}
 }
 
 func (w *MainWindow) onStreamEdit() {
@@ -620,8 +644,16 @@ func (w *MainWindow) onStreamEdit() {
 }
 
 func (w *MainWindow) onStreamListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
-	if gdk.EventButtonNewFromEvent(event).Type() == gdk.EVENT_DOUBLE_BUTTON_PRESS {
-		// Double click in the list box
+	switch btn := gdk.EventButtonNewFromEvent(event); btn.Type() {
+	// Mouse click
+	case gdk.EVENT_BUTTON_PRESS:
+		// Right click
+		if btn.Button() == 3 {
+			w.lbxStreams.SelectRow(w.lbxStreams.GetRowAtY(int(btn.Y())))
+			w.mnStreams.PopupAtPointer(event)
+		}
+	// Double click
+	case gdk.EVENT_DOUBLE_BUTTON_PRESS:
 		w.applyStreamSelection(tbNone)
 	}
 }
@@ -671,6 +703,7 @@ func (w *MainWindow) onStreamPropsApply() {
 
 	// Update stream list
 	w.updateStreams()
+	w.focusMainList()
 }
 
 func (w *MainWindow) onStreamPropsChanged() {
@@ -898,14 +931,14 @@ func (w *MainWindow) information() {
 	defer dlg.Destroy()
 	dlg.SetMarkup(fmt.Sprintf(
 		"<big><b>%s</b></big>\n\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s\n"+
-			"<b>%s</b> %20s",
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s\n"+
+			"<b>%s</b> %s",
 		glib.Local("MPD Information"),
 		glib.Local("Daemon version:"), version,
 		glib.Local("Number of artists:"), stats["artists"],
@@ -1004,8 +1037,8 @@ func (w *MainWindow) initWidgets() {
 
 	// Create global actions
 	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
-	w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
-	w.addAction("mpd.info", "<Ctrl><Shift>I", w.information)
+	w.aMPDDisconnect = w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
+	w.aMPDInfo = w.addAction("mpd.info", "<Ctrl><Shift>I", w.information)
 	w.addAction("prefs", "<Ctrl>comma", w.preferences)
 	w.addAction("about", "F1", w.about)
 	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
@@ -1566,6 +1599,12 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 
 // updateAll updates all window's widgets and lists
 func (w *MainWindow) updateAll() {
+	// Update global actions
+	connected := w.connector.IsConnected()
+	w.aMPDDisconnect.SetEnabled(connected)
+	w.aMPDInfo.SetEnabled(connected)
+
+	// Update other widgets
 	w.updateQueue()
 	w.updateLibraryPath()
 	w.updateLibrary()
@@ -1753,12 +1792,13 @@ func (w *MainWindow) updateLibrary() {
 
 // updateLibraryActions updates the widgets for library list
 func (w *MainWindow) updateLibraryActions() {
-	connected, selected := w.connector.IsConnected(), w.lbxLibrary.GetSelectedRow() != nil
 	element := w.getSelectedLibraryElement()
+	connected, selected := w.connector.IsConnected(), element != nil
 	_, playlist := element.(PlaylistHolder)
 	_, filesystem := element.(URIHolder)
 	editable := playlist && connected && selected
 	updatable := connected && selected && filesystem
+	playable := connected && selected && element.IsPlayable()
 	// Actions
 	w.aLibraryUpdate.SetEnabled(connected)
 	w.aLibraryUpdateAll.SetEnabled(connected)
@@ -1768,6 +1808,8 @@ func (w *MainWindow) updateLibraryActions() {
 	w.aLibraryRename.SetEnabled(editable)
 	w.aLibraryDelete.SetEnabled(editable)
 	// Menu items
+	w.miLibraryAppend.SetSensitive(playable)
+	w.miLibraryReplace.SetSensitive(playable)
 	w.miLibraryRename.SetSensitive(editable)
 	w.miLibraryDelete.SetSensitive(editable)
 	w.miLibraryUpdateSel.SetSensitive(updatable)
@@ -2216,10 +2258,16 @@ func (w *MainWindow) updateStreams() {
 
 // updateStreamsActions updates the widgets for streams list
 func (w *MainWindow) updateStreamsActions() {
-	selected := w.getSelectedStreamIndex() >= 0
+	connected, selected := w.connector.IsConnected(), w.getSelectedStreamIndex() >= 0
+	// Actions
 	w.aStreamAdd.SetEnabled(true) // Adding a stream is always possible
 	w.aStreamEdit.SetEnabled(selected)
 	w.aStreamDelete.SetEnabled(selected)
+	// Menu items
+	w.miStreamsAppend.SetSensitive(connected && selected)
+	w.miStreamsReplace.SetSensitive(connected && selected)
+	w.miStreamsEdit.SetSensitive(selected)
+	w.miStreamsDelete.SetSensitive(selected)
 }
 
 // updateStyle updates custom colours based on the current theme

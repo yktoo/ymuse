@@ -602,6 +602,9 @@ msgstr "Track"
 msgid "Unnamed"
 msgstr "Zonder naam"
 
+msgid "Update"
+msgstr "Bijwerken"
+
 msgid "Update entire library"
 msgstr "Gehele mediatheek bijwerken"
 
