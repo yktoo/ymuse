@@ -1101,8 +1101,7 @@ func (w *MainWindow) libraryUpdate(rescan, selectedOnly bool) {
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		if rescan {
-			// NB implement once gompd provides support for it, see https://github.com/fhs/gompd/issues/54
-			err = errors.New("Rescan is not implemented yet")
+			_, err = client.Rescan(libPath)
 		} else {
 			_, err = client.Update(libPath)
 		}
