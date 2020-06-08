@@ -1599,8 +1599,8 @@ func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 // updateAll updates all window's widgets and lists
 func (w *MainWindow) updateAll() {
 	// Update global actions
-	connected := w.connector.IsConnected()
-	w.aMPDDisconnect.SetEnabled(connected)
+	connected, connecting := w.connector.ConnectStatus()
+	w.aMPDDisconnect.SetEnabled(connected || connecting)
 	w.aMPDInfo.SetEnabled(connected)
 
 	// Update other widgets
@@ -1792,7 +1792,8 @@ func (w *MainWindow) updateLibrary() {
 // updateLibraryActions updates the widgets for library list
 func (w *MainWindow) updateLibraryActions() {
 	element := w.getSelectedLibraryElement()
-	connected, selected := w.connector.IsConnected(), element != nil
+	connected, _ := w.connector.ConnectStatus()
+	selected := element != nil
 	_, playlist := element.(PlaylistHolder)
 	_, filesystem := element.(URIHolder)
 	editable := playlist && connected && selected
@@ -1857,35 +1858,39 @@ func (w *MainWindow) updateOptions() {
 
 // updatePlayer updates player control widgets
 func (w *MainWindow) updatePlayer() {
-	connected := false
-	statusText := glib.Local("<i>(not connected)</i>")
-	var curSong mpd.Attrs
+	connected, connecting := w.connector.ConnectStatus()
+	status := w.connector.Status()
+	var statusHTML string
 	var err error
 
-	// Fetch current song, if there's a connection
-	w.connector.IfConnected(func(client *mpd.Client) {
-		connected = true
-		curSong, err = client.CurrentSong()
-	})
+	switch {
+	// Still connecting
+	case connecting:
+		statusHTML = fmt.Sprintf("<i>%s</i>", html.EscapeString(glib.Local("Connecting to MPD…")))
 
-	if connected {
-		// Check for error
-		if errCheck(err, "CurrentSong() failed") {
-			statusText = fmt.Sprintf("<b>MPD error:</b> %v", err)
-		} else {
-			log.Debugf("Current track: %+v", curSong)
+	// Already connected
+	case connected:
+		// Fetch the current track
+		var curSong mpd.Attrs
+		w.connector.IfConnected(func(client *mpd.Client) {
+			curSong, err = client.CurrentSong()
+			errCheck(err, "CurrentSong() failed")
+		})
+
+		// Dump the current track for debug purposes
+		if err == nil {
+			log.Debugf("Current track: %#v", curSong)
 
 			// Apply track title template
 			var buffer bytes.Buffer
 			if err := w.playerTitleTemplate.Execute(&buffer, curSong); err != nil {
-				statusText = html.EscapeString(fmt.Sprintf("Template error: %v", err))
+				statusHTML = html.EscapeString(fmt.Sprintf("%s: %v", glib.Local("Template error"), err))
 			} else {
-				statusText = buffer.String()
+				statusHTML = buffer.String()
 			}
 		}
 
 		// Update play/pause button's appearance
-		status := w.connector.Status()
 		switch status["state"] {
 		case "play":
 			w.btnPlayPause.SetIconName("ymuse-pause-symbolic")
@@ -1893,13 +1898,18 @@ func (w *MainWindow) updatePlayer() {
 			w.btnPlayPause.SetIconName("ymuse-play-symbolic")
 		}
 
-	} else if err := w.connector.Status()["error"]; err != "" {
-		// If not connected and there's an error
-		statusText = fmt.Sprintf("<span foreground=\"red\">%s</span>", err)
+	// Not connected
+	default:
+		statusHTML = fmt.Sprintf("<i>%s</i>", html.EscapeString(glib.Local("Not connected to MPD")))
+	}
+
+	// If there's an error
+	if errMsg, ok := status["error"]; ok {
+		statusHTML += fmt.Sprintf(" — <span foreground=\"red\">%s</span>", html.EscapeString(errMsg))
 	}
 
 	// Update status text
-	w.lblStatus.SetMarkup(statusText)
+	w.lblStatus.SetMarkup(statusHTML)
 
 	// Highlight and scroll the tree to the currently played item
 	w.updateQueueNowPlaying()
@@ -1930,7 +1940,7 @@ func (w *MainWindow) updatePlayerSeekBar() {
 		// The update comes from MPD: adjust the seek bar position if there's a connection
 		trackStart := -1.0
 		trackLen, trackPos = -1.0, -1.0
-		if w.connector.IsConnected() {
+		if connected, _ := w.connector.ConnectStatus(); connected {
 			// Fetch current player position and track length
 			status := w.connector.Status()
 			trackLen = util.ParseFloatDef(status["duration"], -1)
@@ -2172,7 +2182,7 @@ func (w *MainWindow) updateQueueColumns() {
 
 // updateQueueActions updates the play queue actions
 func (w *MainWindow) updateQueueActions() {
-	connected := w.connector.IsConnected()
+	connected, _ := w.connector.ConnectStatus()
 	notEmpty := connected && w.currentQueueSize > 0
 	selection := notEmpty && w.getQueueHasSelection()
 	// Actions
@@ -2257,7 +2267,8 @@ func (w *MainWindow) updateStreams() {
 
 // updateStreamsActions updates the widgets for streams list
 func (w *MainWindow) updateStreamsActions() {
-	connected, selected := w.connector.IsConnected(), w.getSelectedStreamIndex() >= 0
+	connected, _ := w.connector.ConnectStatus()
+	selected := w.getSelectedStreamIndex() >= 0
 	// Actions
 	w.aStreamAdd.SetEnabled(true) // Adding a stream is always possible
 	w.aStreamEdit.SetEnabled(selected)

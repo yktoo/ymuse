@@ -16,6 +16,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid ""
+"{{- if or .Title .Album | or .Artist -}}\n"
+"<big><b>{{ .Title | default \"(unknown title)\" }}</b></big>\n"
+"by <b>{{ .Artist | default \"(unknown artist)\" }}</b> from <b>{{ .Album | default \"(unknown album)\" }}</b>\n"
+"{{- else if .Name -}}\n"
+"<big><b>{{ .Name }}</b></big>\n"
+"{{- else if .file -}}\n"
+"File <big><b>{{ .file | basename }}</b></big>\n"
+"from <b>{{ .file | dirname }}</b>\n"
+"{{- else -}}\n"
+"<i>(no track)</i>\n"
+"{{- end -}}\n"
+msgstr ""
+
 msgid "#"
 msgstr ""
 
@@ -59,9 +73,6 @@ msgid "<b>Playlists</b>"
 msgstr ""
 
 msgid "<b>Streams</b>"
-msgstr ""
-
-msgid "<i>(not connected)</i>"
 msgstr ""
 
 msgid "_About…"
@@ -152,6 +163,9 @@ msgid "Composer"
 msgstr ""
 
 msgid "Conductor"
+msgstr ""
+
+msgid "Connecting to MPD…"
 msgstr ""
 
 msgid "Connect to MPD"
@@ -566,6 +580,9 @@ msgid "Switch to Queue tab"
 msgstr ""
 
 msgid "Switch to Streams tab"
+msgstr ""
+
+msgid "Template error"
 msgstr ""
 
 msgid "Title"

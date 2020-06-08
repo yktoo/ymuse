@@ -92,50 +92,61 @@ type Config struct {
 }
 
 // Config singleton with all the defaults
-var config = &Config{
-	MpdHost:          "",
-	MpdPort:          6600,
-	MpdPassword:      "",
-	MpdAutoConnect:   true,
-	MpdAutoReconnect: true,
-	QueueColumns: []ColumnSpec{
-		{ID: MTAttrArtist},
-		{ID: MTAttrYear},
-		{ID: MTAttrAlbum},
-		{ID: MTAttrDisc},
-		{ID: MTAttrNumber},
-		{ID: MTAttrTrack},
-		{ID: MTAttrLength},
-		{ID: MTAttrGenre},
-	},
-	DefaultSortAttrID:      MTAttrPath,
-	TrackDefaultReplace:    false,
-	PlaylistDefaultReplace: true,
-	StreamDefaultReplace:   true,
-	PlayerTitleTemplate: `{{- if or .Title .Album | or .Artist -}}
-<big><b>{{ .Title | default "(unknown title)" }}</b></big>
-by <b>{{ .Artist | default "(unknown artist)" }}</b> from <b>{{ .Album | default "(unknown album)" }}</b>
-{{- else if .Name -}}
-<big><b>{{ .Name }}</b></big>
-{{- else if .file -}}
-File <big><b>{{ .file | basename }}</b></big>
-from <b>{{ .file | dirname }}</b>
-{{- else -}}
-<i>(no track)</i>
-{{- end -}}`,
-	MaxSearchResults: 500,
-	Streams: []StreamSpec{
-		{Name: "BBC World News", URI: "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws"},
-	},
-	MainWindowDimensions: Dimensions{-1, -1, -1, -1},
-}
+var config *Config
 var once sync.Once
 
 // GetConfig returns a global Config instance
 func GetConfig() *Config {
 	// Load the config from the file
-	once.Do(config.Load)
+	once.Do(func() {
+		// Instantiate a config
+		config = newConfig()
+		// Load the config from the default file, if any
+		config.Load()
+	})
 	return config
+}
+
+// newConfig initialises and returns a config instance with all the defaults
+func newConfig() *Config {
+	return &Config{
+		MpdHost:          "",
+		MpdPort:          6600,
+		MpdPassword:      "",
+		MpdAutoConnect:   true,
+		MpdAutoReconnect: true,
+		QueueColumns: []ColumnSpec{
+			{ID: MTAttrArtist},
+			{ID: MTAttrYear},
+			{ID: MTAttrAlbum},
+			{ID: MTAttrDisc},
+			{ID: MTAttrNumber},
+			{ID: MTAttrTrack},
+			{ID: MTAttrLength},
+			{ID: MTAttrGenre},
+		},
+		DefaultSortAttrID:      MTAttrPath,
+		TrackDefaultReplace:    false,
+		PlaylistDefaultReplace: true,
+		StreamDefaultReplace:   true,
+		PlayerTitleTemplate: glib.Local(
+			"{{- if or .Title .Album | or .Artist -}}\n" +
+				"<big><b>{{ .Title | default \"(unknown title)\" }}</b></big>\n" +
+				"by <b>{{ .Artist | default \"(unknown artist)\" }}</b> from <b>{{ .Album | default \"(unknown album)\" }}</b>\n" +
+				"{{- else if .Name -}}\n" +
+				"<big><b>{{ .Name }}</b></big>\n" +
+				"{{- else if .file -}}\n" +
+				"File <big><b>{{ .file | basename }}</b></big>\n" +
+				"from <b>{{ .file | dirname }}</b>\n" +
+				"{{- else -}}\n" +
+				"<i>(no track)</i>\n" +
+				"{{- end -}}\n"),
+		MaxSearchResults: 500,
+		Streams: []StreamSpec{
+			{Name: "BBC World News", URI: "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws"},
+		},
+		MainWindowDimensions: Dimensions{-1, -1, -1, -1},
+	}
 }
 
 // Load reads the config from the default file
