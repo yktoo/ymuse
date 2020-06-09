@@ -1,0 +1,54 @@
+name: ymuse
+base: core18
+version: 'git'
+summary: Easy, functional, and snappy client for Music Player Daemon
+title: Ymuse
+description: |
+  Ymuse is a simple and quick client for the Music Player Daemon (MPD)
+  using the GTK toolkit. It supports play queue management and
+  filtering, music library browsing and search, Internet streams, and
+  provides broad customisation possibilities.
+
+grade: devel
+icon: resources/icons/hicolor/scalable/apps/icon.svg
+license: Apache-2.0
+confinement: devmode
+
+apps:
+  ymuse:
+    desktop: ymuse.desktop
+    command: ymuse
+    extensions:
+      - gnome-3-28
+    plugs:
+      - home
+
+parts:
+  ymuse:
+    plugin: go
+    source: .
+    build-packages:
+      - gcc
+      - gettext
+
+    override-build: |
+      set -eu
+      go generate
+      go build -ldflags '-s -w' -o "${SNAPCRAFT_PART_INSTALL}"
+
+  resources:
+    plugin: dump
+    source: resources/
+    organize:
+      icons: usr/share/icons
+      i18n/generated: usr/share/locale
+    prime:
+      - usr/
+      - ymuse.desktop
+
+    override-pull: |
+      snapcraftctl pull
+
+      # Fix icon path in the .desktop
+      sed -i -E 's!^Icon=.*!Icon=/usr/share/icons/hicolor/scalable/apps/icon.svg!' ymuse.desktop
+
