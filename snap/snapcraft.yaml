@@ -12,7 +12,7 @@ description: |
 grade: devel
 icon: resources/icons/hicolor/scalable/apps/icon.svg
 license: Apache-2.0
-confinement: devmode
+confinement: strict
 
 apps:
   ymuse:
@@ -22,6 +22,9 @@ apps:
       - gnome-3-28
     plugs:
       - home
+      - network
+    slots:
+      - dbus-daemon
 
 parts:
   ymuse:
@@ -52,3 +55,8 @@ parts:
       # Fix icon path in the .desktop
       sed -i -E 's!^Icon=.*!Icon=/usr/share/icons/hicolor/scalable/apps/icon.svg!' ymuse.desktop
 
+slots:
+  dbus-daemon:
+    interface: dbus
+    bus: session
+    name: com.yktoo.ymuse
