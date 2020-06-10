@@ -21,7 +21,6 @@ apps:
     extensions:
       - gnome-3-28
     plugs:
-      - home
       - network
     slots:
       - dbus-daemon
