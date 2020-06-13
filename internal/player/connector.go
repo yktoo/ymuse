@@ -160,103 +160,19 @@ func (c *Connector) startConnecting() {
 	go func() { c.chConnectorConnect <- true }()
 }
 
-// connect takes care of establishing a connection to MPD
+// connect maintains MPD connection and invokes callbacks until something is sent via chConnectorQuit
 func (c *Connector) connect() {
 	log.Debug("connect()")
 	var heartbeatTicker = time.NewTicker(time.Second)
-	var err error
-	var client *mpd.Client
 	for {
 		select {
 		// Request to connect
 		case <-c.chConnectorConnect:
-			client = nil
-
-			// If disconnected
-			if connected, _ := c.ConnectStatus(); !connected {
-				// Set the connecting flag
-				c.mpdClientMutex.Lock()
-				c.mpdClientConnecting = true
-				c.mpdClientMutex.Unlock()
-
-				// Notify the callback we're about to connect
-				c.onStatusChange()
-
-				// Try to connect
-				log.Debug("Connecting to MPD")
-				if client, err = mpd.DialAuthenticated("tcp", c.mpdAddress, c.mpdPassword); err != nil {
-					err = errors.Errorf("DialAuthenticated() failed: %v", err)
-				}
-			}
+			c.doConnect(true, false)
 
 		// Heartbeat tick
 		case <-heartbeatTicker.C:
-			// If there's a local client, we've just connected
-			status := mpd.Attrs{}
-			var connected, wasConnected bool
-			if client != nil {
-				// Save client connection
-				if status, err = client.Status(); err == nil {
-					connected = true
-					c.mpdClientMutex.Lock()
-					c.mpdClientConnecting = false
-					c.mpdClient = client
-					c.mpdClientMutex.Unlock()
-
-					// Start the watcher
-					go func() { c.chWatcherStart <- true }()
-				} else {
-					err = errors.Errorf("Status() failed: %v", err)
-					// Disconnect since we're not "fully connected"
-					errCheck(client.Close(), "connect(): Close() failed")
-				}
-				client = nil
-
-			} else {
-				// Validate the existing connection, if any, otherwise
-				c.IfConnected(func(client *mpd.Client) {
-					wasConnected = true
-					status, err = client.Status()
-					if err == nil {
-						connected = true
-					} else {
-						err = errors.Errorf("Status() failed: %v", err)
-					}
-				})
-
-				// Connection lost
-				if wasConnected && !connected {
-					// Remove client connection
-					c.mpdClientMutex.Lock()
-					c.mpdClientConnecting = false
-					c.mpdClient = nil
-					c.mpdClientMutex.Unlock()
-
-					// Suspend the watcher
-					go func() { c.chWatcherStop <- false }()
-				}
-			}
-
-			// On error, replace status with the error info
-			if errCheck(err, "Failed to connect to MPD") {
-				status = mpd.Attrs{"error": err.Error()}
-			}
-
-			// Store the (updated) status
-			c.setStatus(status)
-
-			// Notify the status callback on status change
-			if wasConnected != connected {
-				c.onStatusChange()
-			}
-
-			// No connection (anymore), re-attempt connection if needed
-			if !connected && c.stayConnected {
-				c.startConnecting()
-			}
-
-			// Notify the heartbeat callback
-			c.onHeartbeat()
+			c.doConnect(false, true)
 
 		// Request to quit
 		case <-c.chConnectorQuit:
@@ -264,6 +180,99 @@ func (c *Connector) connect() {
 			heartbeatTicker.Stop()
 			return
 		}
+	}
+}
+
+// doConnect takes care of (re)establishing a connection to MPD and calling the status/heartbeat callbacks
+func (c *Connector) doConnect(connect, heartbeat bool) {
+	var err error
+	var client *mpd.Client
+	var wasConnected bool
+	connected, _ := c.ConnectStatus()
+
+	// If there's a request to connect and not connected yet
+	if connect && !connected {
+		// Set the connecting flag
+		c.mpdClientMutex.Lock()
+		c.mpdClientConnecting = true
+		c.mpdClientMutex.Unlock()
+
+		// Notify the callback we're about to connect
+		c.onStatusChange()
+
+		// Try to connect
+		log.Debug("Connecting to MPD")
+		if client, err = mpd.DialAuthenticated("tcp", c.mpdAddress, c.mpdPassword); err == nil {
+			connected = true
+		} else {
+			err = errors.Errorf("DialAuthenticated() failed: %v", err)
+		}
+	}
+
+	// If there's a local client, we've just connected
+	status := mpd.Attrs{}
+	if connected && client != nil {
+		// Validate the connection by requesting MPD status and, on success, save the client connection
+		if status, err = client.Status(); err == nil {
+			c.mpdClientMutex.Lock()
+			c.mpdClientConnecting = false
+			c.mpdClient = client
+			c.mpdClientMutex.Unlock()
+
+			// Start the watcher
+			go func() { c.chWatcherStart <- true }()
+		} else {
+			connected = false
+			err = errors.Errorf("Status() failed: %v", err)
+			// Disconnect since we're not "fully connected"
+			errCheck(client.Close(), "doConnect(): Close() failed")
+		}
+
+	} else {
+		// We didn't connect. Validate the existing connection, if any
+		c.IfConnected(func(client *mpd.Client) {
+			wasConnected = true
+			if status, err = client.Status(); err == nil {
+				connected = true
+			} else {
+				err = errors.Errorf("Status() failed: %v", err)
+			}
+		})
+
+		// Connection lost
+		if wasConnected && !connected {
+			// Remove client connection
+			c.mpdClientMutex.Lock()
+			c.mpdClientConnecting = false
+			c.mpdClient = nil
+			c.mpdClientMutex.Unlock()
+
+			// Suspend the watcher
+			go func() { c.chWatcherStop <- false }()
+		}
+	}
+
+	// On error, replace status with the error info
+	if errCheck(err, "Failed to connect to MPD") {
+		status = mpd.Attrs{"error": err.Error()}
+	}
+
+	// Store the (updated) status
+	c.setStatus(status)
+
+	// Notify the status callback on status change
+	if wasConnected != connected {
+		c.onStatusChange()
+	}
+
+	// No connection (anymore), re-attempt connection if needed
+	if !connected && c.stayConnected {
+		c.startConnecting()
+	}
+
+	// Notify the heartbeat callback, if necessary
+	if heartbeat {
+		c.onHeartbeat()
 	}
 }
 
