@@ -46,3 +46,11 @@ See [COPYING](COPYING).
 * [go-logging](https://github.com/op/go-logging) by Örjan Fors
 * [goreleaser](https://goreleaser.com/) by Carlos Alexandro Becker et al.
 
+## TODO
+
+* Automated UI testing.
+* Packaging in a snap (in progress).
+* Displaying album artwork.
+* Drag’n’drop in the play queue.
+* More settings.
+* Multiple MPD connections support.
