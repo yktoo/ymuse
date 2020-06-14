@@ -2,25 +2,25 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkAdjustment" id="adjMpdPort">
+  <object class="GtkAdjustment" id="MpdPortAdjustment">
     <property name="lower">1</property>
     <property name="upper">65535</property>
     <property name="value">6600</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-    <signal name="value-changed" handler="on_setting_change" swapped="no"/>
+    <signal name="value-changed" handler="on_Setting_change" swapped="no"/>
   </object>
-  <object class="GtkTextBuffer" id="txbPlayerTitleTemplate">
-    <signal name="changed" handler="on_setting_change" swapped="no"/>
+  <object class="GtkTextBuffer" id="PlayerTitleTemplateTextBuffer">
+    <signal name="changed" handler="on_Setting_change" swapped="no"/>
   </object>
-  <object class="GtkDialog" id="prefsDialog">
+  <object class="GtkDialog" id="PreferencesDialog">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Preferences</property>
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <signal name="map" handler="on_prefsDialog_map" swapped="no"/>
+    <signal name="map" handler="on_PreferencesDialog_map" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -45,18 +45,18 @@
           </packing>
         </child>
         <child>
-          <object class="GtkNotebook" id="nbMain">
+          <object class="GtkNotebook" id="MainNotebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="show_border">False</property>
             <child>
-              <object class="GtkBox" id="bxGeneral">
+              <object class="GtkBox" id="GeneralBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkFrame" id="frMpdConnection">
+                  <object class="GtkFrame" id="MpdConnectionFrame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -69,13 +69,13 @@
                         <property name="bottom_padding">6</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkGrid" id="gMpdConnection">
+                          <object class="GtkGrid" id="MpdConnectionGrid">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="row_spacing">6</property>
                             <property name="column_spacing">6</property>
                             <child>
-                              <object class="GtkLabel" id="lblMpdHost">
+                              <object class="GtkLabel" id="MpdHostLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Host:</property>
@@ -88,10 +88,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="eMpdHost">
+                              <object class="GtkEntry" id="MpdHostEntry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <signal name="changed" handler="on_setting_change" swapped="no"/>
+                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -111,7 +111,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="lblMpdPort">
+                              <object class="GtkLabel" id="MpdPortLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Port:</property>
@@ -124,10 +124,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSpinButton" id="eMpdPort">
+                              <object class="GtkSpinButton" id="MpdPortSpinButton">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="adjustment">adjMpdPort</property>
+                                <property name="adjustment">MpdPortAdjustment</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -135,7 +135,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="lblMpdPassword">
+                              <object class="GtkLabel" id="MpdPasswordLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Password:</property>
@@ -148,11 +148,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="eMpdPassword">
+                              <object class="GtkEntry" id="MpdPasswordEntry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="visibility">False</property>
-                                <signal name="changed" handler="on_setting_change" swapped="no"/>
+                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -160,13 +160,13 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="cbMpdAutoConnect">
+                              <object class="GtkCheckButton" id="MpdAutoConnectCheckButton">
                                 <property name="label" translatable="yes">Automatically connect on startup</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -174,13 +174,13 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="cbMpdAutoReconnect">
+                              <object class="GtkCheckButton" id="MpdAutoReconnectCheckButton">
                                 <property name="label" translatable="yes">Automatically reconnect</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -188,7 +188,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkButton" id="btnMpdReconnectNow">
+                              <object class="GtkButton" id="MpdReconnectNowButton">
                                 <property name="label" translatable="yes">Reconnect now</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -259,14 +259,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="bxInterface">
+              <object class="GtkBox" id="InterfaceBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkFrame" id="frLibrary">
+                  <object class="GtkFrame" id="LibraryFrame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -298,14 +298,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbLibraryDefaultReplace">
+                              <object class="GtkRadioButton" id="LibraryDefaultReplaceRadioButton">
                                 <property name="label" translatable="yes">Replace the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -314,14 +314,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbLibraryDefaultAppend">
+                              <object class="GtkRadioButton" id="LibraryDefaultAppendRadioButton">
                                 <property name="label" translatable="yes">Append to the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <property name="group">rbLibraryDefaultReplace</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <property name="group">LibraryDefaultReplaceRadioButton</property>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -349,7 +349,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frPlaylists">
+                  <object class="GtkFrame" id="PlaylistsFrame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -381,14 +381,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbPlaylistsDefaultReplace">
+                              <object class="GtkRadioButton" id="PlaylistsDefaultReplaceRadioButton">
                                 <property name="label" translatable="yes">Replace the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -397,14 +397,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbPlaylistsDefaultAppend">
+                              <object class="GtkRadioButton" id="PlaylistsDefaultAppendRadioButton">
                                 <property name="label" translatable="yes">Append to the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <property name="group">rbPlaylistsDefaultReplace</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <property name="group">PlaylistsDefaultReplaceRadioButton</property>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -432,7 +432,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frStreams">
+                  <object class="GtkFrame" id="StreamsFrame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -464,14 +464,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbStreamsDefaultReplace">
+                              <object class="GtkRadioButton" id="StreamsDefaultReplaceRadioButton">
                                 <property name="label" translatable="yes">Replace the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -480,14 +480,14 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="rbStreamsDefaultAppend">
+                              <object class="GtkRadioButton" id="StreamsDefaultAppendRadioButton">
                                 <property name="label" translatable="yes">Append to the queue</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="draw_indicator">True</property>
-                                <property name="group">rbStreamsDefaultReplace</property>
-                                <signal name="toggled" handler="on_setting_change" swapped="no"/>
+                                <property name="group">StreamsDefaultReplaceRadioButton</property>
+                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -515,7 +515,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="frPlayer">
+                  <object class="GtkFrame" id="PlayerFrame">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label_xalign">0</property>
@@ -534,7 +534,7 @@
                             <property name="orientation">vertical</property>
                             <property name="spacing">6</property>
                             <child>
-                              <object class="GtkLabel" id="lblPlayerTitleTemplate">
+                              <object class="GtkLabel" id="PlayerTitleTemplateLabel">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Track title template:</property>
@@ -547,7 +547,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkScrolledWindow" id="swPlayerTitleTemplate">
+                              <object class="GtkScrolledWindow" id="PlayerTitleTemplateScrolledWindow">
                                 <property name="width_request">500</property>
                                 <property name="height_request">150</property>
                                 <property name="visible">True</property>
@@ -555,10 +555,10 @@
                                 <property name="vscrollbar_policy">always</property>
                                 <property name="shadow_type">in</property>
                                 <child>
-                                  <object class="GtkTextView" id="txvPlayerTitleTemplate">
+                                  <object class="GtkTextView" id="PlayerTitleTemplateTextView">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="buffer">txbPlayerTitleTemplate</property>
+                                    <property name="buffer">PlayerTitleTemplateTextBuffer</property>
                                     <property name="monospace">True</property>
                                   </object>
                                 </child>
@@ -605,13 +605,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="bxColumns">
+              <object class="GtkBox" id="ColumnsBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel" id="lblColumnsTop">
+                  <object class="GtkLabel" id="ColumnsTopLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_bottom">6</property>
@@ -625,16 +625,16 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="swColumns">
+                  <object class="GtkScrolledWindow" id="ColumnsScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkViewport" id="vwpColumns">
+                      <object class="GtkViewport" id="ColumnsViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkListBox" id="lbxColumns">
+                          <object class="GtkListBox" id="ColumnsListBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="selection_mode">browse</property>
@@ -650,20 +650,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolbar" id="tbColumns">
+                  <object class="GtkToolbar" id="ColumnsToolbar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="toolbar_style">icons</property>
                     <property name="icon_size">2</property>
                     <child>
-                      <object class="GtkToolButton" id="btnColumnMoveUp">
+                      <object class="GtkToolButton" id="ColumnMoveUpToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Move the selected column up</property>
                         <property name="label" translatable="yes">Move up</property>
                         <property name="use_underline">True</property>
                         <property name="icon_name">go-up</property>
-                        <signal name="clicked" handler="on_btnColumnMoveUp_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_ColumnMoveUpToolButton_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -671,14 +671,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnColumnMoveDown">
+                      <object class="GtkToolButton" id="ColumnMoveDownToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Move the selected column down</property>
                         <property name="label" translatable="yes">Move down</property>
                         <property name="use_underline">True</property>
                         <property name="icon_name">go-down</property>
-                        <signal name="clicked" handler="on_btnColumnMoveDown_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_ColumnMoveDownToolButton_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

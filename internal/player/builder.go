@@ -16,9 +16,10 @@
 package player
 
 import (
-	"github.com/gotk3/gotk3/glib"
+	"fmt"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
+	"reflect"
 )
 
 // Builder instance capable of finding specific types of widgets
@@ -38,245 +39,53 @@ func NewBuilder(content string) *Builder {
 	return &Builder{Builder: builder}
 }
 
-// get fetches an object with the given name or terminates the app on a failure
-func (b *Builder) get(name string) glib.IObject {
-	obj, err := b.GetObject(name)
-	if err != nil {
-		log.Fatal(err)
+// BindWidgets binds the builder's widgets to same-named fields in the provided struct. Only exported fields are taken
+// into account
+func (b *Builder) BindWidgets(obj interface{}) error {
+	// We're only dealing with structs
+	vPtr := reflect.ValueOf(obj)
+	if vPtr.Kind() != reflect.Ptr || vPtr.IsNil() || vPtr.Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("*struct expected, %T was given", obj)
 	}
-	return obj
-}
 
-// getAdjustment finds and returns an adjustment by its name
-func (b *Builder) getAdjustment(name string) *gtk.Adjustment {
-	result, ok := b.get(name).(*gtk.Adjustment)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Adjustment", name))
-	}
-	return result
-}
+	// Fetch a value for the struct vPtr points to
+	v := vPtr.Elem()
 
-// getApplicationWindow finds and returns an application window by its name
-func (b *Builder) getApplicationWindow(name string) *gtk.ApplicationWindow {
-	result, ok := b.get(name).(*gtk.ApplicationWindow)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ApplicationWindow", name))
-	}
-	return result
-}
+	// Iterate over struct's fields
+	t := v.Type()
+	for i := 0; i < t.NumField(); i++ {
+		valField := v.Field(i)
+		if valField.CanSet() {
+			// Verify it's a pointer
+			typeField := t.Field(i)
+			if valField.Kind() != reflect.Ptr {
+				return fmt.Errorf("struct'd field %s is %v, but only pointers are supported", typeField.Name, valField.Kind())
+			}
 
-// getBox finds and returns a box by its name
-func (b *Builder) getBox(name string) *gtk.Box {
-	result, ok := b.get(name).(*gtk.Box)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Box", name))
-	}
-	return result
-}
+			// Try to find a widget with the field's name
+			widget, err := b.GetObject(typeField.Name)
+			if err != nil {
+				return err
+			}
 
-// getButton finds and returns a button by its name
-func (b *Builder) getButton(name string) *gtk.Button {
-	result, ok := b.get(name).(*gtk.Button)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Button", name))
-	}
-	return result
-}
+			// Try to cast the value to the target type
+			var targetVal reflect.Value
+			func() {
+				err = nil
+				defer func() {
+					if r := recover(); r != nil {
+						err = fmt.Errorf("failed to cast IObject (ID=%s) to %s: %v", typeField.Name, typeField.Type, r)
+					}
+				}()
+				targetVal = reflect.ValueOf(widget).Convert(typeField.Type)
+			}()
+			if err != nil {
+				return err
+			}
 
-// getCheckButton finds and returns a check button by its name
-func (b *Builder) getCheckButton(name string) *gtk.CheckButton {
-	result, ok := b.get(name).(*gtk.CheckButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.CheckButton", name))
+			// Set the value. Any possible panic won't be recovered
+			valField.Set(targetVal)
+		}
 	}
-	return result
-}
-
-// getComboBoxText finds and returns a text combo box by its name
-func (b *Builder) getComboBoxText(name string) *gtk.ComboBoxText {
-	result, ok := b.get(name).(*gtk.ComboBoxText)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ComboBoxText", name))
-	}
-	return result
-}
-
-// getDialog finds and returns a dialog by its name
-func (b *Builder) getDialog(name string) *gtk.Dialog {
-	result, ok := b.get(name).(*gtk.Dialog)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Dialog", name))
-	}
-	return result
-}
-
-// getEntry finds and returns an entry by its name
-func (b *Builder) getEntry(name string) *gtk.Entry {
-	result, ok := b.get(name).(*gtk.Entry)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Entry", name))
-	}
-	return result
-}
-
-// getLabel finds and returns a label by its name
-func (b *Builder) getLabel(name string) *gtk.Label {
-	result, ok := b.get(name).(*gtk.Label)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Label", name))
-	}
-	return result
-}
-
-// getListBox finds and returns a list box by its name
-func (b *Builder) getListBox(name string) *gtk.ListBox {
-	result, ok := b.get(name).(*gtk.ListBox)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ListBox", name))
-	}
-	return result
-}
-
-// getListStore finds and returns a list box by its name
-func (b *Builder) getListStore(name string) *gtk.ListStore {
-	result, ok := b.get(name).(*gtk.ListStore)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ListStore", name))
-	}
-	return result
-}
-
-// getMenu finds and returns a menu by its name
-func (b *Builder) getMenu(name string) *gtk.Menu {
-	result, ok := b.get(name).(*gtk.Menu)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Menu", name))
-	}
-	return result
-}
-
-// getMenuItem finds and returns a menu item by its name
-func (b *Builder) getMenuItem(name string) *gtk.MenuItem {
-	result, ok := b.get(name).(*gtk.MenuItem)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.MenuItem", name))
-	}
-	return result
-}
-
-// getPopoverMenu finds and returns a popover menu by its name
-func (b *Builder) getPopoverMenu(name string) *gtk.PopoverMenu {
-	result, ok := b.get(name).(*gtk.PopoverMenu)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.PopoverMenu", name))
-	}
-	return result
-}
-
-// getRadioButton finds and returns a radio button by its name
-func (b *Builder) getRadioButton(name string) *gtk.RadioButton {
-	result, ok := b.get(name).(*gtk.RadioButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.RadioButton", name))
-	}
-	return result
-}
-
-// getScale finds and returns a scale by its name
-func (b *Builder) getScale(name string) *gtk.Scale {
-	result, ok := b.get(name).(*gtk.Scale)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Scale", name))
-	}
-	return result
-}
-
-// getSearchBar finds and returns a search bar by its name
-func (b *Builder) getSearchBar(name string) *gtk.SearchBar {
-	result, ok := b.get(name).(*gtk.SearchBar)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.SearchBar", name))
-	}
-	return result
-}
-
-// getSearchEntry finds and returns a search entry by its name
-func (b *Builder) getSearchEntry(name string) *gtk.SearchEntry {
-	result, ok := b.get(name).(*gtk.SearchEntry)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.SearchEntry", name))
-	}
-	return result
-}
-
-// getShortcutsWindow finds and returns a shortcuts window by its name
-func (b *Builder) getShortcutsWindow(name string) *gtk.ShortcutsWindow {
-	result, ok := b.get(name).(*gtk.ShortcutsWindow)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ShortcutsWindow", name))
-	}
-	return result
-}
-
-// getStack finds and returns a stack by its name
-func (b *Builder) getStack(name string) *gtk.Stack {
-	result, ok := b.get(name).(*gtk.Stack)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Stack", name))
-	}
-	return result
-}
-
-// getSwitch finds and returns a switch by its name
-func (b *Builder) getSwitch(name string) *gtk.Switch {
-	result, ok := b.get(name).(*gtk.Switch)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.Switch", name))
-	}
-	return result
-}
-
-// getTextBuffer finds and returns a text buffer by its name
-func (b *Builder) getTextBuffer(name string) *gtk.TextBuffer {
-	result, ok := b.get(name).(*gtk.TextBuffer)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.TextBuffer", name))
-	}
-	return result
-}
-
-// getToggleToolButton finds and returns a toggle tool button by its name
-func (b *Builder) getToggleToolButton(name string) *gtk.ToggleToolButton {
-	result, ok := b.get(name).(*gtk.ToggleToolButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ToggleToolButton", name))
-	}
-	return result
-}
-
-// getToolButton finds and returns a tool button by its name
-func (b *Builder) getToolButton(name string) *gtk.ToolButton {
-	result, ok := b.get(name).(*gtk.ToolButton)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.ToolButton", name))
-	}
-	return result
-}
-
-// getTreeModelFilter finds and returns a tree model filter by its name
-func (b *Builder) getTreeModelFilter(name string) *gtk.TreeModelFilter {
-	result, ok := b.get(name).(*gtk.TreeModelFilter)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.TreeModelFilter", name))
-	}
-	return result
-}
-
-// getTreeView finds and returns a tree view by its name
-func (b *Builder) getTreeView(name string) *gtk.TreeView {
-	result, ok := b.get(name).(*gtk.TreeView)
-	if !ok {
-		log.Fatal(errors.Errorf("%v is not a gtk.TreeView", name))
-	}
-	return result
+	return nil
 }

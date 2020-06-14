@@ -2,31 +2,31 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkAdjustment" id="adjPlayPosition">
+  <object class="GtkAdjustment" id="PlayPositionAdjustment">
     <property name="upper">100</property>
     <property name="value">25</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkMenu" id="mnLibrary">
+  <object class="GtkMenu" id="LibraryMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="miLibraryAppend">
+      <object class="GtkMenuItem" id="LibraryAppendMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Append to the queue</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miLibraryAppend_activate" swapped="no"/>
+        <signal name="activate" handler="on_LibraryAppendMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miLibraryReplace">
+      <object class="GtkMenuItem" id="LibraryReplaceMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Replace the queue</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miLibraryReplace_activate" swapped="no"/>
+        <signal name="activate" handler="on_LibraryReplaceMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -36,89 +36,89 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miLibraryRename">
+      <object class="GtkMenuItem" id="LibraryRenameMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Rename</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miLibraryRename_activate" swapped="no"/>
+        <signal name="activate" handler="on_LibraryRenameMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miLibraryDelete">
+      <object class="GtkMenuItem" id="LibraryDeleteMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Delete</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miLibraryDelete_activate" swapped="no"/>
+        <signal name="activate" handler="on_LibraryDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miLibraryUpdateSel">
+      <object class="GtkMenuItem" id="LibraryUpdateSelMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Update</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miLibraryUpdateSel_activate" swapped="no"/>
+        <signal name="activate" handler="on_LibraryUpdateSelMenuItem_activate" swapped="no"/>
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="mnQueue">
+  <object class="GtkMenu" id="QueueMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="miQueueNowPlaying">
+      <object class="GtkMenuItem" id="QueueNowPlayingMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Now playing</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miQueueNowPlaying_activate" swapped="no"/>
+        <signal name="activate" handler="on_QueueNowPlayingMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="sepQueueNowPlaying">
+      <object class="GtkSeparatorMenuItem" id="QueueNowPlayingSeparatorItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miQueueClear">
+      <object class="GtkMenuItem" id="QueueClearMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Clear</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miQueueClear_activate" swapped="no"/>
+        <signal name="activate" handler="on_QueueClearMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miQueueDelete">
+      <object class="GtkMenuItem" id="QueueDeleteMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Delete selected</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miQueueDelete_activate" swapped="no"/>
+        <signal name="activate" handler="on_QueueDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
   </object>
-  <object class="GtkMenu" id="mnStreams">
+  <object class="GtkMenu" id="StreamsMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="miStreamsAppend">
+      <object class="GtkMenuItem" id="StreamsAppendMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Append to the queue</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miStreamsAppend_activate" swapped="no"/>
+        <signal name="activate" handler="on_StreamsAppendMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miStreamsReplace">
+      <object class="GtkMenuItem" id="StreamsReplaceMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Replace the queue</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miStreamsReplace_activate" swapped="no"/>
+        <signal name="activate" handler="on_StreamsReplaceMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -128,42 +128,42 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miStreamsEdit">
+      <object class="GtkMenuItem" id="StreamsEditMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Edit</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miStreamsEdit_activate" swapped="no"/>
+        <signal name="activate" handler="on_StreamsEditMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="miStreamsDelete">
+      <object class="GtkMenuItem" id="StreamsDeleteMenuItem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Delete</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_miStreamsDelete_activate" swapped="no"/>
+        <signal name="activate" handler="on_StreamsDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="pmnStreamProps">
+  <object class="GtkPopoverMenu" id="StreamPropsPopoverMenu">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkBox" id="bxStreamProps">
+      <object class="GtkBox" id="StreamPropsBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkGrid" id="gStreamProps">
+          <object class="GtkGrid" id="StreamPropsGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="row_spacing">6</property>
             <property name="column_spacing">6</property>
             <child>
-              <object class="GtkLabel" id="lblStreamPropsName">
+              <object class="GtkLabel" id="StreamPropsNameLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">False</property>
@@ -176,12 +176,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="eStreamPropsUri">
+              <object class="GtkEntry" id="StreamPropsUriEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="width_chars">60</property>
-                <signal name="changed" handler="on_streamProps_changed" swapped="no"/>
+                <signal name="changed" handler="on_StreamPropsChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -189,7 +189,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lblStreamPropsUri">
+              <object class="GtkLabel" id="StreamPropsUriLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">False</property>
@@ -202,12 +202,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="eStreamPropsName">
+              <object class="GtkEntry" id="StreamPropsNameEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
                 <property name="width_chars">60</property>
-                <signal name="changed" handler="on_streamProps_changed" swapped="no"/>
+                <signal name="changed" handler="on_StreamPropsChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -222,7 +222,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="btnStreamPropsApply">
+          <object class="GtkModelButton" id="StreamPropsApplyModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -243,7 +243,7 @@
       </packing>
     </child>
   </object>
-  <object class="GtkListStore" id="queueListStore">
+  <object class="GtkListStore" id="QueueListStore">
     <columns>
       <!-- column-name Artist -->
       <column type="gchararray"/>
@@ -301,38 +301,38 @@
       <column type="gboolean"/>
     </columns>
   </object>
-  <object class="GtkTreeModelFilter" id="queueListFilter">
-    <property name="child_model">queueListStore</property>
+  <object class="GtkTreeModelFilter" id="QueueTreeModelFilter">
+    <property name="child_model">QueueListStore</property>
   </object>
-  <object class="GtkApplicationWindow" id="mainWindow">
+  <object class="GtkApplicationWindow" id="AppWindow">
     <property name="width_request">600</property>
     <property name="height_request">300</property>
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="icon_name">ymuse</property>
-    <signal name="delete-event" handler="on_mainWindow_delete" swapped="no"/>
-    <signal name="map" handler="on_mainWindow_map" swapped="no"/>
-    <signal name="style-updated" handler="on_mainWindow_styleUpdated" swapped="no"/>
+    <signal name="delete-event" handler="on_MainWindow_delete" swapped="no"/>
+    <signal name="map" handler="on_MainWindow_map" swapped="no"/>
+    <signal name="style-updated" handler="on_MainWindow_styleUpdated" swapped="no"/>
     <child type="titlebar">
-      <object class="GtkHeaderBar" id="hdbMain">
+      <object class="GtkHeaderBar" id="MainHeaderBar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="show_close_button">True</property>
         <child type="title">
-          <object class="GtkStackSwitcher" id="stswMain">
+          <object class="GtkStackSwitcher" id="MainStackSwitcher">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="halign">start</property>
-            <property name="stack">mainStack</property>
+            <property name="stack">MainStack</property>
           </object>
         </child>
         <child>
-          <object class="GtkMenuButton" id="mbtnAppMenu">
+          <object class="GtkMenuButton" id="AppMenuButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="popover">pmnAppMenu</property>
+            <property name="popover">AppPopoverMenu</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
@@ -349,7 +349,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="bxMain">
+      <object class="GtkBox" id="MainBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="margin_left">6</property>
@@ -358,25 +358,25 @@
         <property name="margin_bottom">6</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkStack" id="mainStack">
+          <object class="GtkStack" id="MainStack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <property name="transition_type">slide-left-right</property>
-            <signal name="notify::visible-child" handler="on_mainStack_switched" swapped="no"/>
+            <signal name="notify::visible-child" handler="on_MainStack_switched" swapped="no"/>
             <child>
-              <object class="GtkBox" id="bxQueue">
+              <object class="GtkBox" id="QueueBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolbar" id="tbQueue">
+                  <object class="GtkToolbar" id="QueueToolbar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_size">2</property>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueNowPlaying">
+                      <object class="GtkToolButton" id="QueueNowPlayingToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Jump to the currently played track</property>
@@ -391,7 +391,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueClear">
+                      <object class="GtkToolButton" id="QueueClearToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Clear the play queue</property>
@@ -406,7 +406,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueSort">
+                      <object class="GtkToolButton" id="QueueSortToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Sort the play queue</property>
@@ -422,7 +422,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueDelete">
+                      <object class="GtkToolButton" id="QueueDeleteToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Remove selected track(s) from the queue</property>
@@ -437,7 +437,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnQueueSave">
+                      <object class="GtkToolButton" id="QueueSaveToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Save the play queue as a playlist</property>
@@ -453,7 +453,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleToolButton" id="btnQueueFilter">
+                      <object class="GtkToggleToolButton" id="QueueFilterToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Filter the play queue</property>
@@ -474,13 +474,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSearchBar" id="queueSearchBar">
+                  <object class="GtkSearchBar" id="QueueSearchBar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="show_close_button">True</property>
-                    <signal name="notify::search-mode-enabled" handler="on_queueSearchBar_searchMode" swapped="no"/>
+                    <signal name="notify::search-mode-enabled" handler="on_QueueSearchBar_searchMode" swapped="no"/>
                     <child>
-                      <object class="GtkSearchEntry" id="queueSearchEntry">
+                      <object class="GtkSearchEntry" id="QueueSearchEntry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="width_chars">50</property>
@@ -488,7 +488,7 @@
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
                         <property name="placeholder_text" translatable="yes">Filter…</property>
-                        <signal name="search-changed" handler="on_queueSearchEntry_searchChanged" swapped="no"/>
+                        <signal name="search-changed" handler="on_QueueSearchEntry_searchChanged" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -499,29 +499,29 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="swQueue">
+                  <object class="GtkScrolledWindow" id="QueueScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="shadow_type">etched-out</property>
                     <child>
-                      <object class="GtkTreeView" id="trvQueue">
+                      <object class="GtkTreeView" id="QueueTreeView">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">queueListFilter</property>
+                        <property name="model">QueueTreeModelFilter</property>
                         <property name="enable_search">False</property>
                         <property name="fixed_height_mode">True</property>
                         <property name="show_expanders">False</property>
                         <property name="rubber_banding">True</property>
-                        <signal name="button-press-event" handler="on_trvQueue_buttonPress" swapped="no"/>
-                        <signal name="key-press-event" handler="on_trvQueue_keyPress" swapped="no"/>
+                        <signal name="button-press-event" handler="on_QueueTreeView_buttonPress" swapped="no"/>
+                        <signal name="key-press-event" handler="on_QueueTreeView_keyPress" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection" id="tselQueue">
+                          <object class="GtkTreeSelection" id="QueueTreeSelection">
                             <property name="mode">multiple</property>
-                            <signal name="changed" handler="on_tselQueue_changed" swapped="no"/>
+                            <signal name="changed" handler="on_QueueTreeSelection_changed" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -534,12 +534,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="bxQueueInfo">
+                  <object class="GtkBox" id="QueueInfoBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">6</property>
                     <child>
-                      <object class="GtkLabel" id="lblQueueInfo">
+                      <object class="GtkLabel" id="QueueInfoLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
@@ -554,7 +554,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="lblQueueFilter">
+                      <object class="GtkLabel" id="QueueFilterLabel">
                         <property name="can_focus">False</property>
                         <property name="margin_right">6</property>
                         <property name="margin_top">3</property>
@@ -583,22 +583,22 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="bxLibrary">
+              <object class="GtkBox" id="LibraryBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox" id="bxLibraryTop">
+                  <object class="GtkBox" id="LibraryTopBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkToolbar" id="tbLibrary">
+                      <object class="GtkToolbar" id="LibraryToolbar">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="show_arrow">False</property>
                         <property name="icon_size">2</property>
                         <child>
-                          <object class="GtkToolButton" id="btnLibraryUpdate">
+                          <object class="GtkToolButton" id="LibraryUpdateToolButton">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Update the music library</property>
@@ -613,7 +613,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToolButton" id="btnLibraryRename">
+                          <object class="GtkToolButton" id="LibraryRenameToolButton">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Rename the selected item</property>
@@ -628,7 +628,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToolButton" id="btnLibraryDelete">
+                          <object class="GtkToolButton" id="LibraryDeleteToolButton">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Delete the selected item</property>
@@ -643,7 +643,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkToggleToolButton" id="btnLibrarySearch">
+                          <object class="GtkToggleToolButton" id="LibrarySearchToolButton">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Search the library</property>
@@ -665,12 +665,12 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkStack" id="libraryToolStack">
+                      <object class="GtkStack" id="LibraryToolStack">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="transition_type">slide-up-down</property>
                         <child>
-                          <object class="GtkBox" id="bxLibraryPath">
+                          <object class="GtkBox" id="LibraryPathBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">6</property>
@@ -690,21 +690,21 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="bxLibrarySearch">
+                          <object class="GtkBox" id="LibrarySearchBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="border_width">6</property>
                             <property name="spacing">6</property>
                             <child>
-                              <object class="GtkSearchEntry" id="librarySearchEntry">
+                              <object class="GtkSearchEntry" id="LibrarySearchEntry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="primary_icon_name">ymuse-search-symbolic</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">False</property>
                                 <property name="placeholder_text" translatable="yes">Search…</property>
-                                <signal name="search-changed" handler="on_librarySearchChanged" swapped="no"/>
-                                <signal name="stop-search" handler="on_librarySearchStop" swapped="no"/>
+                                <signal name="search-changed" handler="on_LibrarySearchChanged" swapped="no"/>
+                                <signal name="stop-search" handler="on_LibrarySearchStop" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -713,11 +713,11 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkComboBoxText" id="cbxLibrarySearchAttr">
+                              <object class="GtkComboBoxText" id="LibrarySearchAttrComboBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">Track attribute(s) to search</property>
-                                <signal name="changed" handler="on_librarySearchChanged" swapped="no"/>
+                                <signal name="changed" handler="on_LibrarySearchChanged" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -751,24 +751,24 @@
                   <placeholder/>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="swLibrary">
+                  <object class="GtkScrolledWindow" id="LibraryScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkViewport" id="vwpLibrary">
+                      <object class="GtkViewport" id="LibraryViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkListBox" id="lbxLibrary">
+                          <object class="GtkListBox" id="LibraryListBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="selection_mode">browse</property>
-                            <signal name="button-press-event" handler="on_lbxLibrary_buttonPress" swapped="no"/>
-                            <signal name="key-press-event" handler="on_lbxLibrary_keyPress" swapped="no"/>
-                            <signal name="selected-rows-changed" handler="on_lbxLibrary_selectionChange" swapped="no"/>
+                            <signal name="button-press-event" handler="on_LibraryListBox_buttonPress" swapped="no"/>
+                            <signal name="key-press-event" handler="on_LibraryListBox_keyPress" swapped="no"/>
+                            <signal name="selected-rows-changed" handler="on_LibraryListBox_selectionChange" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -781,12 +781,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="bxLibraryInfo">
+                  <object class="GtkBox" id="LibraryInfoBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLabel" id="lblLibraryInfo">
+                      <object class="GtkLabel" id="LibraryInfoLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
@@ -818,17 +818,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="bxStreams">
+              <object class="GtkBox" id="StreamsBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkToolbar" id="tbStreams">
+                  <object class="GtkToolbar" id="StreamsToolbar">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="icon_size">2</property>
                     <child>
-                      <object class="GtkToolButton" id="btnStreamsAdd">
+                      <object class="GtkToolButton" id="StreamsAddToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Add a new stream</property>
@@ -843,7 +843,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnStreamsEdit">
+                      <object class="GtkToolButton" id="StreamsEditToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Edit the selected stream</property>
@@ -858,7 +858,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToolButton" id="btnStreamsDelete">
+                      <object class="GtkToolButton" id="StreamsDeleteToolButton">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Delete the selected stream</property>
@@ -880,24 +880,24 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="swStreams">
+                  <object class="GtkScrolledWindow" id="StreamsScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkViewport" id="vwpStreams">
+                      <object class="GtkViewport" id="StreamsViewport">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkListBox" id="lbxStreams">
+                          <object class="GtkListBox" id="StreamsListBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="selection_mode">browse</property>
-                            <signal name="button-press-event" handler="on_lbxStreams_buttonPress" swapped="no"/>
-                            <signal name="key-press-event" handler="on_lbxStreams_keyPress" swapped="no"/>
-                            <signal name="selected-rows-changed" handler="on_lbxStreams_selectionChange" swapped="no"/>
+                            <signal name="button-press-event" handler="on_StreamsListBox_buttonPress" swapped="no"/>
+                            <signal name="key-press-event" handler="on_StreamsListBox_keyPress" swapped="no"/>
+                            <signal name="selected-rows-changed" handler="on_StreamsListBox_selectionChange" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -910,12 +910,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="bxStreamsInfo">
+                  <object class="GtkBox" id="StreamsInfoBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLabel" id="lblStreamsInfo">
+                      <object class="GtkLabel" id="StreamsInfoLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">3</property>
@@ -954,7 +954,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lblStatus">
+          <object class="GtkLabel" id="StatusLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">6</property>
@@ -970,7 +970,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="bxBottomBar">
+          <object class="GtkBox" id="BottomBarBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_bottom">6</property>
@@ -978,12 +978,12 @@
             <property name="vexpand">False</property>
             <property name="spacing">12</property>
             <child>
-              <object class="GtkToolbar" id="tbBottom">
+              <object class="GtkToolbar" id="BottomToolbar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="icon_size">4</property>
                 <child>
-                  <object class="GtkToolButton" id="btnPrevious">
+                  <object class="GtkToolButton" id="PreviousToolButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Previous track</property>
@@ -998,7 +998,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolButton" id="btnStop">
+                  <object class="GtkToolButton" id="StopToolButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Stop playback</property>
@@ -1013,7 +1013,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolButton" id="btnPlayPause">
+                  <object class="GtkToolButton" id="PlayPauseButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Pause or resume playback</property>
@@ -1028,7 +1028,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolButton" id="btnNext">
+                  <object class="GtkToolButton" id="NextToolButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Next track</property>
@@ -1043,7 +1043,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparatorToolItem" id="sepBtnNext">
+                  <object class="GtkSeparatorToolItem" id="BtnNextSeparatorItem">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
@@ -1053,7 +1053,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleToolButton" id="btnRandom">
+                  <object class="GtkToggleToolButton" id="RandomButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Shuffle mode</property>
@@ -1068,7 +1068,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleToolButton" id="btnRepeat">
+                  <object class="GtkToggleToolButton" id="RepeatButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Repeat mode</property>
@@ -1083,7 +1083,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleToolButton" id="btnConsume">
+                  <object class="GtkToggleToolButton" id="ConsumeButton">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Consume mode</property>
@@ -1105,21 +1105,21 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="scPlayPosition">
+              <object class="GtkScale" id="PlayPositionScale">
                 <property name="width_request">100</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
-                <property name="adjustment">adjPlayPosition</property>
+                <property name="adjustment">PlayPositionAdjustment</property>
                 <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">0</property>
                 <property name="round_digits">0</property>
                 <property name="digits">0</property>
                 <property name="draw_value">False</property>
                 <property name="value_pos">right</property>
-                <signal name="button-press-event" handler="on_scPlayPosition_buttonEvent" swapped="no"/>
-                <signal name="button-release-event" handler="on_scPlayPosition_buttonEvent" swapped="no"/>
-                <signal name="value-changed" handler="on_scPlayPosition_valueChanged" swapped="no"/>
+                <signal name="button-press-event" handler="on_PlayPositionScale_buttonEvent" swapped="no"/>
+                <signal name="button-release-event" handler="on_PlayPositionScale_buttonEvent" swapped="no"/>
+                <signal name="value-changed" handler="on_PlayPositionScale_valueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -1128,7 +1128,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lblPosition">
+              <object class="GtkLabel" id="PositionLabel">
                 <property name="width_request">100</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -1154,17 +1154,17 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="pmnAppMenu">
+  <object class="GtkPopoverMenu" id="AppPopoverMenu">
     <property name="can_focus">False</property>
-    <property name="relative_to">mbtnAppMenu</property>
+    <property name="relative_to">AppMenuButton</property>
     <child>
-      <object class="GtkBox" id="bxAppMenu">
+      <object class="GtkBox" id="AppMenuBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkModelButton" id="mbtnMpdConnect">
+          <object class="GtkModelButton" id="MpdConnectModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1178,7 +1178,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnMpdDisconnect">
+          <object class="GtkModelButton" id="MpdDisconnectModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1192,7 +1192,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnMpdInfo">
+          <object class="GtkModelButton" id="MpdInfoModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1217,7 +1217,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnAppPrefs">
+          <object class="GtkModelButton" id="AppPrefsModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1242,7 +1242,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnAppAbout">
+          <object class="GtkModelButton" id="AppAboutModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1256,7 +1256,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnAppShortcuts">
+          <object class="GtkModelButton" id="AppShortcutsModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1270,7 +1270,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnAppQuit">
+          <object class="GtkModelButton" id="AppQuitModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1290,17 +1290,17 @@
       </packing>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="pmnLibraryUpdate">
+  <object class="GtkPopoverMenu" id="LibraryUpdatePopoverMenu">
     <property name="can_focus">False</property>
-    <property name="relative_to">btnLibraryUpdate</property>
+    <property name="relative_to">LibraryUpdateToolButton</property>
     <child>
-      <object class="GtkBox" id="bxLibraryUpdate">
+      <object class="GtkBox" id="LibraryUpdateBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkModelButton" id="mbtnLibraryUpdateAll">
+          <object class="GtkModelButton" id="LibraryUpdateAllModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1315,7 +1315,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnLibraryUpdateSelected">
+          <object class="GtkModelButton" id="LibraryUpdateSelectedModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1330,7 +1330,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnLibraryRescanAll">
+          <object class="GtkModelButton" id="LibraryRescanAllModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1345,7 +1345,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="mbtnLibraryRescanSelected">
+          <object class="GtkModelButton" id="LibraryRescanSelectedModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1366,25 +1366,25 @@
       </packing>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="pmnQueueSave">
+  <object class="GtkPopoverMenu" id="QueueSavePopoverMenu">
     <property name="can_focus">False</property>
-    <property name="relative_to">btnQueueSave</property>
+    <property name="relative_to">QueueSaveToolButton</property>
     <child>
-      <object class="GtkBox" id="bxQueueSave">
+      <object class="GtkBox" id="QueueSaveBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkGrid" id="gQueueSave">
+          <object class="GtkGrid" id="QueueSaveGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="row_spacing">6</property>
             <property name="column_spacing">6</property>
             <child>
-              <object class="GtkLabel" id="lblQueueSavePlaylist">
+              <object class="GtkLabel" id="QueueSavePlaylistLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">False</property>
@@ -1397,11 +1397,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="cbxQueueSavePlaylist">
+              <object class="GtkComboBoxText" id="QueueSavePlaylistComboBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
-                <signal name="changed" handler="on_pmnQueueSave_validate" swapped="no"/>
+                <signal name="changed" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -1409,11 +1409,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="eQueueSavePlaylistName">
+              <object class="GtkEntry" id="QueueSavePlaylistNameEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hexpand">True</property>
-                <signal name="changed" handler="on_pmnQueueSave_validate" swapped="no"/>
+                <signal name="changed" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -1421,13 +1421,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="cbQueueSaveSelectedOnly">
+              <object class="GtkCheckButton" id="QueueSaveSelectedOnlyCheckButton">
                 <property name="label" translatable="yes">Save selected tracks only</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="on_pmnQueueSave_validate" swapped="no"/>
+                <signal name="toggled" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -1435,7 +1435,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lblQueueSavePlaylistName">
+              <object class="GtkLabel" id="QueueSavePlaylistNameLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">False</property>
@@ -1458,11 +1458,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="bxQueueSaveBottom">
+          <object class="GtkBox" id="QueueSaveBottomBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkModelButton" id="btnQueueSaveReplace">
+              <object class="GtkModelButton" id="QueueSaveReplaceModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -1477,7 +1477,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkModelButton" id="btnQueueSaveAppend">
+              <object class="GtkModelButton" id="QueueSaveAppendModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -1505,23 +1505,23 @@
       </packing>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="pmnQueueSort">
+  <object class="GtkPopoverMenu" id="QueueSortPopoverMenu">
     <property name="can_focus">False</property>
-    <property name="relative_to">btnQueueSort</property>
+    <property name="relative_to">QueueSortToolButton</property>
     <child>
-      <object class="GtkBox" id="bxQueueSort">
+      <object class="GtkBox" id="QueueSortBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="border_width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
-          <object class="GtkBox" id="bxQueueSortBy">
+          <object class="GtkBox" id="QueueSortByBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">6</property>
             <child>
-              <object class="GtkLabel" id="lblQueueSortBy">
+              <object class="GtkLabel" id="QueueSortByLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Sort queue by</property>
@@ -1534,7 +1534,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="cbxQueueSortBy">
+              <object class="GtkComboBoxText" id="QueueSortByComboBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
@@ -1546,7 +1546,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkModelButton" id="btnQueueSortAsc">
+              <object class="GtkModelButton" id="QueueSortAscModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -1561,7 +1561,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkModelButton" id="btnQueueSortDesc">
+              <object class="GtkModelButton" id="QueueSortDescModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -1594,7 +1594,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="btnQueueSortShuffle">
+          <object class="GtkModelButton" id="QueueSortShuffleModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>

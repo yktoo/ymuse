@@ -16,6 +16,7 @@
 package player
 
 import (
+	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/yktoo/ymuse/internal/config"
@@ -31,25 +32,27 @@ type queueCol struct {
 
 // PrefsDialog represents the preferences dialog
 type PrefsDialog struct {
-	dialog *gtk.Dialog
+	PreferencesDialog *gtk.Dialog
+	// General page widgets
+	MpdHostEntry                *gtk.Entry
+	MpdPortAdjustment           *gtk.Adjustment
+	MpdPasswordEntry            *gtk.Entry
+	MpdAutoConnectCheckButton   *gtk.CheckButton
+	MpdAutoReconnectCheckButton *gtk.CheckButton
+	// Interface page widgets
+	LibraryDefaultReplaceRadioButton   *gtk.RadioButton
+	LibraryDefaultAppendRadioButton    *gtk.RadioButton
+	PlaylistsDefaultReplaceRadioButton *gtk.RadioButton
+	PlaylistsDefaultAppendRadioButton  *gtk.RadioButton
+	StreamsDefaultReplaceRadioButton   *gtk.RadioButton
+	StreamsDefaultAppendRadioButton    *gtk.RadioButton
+	PlayerTitleTemplateTextBuffer      *gtk.TextBuffer
+	// Columns page widgets
+	ColumnsListBox *gtk.ListBox
+
 	// Whether the dialog is initialised
 	initialised bool
-	// General page widgets
-	eMpdHost           *gtk.Entry
-	adjMpdPort         *gtk.Adjustment
-	eMpdPassword       *gtk.Entry
-	cbMpdAutoConnect   *gtk.CheckButton
-	cbMpdAutoReconnect *gtk.CheckButton
-	// Interface page widgets
-	rbLibraryDefaultReplace   *gtk.RadioButton
-	rbLibraryDefaultAppend    *gtk.RadioButton
-	rbPlaylistsDefaultReplace *gtk.RadioButton
-	rbPlaylistsDefaultAppend  *gtk.RadioButton
-	rbStreamsDefaultReplace   *gtk.RadioButton
-	rbStreamsDefaultAppend    *gtk.RadioButton
-	txbPlayerTitleTemplate    *gtk.TextBuffer
-	// Columns page widgets
-	lbxColumns   *gtk.ListBox
+	// Columns, in the same order as in the ColumnsListBox
 	queueColumns []queueCol
 	// Callbacks
 	onQueueColumnsChanged        func()
@@ -58,53 +61,39 @@ type PrefsDialog struct {
 
 // PreferencesDialog creates, shows and disposes of a Preferences dialog instance
 func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
-	// Load the dialog layout
-	builder := NewBuilder(generated.GetPrefsGlade())
-
-	// Create the dialog and map the widgets
+	// Create the dialog
 	d := &PrefsDialog{
-		dialog: builder.getDialog("prefsDialog"),
-		// General page widgets
-		eMpdHost:           builder.getEntry("eMpdHost"),
-		adjMpdPort:         builder.getAdjustment("adjMpdPort"),
-		eMpdPassword:       builder.getEntry("eMpdPassword"),
-		cbMpdAutoConnect:   builder.getCheckButton("cbMpdAutoConnect"),
-		cbMpdAutoReconnect: builder.getCheckButton("cbMpdAutoReconnect"),
-		// Interface page widgets
-		rbLibraryDefaultReplace:   builder.getRadioButton("rbLibraryDefaultReplace"),
-		rbLibraryDefaultAppend:    builder.getRadioButton("rbLibraryDefaultAppend"),
-		rbPlaylistsDefaultReplace: builder.getRadioButton("rbPlaylistsDefaultReplace"),
-		rbPlaylistsDefaultAppend:  builder.getRadioButton("rbPlaylistsDefaultAppend"),
-		rbStreamsDefaultReplace:   builder.getRadioButton("rbStreamsDefaultReplace"),
-		rbStreamsDefaultAppend:    builder.getRadioButton("rbStreamsDefaultAppend"),
-		txbPlayerTitleTemplate:    builder.getTextBuffer("txbPlayerTitleTemplate"),
-		// Columns page widgets
-		lbxColumns: builder.getListBox("lbxColumns"),
-		// Callbacks
 		onQueueColumnsChanged:        onQueueColumnsChanged,
 		onPlayerTitleTemplateChanged: onPlayerTitleTemplateChanged,
 	}
-	defer d.dialog.Destroy()
+
+	// Load the dialog layout and map the widgets
+	builder := NewBuilder(generated.GetPrefsGlade())
+	if err := builder.BindWidgets(d); errCheck(err, "PreferencesDialog(): BindWidgets() failed") {
+		util.ErrorDialog(parent, fmt.Sprintf("Failed to open the Preferences Dialog: %v", err))
+		return
+	}
+	defer d.PreferencesDialog.Destroy()
 
 	// Set the dialog up
-	d.dialog.SetTransientFor(parent)
+	d.PreferencesDialog.SetTransientFor(parent)
 
 	// Remove the 2-pixel "aura" around the notebook
-	if box, err := d.dialog.GetContentArea(); err == nil {
+	if box, err := d.PreferencesDialog.GetContentArea(); err == nil {
 		box.SetBorderWidth(0)
 	}
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_prefsDialog_map":           d.onMap,
-		"on_setting_change":            d.onSettingChange,
-		"on_MpdReconnect":              onMpdReconnect,
-		"on_btnColumnMoveUp_clicked":   d.onColumnMoveUp,
-		"on_btnColumnMoveDown_clicked": d.onColumnMoveDown,
+		"on_PreferencesDialog_map":            d.onMap,
+		"on_Setting_change":                   d.onSettingChange,
+		"on_MpdReconnect":                     onMpdReconnect,
+		"on_ColumnMoveUpToolButton_clicked":   d.onColumnMoveUp,
+		"on_ColumnMoveDownToolButton_clicked": d.onColumnMoveDown,
 	})
 
 	// Run the dialog
-	d.dialog.Run()
+	d.PreferencesDialog.Run()
 }
 
 func (d *PrefsDialog) onMap() {
@@ -113,19 +102,19 @@ func (d *PrefsDialog) onMap() {
 	// Initialise widgets
 	cfg := config.GetConfig()
 	// General page
-	d.eMpdHost.SetText(cfg.MpdHost)
-	d.adjMpdPort.SetValue(float64(cfg.MpdPort))
-	d.eMpdPassword.SetText(cfg.MpdPassword)
-	d.cbMpdAutoConnect.SetActive(cfg.MpdAutoConnect)
-	d.cbMpdAutoReconnect.SetActive(cfg.MpdAutoReconnect)
+	d.MpdHostEntry.SetText(cfg.MpdHost)
+	d.MpdPortAdjustment.SetValue(float64(cfg.MpdPort))
+	d.MpdPasswordEntry.SetText(cfg.MpdPassword)
+	d.MpdAutoConnectCheckButton.SetActive(cfg.MpdAutoConnect)
+	d.MpdAutoReconnectCheckButton.SetActive(cfg.MpdAutoReconnect)
 	// Interface page
-	d.rbLibraryDefaultReplace.SetActive(cfg.TrackDefaultReplace)
-	d.rbLibraryDefaultAppend.SetActive(!cfg.TrackDefaultReplace)
-	d.rbPlaylistsDefaultReplace.SetActive(cfg.PlaylistDefaultReplace)
-	d.rbPlaylistsDefaultAppend.SetActive(!cfg.PlaylistDefaultReplace)
-	d.rbStreamsDefaultReplace.SetActive(cfg.StreamDefaultReplace)
-	d.rbStreamsDefaultAppend.SetActive(!cfg.StreamDefaultReplace)
-	d.txbPlayerTitleTemplate.SetText(cfg.PlayerTitleTemplate)
+	d.LibraryDefaultReplaceRadioButton.SetActive(cfg.TrackDefaultReplace)
+	d.LibraryDefaultAppendRadioButton.SetActive(!cfg.TrackDefaultReplace)
+	d.PlaylistsDefaultReplaceRadioButton.SetActive(cfg.PlaylistDefaultReplace)
+	d.PlaylistsDefaultAppendRadioButton.SetActive(!cfg.PlaylistDefaultReplace)
+	d.StreamsDefaultReplaceRadioButton.SetActive(cfg.StreamDefaultReplace)
+	d.StreamsDefaultAppendRadioButton.SetActive(!cfg.StreamDefaultReplace)
+	d.PlayerTitleTemplateTextBuffer.SetText(cfg.PlayerTitleTemplate)
 	// Columns page
 	d.populateColumns()
 	d.initialised = true
@@ -141,7 +130,7 @@ func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
 	if errCheck(err, "ListBoxRowNew() failed") {
 		return
 	}
-	d.lbxColumns.Add(row)
+	d.ColumnsListBox.Add(row)
 
 	// Add a container box
 	hbx, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 6)
@@ -178,7 +167,7 @@ func (d *PrefsDialog) columnCheckboxToggled(id int, selected bool, row *gtk.List
 		d.queueColumns[i].selected = selected
 
 		// Select the row
-		d.lbxColumns.SelectRow(row)
+		d.ColumnsListBox.SelectRow(row)
 
 		// Update the queue columns
 		d.notifyColumnsChanged()
@@ -198,7 +187,7 @@ func (d *PrefsDialog) indexOfColumnWithAttrID(id int) int {
 // moveSelectedColumnRow moves the row selected in the Columns listbox up or down
 func (d *PrefsDialog) moveSelectedColumnRow(up bool) {
 	// Get and check the selection
-	row := d.lbxColumns.GetSelectedRow()
+	row := d.ColumnsListBox.GetSelectedRow()
 	if row == nil {
 		return
 	}
@@ -219,12 +208,12 @@ func (d *PrefsDialog) moveSelectedColumnRow(up bool) {
 	d.queueColumns[index], d.queueColumns[prevIndex] = d.queueColumns[prevIndex], d.queueColumns[index]
 
 	// Remove and re-insert the row
-	d.lbxColumns.Remove(row)
-	d.lbxColumns.Insert(row, index)
+	d.ColumnsListBox.Remove(row)
+	d.ColumnsListBox.Insert(row, index)
 
 	// Re-select the row. NB: need to deselect all first, otherwise it wouldn't get selected
-	d.lbxColumns.SelectRow(nil)
-	d.lbxColumns.SelectRow(d.lbxColumns.GetRowAtIndex(index))
+	d.ColumnsListBox.SelectRow(nil)
+	d.ColumnsListBox.SelectRow(d.ColumnsListBox.GetRowAtIndex(index))
 
 	// Update the queue's columns
 	d.notifyColumnsChanged()
@@ -268,20 +257,20 @@ func (d *PrefsDialog) onSettingChange() {
 	// Collect settings
 	cfg := config.GetConfig()
 	// General page
-	if s, err := d.eMpdHost.GetText(); !errCheck(err, "eMpdHost.GetText() failed") {
+	if s, err := d.MpdHostEntry.GetText(); !errCheck(err, "MpdHostEntry.GetText() failed") {
 		cfg.MpdHost = s
 	}
-	cfg.MpdPort = int(d.adjMpdPort.GetValue())
-	if s, err := d.eMpdPassword.GetText(); !errCheck(err, "eMpdPassword.GetText() failed") {
+	cfg.MpdPort = int(d.MpdPortAdjustment.GetValue())
+	if s, err := d.MpdPasswordEntry.GetText(); !errCheck(err, "MpdPasswordEntry.GetText() failed") {
 		cfg.MpdPassword = s
 	}
-	cfg.MpdAutoConnect = d.cbMpdAutoConnect.GetActive()
-	cfg.MpdAutoReconnect = d.cbMpdAutoReconnect.GetActive()
+	cfg.MpdAutoConnect = d.MpdAutoConnectCheckButton.GetActive()
+	cfg.MpdAutoReconnect = d.MpdAutoReconnectCheckButton.GetActive()
 	// Interface page
-	cfg.TrackDefaultReplace = d.rbLibraryDefaultReplace.GetActive()
-	cfg.PlaylistDefaultReplace = d.rbPlaylistsDefaultReplace.GetActive()
-	cfg.StreamDefaultReplace = d.rbStreamsDefaultReplace.GetActive()
-	if s, err := util.GetTextBufferText(d.txbPlayerTitleTemplate); !errCheck(err, "util.GetTextBufferText() failed") {
+	cfg.TrackDefaultReplace = d.LibraryDefaultReplaceRadioButton.GetActive()
+	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
+	cfg.StreamDefaultReplace = d.StreamsDefaultReplaceRadioButton.GetActive()
+	if s, err := util.GetTextBufferText(d.PlayerTitleTemplateTextBuffer); !errCheck(err, "util.GetTextBufferText() failed") {
 		if s != cfg.PlayerTitleTemplate {
 			cfg.PlayerTitleTemplate = s
 			d.onPlayerTitleTemplateChanged()
@@ -313,5 +302,5 @@ func (d *PrefsDialog) populateColumns() {
 			d.addQueueColumn(id, 0, false)
 		}
 	}
-	d.lbxColumns.ShowAll()
+	d.ColumnsListBox.ShowAll()
 }
