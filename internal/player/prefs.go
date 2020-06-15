@@ -68,8 +68,13 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 	}
 
 	// Load the dialog layout and map the widgets
-	builder := NewBuilder(generated.GetPrefsGlade())
-	if err := builder.BindWidgets(d); errCheck(err, "PreferencesDialog(): BindWidgets() failed") {
+	builder, err := NewBuilder(generated.GetPrefsGlade())
+	if err == nil {
+		err = builder.BindWidgets(d)
+	}
+
+	// Check for errors
+	if errCheck(err, "PreferencesDialog(): failed to initialise dialog") {
 		util.ErrorDialog(parent, fmt.Sprintf("Failed to open the Preferences Dialog: %v", err))
 		return
 	}

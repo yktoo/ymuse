@@ -18,7 +18,6 @@ package player
 import (
 	"fmt"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/pkg/errors"
 	"reflect"
 )
 
@@ -28,15 +27,15 @@ type Builder struct {
 }
 
 // NewBuilder creates and returns a new Builder instance
-func NewBuilder(content string) *Builder {
+func NewBuilder(content string) (*Builder, error) {
 	builder, err := gtk.BuilderNew()
 	if err != nil {
-		panic(errors.Errorf("gtk.BuilderNew() failed"))
+		return nil, err
 	}
 	if err := builder.AddFromString(content); err != nil {
-		panic(errors.Errorf("builder.AddFromString() failed"))
+		return nil, fmt.Errorf("builder.AddFromString() failed: %v", err)
 	}
-	return &Builder{Builder: builder}
+	return &Builder{Builder: builder}, nil
 }
 
 // BindWidgets binds the builder's widgets to same-named fields in the provided struct. Only exported fields are taken
@@ -59,7 +58,7 @@ func (b *Builder) BindWidgets(obj interface{}) error {
 			// Verify it's a pointer
 			typeField := t.Field(i)
 			if valField.Kind() != reflect.Ptr {
-				return fmt.Errorf("struct'd field %s is %v, but only pointers are supported", typeField.Name, valField.Kind())
+				return fmt.Errorf("struct's field %s is %v, but only pointers are supported", typeField.Name, valField.Kind())
 			}
 
 			// Try to find a widget with the field's name

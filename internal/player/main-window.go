@@ -177,7 +177,10 @@ const (
 // NewMainWindow creates and returns a new MainWindow instance
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
-	builder := NewBuilder(generated.GetPlayerGlade())
+	builder, err := NewBuilder(generated.GetPlayerGlade())
+	if err != nil {
+		log.Fatalf("NewBuilder() failed: %v", err)
+	}
 
 	// Instantiate a window and bind widgets
 	w := &MainWindow{app: application}
@@ -1500,20 +1503,25 @@ func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 // shortcutInfo displays a shortcut info window
 func (w *MainWindow) shortcutInfo() {
 	// Construct a window from the Glade resource
-	builder := NewBuilder(generated.GetShortcutsGlade())
+	builder, err := NewBuilder(generated.GetShortcutsGlade())
+
+	// Map the window's widgets
 	win := struct {
 		ShortcutsWindow *gtk.ShortcutsWindow
 	}{}
+	if err == nil {
+		err = builder.BindWidgets(&win)
+	}
 
-	// Map the window's widgets
-	if err := builder.BindWidgets(&win); w.errCheckDialog(err, "Failed to open the Shortcuts Window") {
+	// Check for errors
+	if w.errCheckDialog(err, "Failed to open the Shortcuts Window") {
 		return
 	}
 
 	// Set up the window
 	sw := win.ShortcutsWindow
 	sw.SetTransientFor(w.AppWindow)
-	_, err := sw.Connect("unmap", sw.Destroy)
+	_, err = sw.Connect("unmap", sw.Destroy)
 	errCheck(err, "Failed to connect unmap signal")
 
 	// Show the window
