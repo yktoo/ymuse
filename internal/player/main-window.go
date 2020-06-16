@@ -695,9 +695,14 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 		return
 	}
 
-	// Default for folders is entering into
-	if replace == tbNone && e.IsFolder() {
+	// Level-up element
+	if _, ok := e.(*LevelUpLibElement); ok {
+		w.libPath.LevelUp()
+
+	} else if replace == tbNone && e.IsFolder() {
+		// Default for folders is entering into
 		w.libPath.Append(e)
+
 	} else {
 		// Queue the element up otherwise
 		w.queueLibraryElement(replace, e)
@@ -1667,6 +1672,11 @@ func (w *MainWindow) updateLibrary() {
 	} else {
 		log.Errorf("Unknown library path kind (last element is %T)", lastElement)
 		return
+	}
+
+	// If no search mode and not root, insert a "level up" element
+	if pattern == "" && lastElement != nil {
+		elements = append([]LibraryPathElement{NewLevelUpLibElement()}, elements...)
 	}
 
 	// Repopulate the library list

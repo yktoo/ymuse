@@ -64,6 +64,7 @@ type PlaylistHolder interface {
 }
 
 var elementConstructors = map[string]func() LibraryPathElement{
+	"lvlup":      NewLevelUpLibElement,
 	"filesystem": NewFilesystemLibElement,
 	"dir":        NewDirLibElement,
 	"file":       NewFileLibElement,
@@ -223,6 +224,44 @@ func (h *BaseAttrHolder) AttributeID() int {
 
 func (h *BaseAttrHolder) AttributeValue() string {
 	return h.attrValue
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// LevelUpLibElement - a LibraryPathElement that looks as a ".." and is used to navigate to the parent
+//----------------------------------------------------------------------------------------------------------------------
+
+type LevelUpLibElement struct{}
+
+func NewLevelUpLibElement() LibraryPathElement {
+	return &LevelUpLibElement{}
+}
+
+func (e *LevelUpLibElement) Icon() string {
+	return "ymuse-level-up-symbolic"
+}
+
+func (e *LevelUpLibElement) Label() string {
+	return ""
+}
+
+func (e *LevelUpLibElement) IsFolder() bool {
+	return false
+}
+
+func (e *LevelUpLibElement) IsPlayable() bool {
+	return false
+}
+
+func (e *LevelUpLibElement) Prefix() string {
+	return "lvlup"
+}
+
+func (e *LevelUpLibElement) Marshal() string {
+	return ""
+}
+
+func (e *LevelUpLibElement) Unmarshal(string) error {
+	return nil
 }
 
 //----------------------------------------------------------------------------------------------------------------------
