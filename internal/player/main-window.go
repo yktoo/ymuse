@@ -1222,8 +1222,8 @@ func (w *MainWindow) queueFilter() {
 					continue
 				}
 
-				// Convert the value into a string
-				s, _ := v.GetString() // Ignoring the returned error due to https://github.com/gotk3/gotk3/issues/583
+				// Convert the value into a string (ignore any error caused by a missing value as we don't store them)
+				s, _ := v.GetString()
 
 				// Check for a match and stop checking if match has already been found
 				visible = s != "" && strings.Contains(strings.ToLower(s), substr)
