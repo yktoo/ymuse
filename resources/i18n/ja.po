@@ -1,0 +1,689 @@
+# Ymuse MPD client
+# Copyright (C) 2020 Dmitry Kann
+# This file is distributed under the same license as the Ymuse package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-25 12:11+0200\n"
+"PO-Revision-Date: 2020-06-16 19:16+0900\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: Nakaya <eniehack@outlook.jp>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: ja\n"
+
+msgid ""
+"{{- if or .Title .Album | or .Artist -}}\n"
+"<big><b>{{ .Title | default \"(unknown title)\" }}</b></big>\n"
+"by <b>{{ .Artist | default \"(unknown artist)\" }}</b> from <b>{{ .Album | "
+"default \"(unknown album)\" }}</b>\n"
+"{{- else if .Name -}}\n"
+"<big><b>{{ .Name }}</b></big>\n"
+"{{- else if .file -}}\n"
+"File <big><b>{{ .file | basename }}</b></big>\n"
+"from <b>{{ .file | dirname }}</b>\n"
+"{{- else -}}\n"
+"<i>(no track)</i>\n"
+"{{- end -}}\n"
+msgstr ""
+"{{- if or .Title .Album | or .Artist -}}\n"
+"<big><b>{{ .Title | default \"(不明なタイトル)\" }}</b></big>\n"
+"by <b>{{ .Artist | default \"(不明なアーティスト)\" }}</b> from <b>{{ ."
+"Album | default \"(不明なアルバム)\" }}</b>\n"
+"{{- else if .Name -}}\n"
+"<big><b>{{ .Name }}</b></big>\n"
+"{{- else if .file -}}\n"
+"File <big><b>{{ .file | basename }}</b></big>\n"
+"from <b>{{ .file | dirname }}</b>\n"
+"{{- else -}}\n"
+"<i>(トラックがありません)</i>\n"
+"{{- end -}}\n"
+
+msgid "#"
+msgstr "トラック番号"
+
+msgid "%d items"
+msgstr "%d個のアイテム"
+
+msgid "%d streams"
+msgstr "%d個のラジオ配信"
+
+msgid "%d track(s) displayed"
+msgstr "%d個のトラックが表示されています"
+
+msgid "%d tracks"
+msgstr "%d個のトラック"
+
+msgid "(leave empty for localhost)"
+msgstr "(空欄の場合はlocalhostと見なされます)"
+
+#, fuzzy
+msgid "(limited selection of %d items)"
+msgstr "限定された%d個の選択されたアイテム"
+
+msgid "(new playlist)"
+msgstr "(新しいプレイリスト)"
+
+msgid "(Re)connect to MPD"
+msgstr "MPDサーバに(再)接続する"
+
+msgid "(unknown)"
+msgstr "(不明)"
+
+msgid "<b>Library</b>"
+msgstr "<b>ライブラリ</b>"
+
+msgid "<b>MPD connection</b>"
+msgstr "<b>MPDサーバとの接続</b>"
+
+msgid "<b>Player</b>"
+msgstr "<b>プレーヤ</b>"
+
+msgid "<b>Playlists</b>"
+msgstr "<b>プレイリスト</b>"
+
+msgid "<b>Streams</b>"
+msgstr "<b>ラジオ配信</b>"
+
+msgid "_About…"
+msgstr "ymuseについて"
+
+msgid "_Preferences…"
+msgstr "設定"
+
+msgid "_Quit"
+msgstr "終了する"
+
+msgid "About"
+msgstr "このソフトウェアについて"
+
+msgid "Add a new stream"
+msgstr "新しいラジオ配信を追加"
+
+msgid "Add"
+msgstr "追加"
+
+#, fuzzy
+msgid "Album (for sorting)"
+msgstr "アルバム（並び換え用）"
+
+#, fuzzy
+msgid "Album artist (for sorting)"
+msgstr "アルバムアーティスト（並び換え用）"
+
+msgid "Album artist"
+msgstr "アルバムアーティスト"
+
+msgid "Album"
+msgstr "アルバム"
+
+msgid "Albums"
+msgstr "アルバム"
+
+msgid "and"
+msgstr ""
+
+msgid "Append to the queue"
+msgstr "キューの末尾に追加する"
+
+msgid "Append tracks"
+msgstr "末尾にトラックを追加する"
+
+msgid "Application shortcuts"
+msgstr "アプリケーションショートカット"
+
+msgid "Apply"
+msgstr "適用"
+
+msgid "Are you sure you want to delete playlist \"%s\"?"
+msgstr "プレイリスト\"%s\"を削除してもよろしいですか？"
+
+msgid "Are you sure you want to delete stream \"%s\"?"
+msgstr "配信\"%s\"を削除してもよろしいですか？"
+
+#, fuzzy
+msgid "Artist (for sorting)"
+msgstr "アーティスト（並び換え用）"
+
+msgid "Artist"
+msgstr "アーティスト"
+
+msgid "Artists"
+msgstr "アーティスト"
+
+msgid "Ascending"
+msgstr "昇順"
+
+msgid "Automatically connect on startup"
+msgstr "起動時に自動で接続する"
+
+msgid "Automatically reconnect"
+msgstr "自動的に再接続する"
+
+msgid "Clear the play queue"
+msgstr "キューを消去する"
+
+msgid "Clear"
+msgstr "キューを消去する"
+
+msgid "Columns"
+msgstr "カラム"
+
+msgid "Comment"
+msgstr "コメント"
+
+msgid "Composer"
+msgstr "作曲者"
+
+msgid "Conductor"
+msgstr "指揮者"
+
+msgid "Connecting to MPD…"
+msgstr "MPDサーバに接続しています……"
+
+msgid "Connect to MPD"
+msgstr "MPDサーバと接続する"
+
+msgid "Consume mode"
+msgstr "コンシュームモード（再生が終わったトラックを都度キューから削除する）"
+
+msgid "Consume"
+msgstr "コンシューム"
+
+msgid "Current track time"
+msgstr "再生中のトラックの再生時間"
+
+msgid "Daemon uptime:"
+msgstr "MPDサーバの起動時間:"
+
+msgid "Daemon version:"
+msgstr "MPDサーバのバージョン:"
+
+msgid "days"
+msgstr "日"
+
+msgid "Delete playlist"
+msgstr "プレイリストを削除する"
+
+msgid "Delete selected"
+msgstr "選択したトラックを削除する"
+
+msgid "Delete stream"
+msgstr "選択したラジオ配信を削除する"
+
+msgid "Delete the selected item"
+msgstr "選択したファイルを削除する"
+
+msgid "Delete the selected stream"
+msgstr "選択したラジオ配信を削除する"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Descending"
+msgstr "降順"
+
+msgid "Directory and file name"
+msgstr "ディレクトリとファイル名"
+
+msgid "Directory"
+msgstr "ディレクトリ"
+
+msgid "Disc"
+msgstr "ディスク"
+
+msgid "Disconnect from MPD"
+msgstr "MPDサーバから切断する"
+
+msgid "Edit the selected stream"
+msgstr "選択されたラジオ配信の項目を編集する"
+
+msgid "Edit"
+msgstr "編集"
+
+msgid "Everywhere"
+msgstr "指定なし"
+
+msgid "Failed to add item to the queue"
+msgstr "アイテムをキューへ追加できませんでした"
+
+msgid "Failed to add playlist to the queue"
+msgstr "プレイリストをキューへ追加できませんでした"
+
+msgid "Failed to add stream to the queue"
+msgstr "ラジオ配信をキューへ追加できませんでした"
+
+msgid "Failed to clear the queue"
+msgstr "キューの消去に失敗しました"
+
+msgid "Failed to create a playlist"
+msgstr "プレイリストの作成に失敗しました"
+
+msgid "Failed to delete the playlist"
+msgstr "プレイリストの削除に失敗しました"
+
+msgid "Failed to delete tracks from the queue"
+msgstr "キューからトラックを削除できませんでした"
+
+msgid "Failed to play the selected track"
+msgstr "選択したトラックを再生できませんでした"
+
+msgid "Failed to rename the playlist"
+msgstr "プレイリストの名前を変更できませんでした"
+
+msgid "Failed to retrieve information from MPD"
+msgstr "MPDサーバから情報を取得できませんでした"
+
+msgid "Failed to shuffle the queue"
+msgstr "キューをシャッフルできませんでした"
+
+msgid "Failed to skip to next track"
+msgstr "次のトラックへスキップできませんでした"
+
+msgid "Failed to skip to previous track"
+msgstr "前のトラックへ移動できませんでした"
+
+msgid "Failed to sort the queue"
+msgstr "キューの整列に失敗しました"
+
+msgid "Failed to stop playback"
+msgstr "停止できませんでした"
+
+msgid "Failed to toggle consume mode"
+msgstr "コンシュームモードに切り替えられませんでした"
+
+msgid "Failed to toggle playback"
+msgstr "トラックを再生できませんでした"
+
+msgid "Failed to toggle random mode"
+msgstr "ランダムモードを切り替えられませんでした"
+
+msgid "Failed to toggle repeat mode"
+msgstr "リピートモードを切り替えられませんでした"
+
+msgid "Failed to update the library"
+msgstr "音楽ライブラリを更新できませんでした"
+
+msgid "File name"
+msgstr "ファイル名"
+
+msgid "File path"
+msgstr "ファイルパス"
+
+msgid "File"
+msgstr "ファイル"
+
+msgid "Files"
+msgstr "ファイル"
+
+msgid "Filter the play queue"
+msgstr "キュー内を検索する"
+
+msgid "Filter…"
+msgstr "検索"
+
+#, fuzzy
+msgid "General"
+msgstr "MPDサーバ"
+
+msgid "Genre"
+msgstr "ジャンル"
+
+msgid "Genres"
+msgstr "ジャンル"
+
+msgid "Grouping"
+msgstr "グループ"
+
+msgid "Host:"
+msgstr "ホスト:"
+
+msgid "Interface"
+msgstr "インターフェース"
+
+msgid "Jump to the currently played track"
+msgstr "再生中のトラックに移動する"
+
+msgid "Keyboard Shortcuts"
+msgstr "キーボードショートカット"
+
+msgid "Keyboard shortcuts…"
+msgstr "キーボードショートカット"
+
+#, fuzzy
+msgid "Label"
+msgstr "ラベル"
+
+msgid "Last database update:"
+msgstr "データベースの最終更新日時:"
+
+msgid "Length"
+msgstr "長さ"
+
+msgid "Library"
+msgstr "ライブラリ"
+
+msgid "Listening time:"
+msgstr "聴いた時間:"
+
+msgid "more verbose logging"
+msgstr "もっと詳細なログ"
+
+msgid "Move down"
+msgstr "下へ移動する"
+
+msgid "Move the selected column down"
+msgstr "選択されたカラムを下へ移動する"
+
+msgid "Move the selected column up"
+msgstr "選択されたカラムを上へ移動する"
+
+msgid "Move up"
+msgstr "上へ移動する"
+
+msgid "MPD _information…"
+msgstr "MPDサーバの情報"
+
+msgid "MPD information"
+msgstr "MPDサーバの情報"
+
+msgid "Name"
+msgstr "名前"
+
+msgid "New playlist name"
+msgstr "新しいプレイリストの名前"
+
+msgid "Next track"
+msgstr "次のトラック"
+
+msgid "Next"
+msgstr "次"
+
+msgid "No items"
+msgstr "アイテムがありません"
+
+msgid "No streams"
+msgstr "ラジオ配信がありません"
+
+msgid "Not connected to MPD"
+msgstr "MPDサーバと接続していません"
+
+msgid "Now playing"
+msgstr "再生中のトラックに移動する"
+
+msgid "Number of albums:"
+msgstr "アルバムの数:"
+
+msgid "Number of artists:"
+msgstr "アーティストの数:"
+
+msgid "Number of tracks:"
+msgstr "トラックの数:"
+
+msgid "On double click / Enter on a playlist:"
+msgstr "プレイリストが選択された状態でEnterキー/ダブルクリックを押したとき:"
+
+msgid "On double click / Enter on a stream:"
+msgstr "ラジオ配信が選択された状態でEnterキー/ダブルクリックを押したとき:"
+
+msgid "On double click / Enter on a track:"
+msgstr "トラックが選択された状態でEnterキー/ダブルクリックを押したとき:"
+
+msgid "one day"
+msgstr "1日"
+
+msgid "One track"
+msgstr "1個のトラック"
+
+msgid "Open Filter bar"
+msgstr "検索バーを表示する"
+
+msgid "Password:"
+msgstr "パスワード:"
+
+#, fuzzy
+msgid "Path"
+msgstr "パス"
+
+msgid "Pause or resume playback"
+msgstr "再生/一時停止"
+
+msgid "Performer"
+msgstr "演奏者"
+
+msgid "Play selection"
+msgstr "選択されているトラックを再生する"
+
+msgid "Play/Pause"
+msgstr "再生/一時停止"
+
+msgid "Player title template error, check log"
+msgstr ""
+"プレーヤタイトルのテンプレートに問題があります。ログを確認してください"
+
+msgid "Player"
+msgstr "プレーヤ"
+
+msgid "playing time %s"
+msgstr "再生時間 %s"
+
+msgid "Playlists"
+msgstr "プレイリスト"
+
+msgid "Port:"
+msgstr "ポート:"
+
+msgid "Preferences"
+msgstr "設定"
+
+msgid "Previous track"
+msgstr "前のトラック"
+
+msgid "Previous"
+msgstr "前"
+
+msgid "Queue is empty"
+msgstr "キューが空です"
+
+msgid "Queue"
+msgstr "キュー"
+
+msgid "Quit"
+msgstr "終了"
+
+msgid "Random"
+msgstr "ランダム"
+
+msgid "Reconnect now"
+msgstr "再接続する"
+
+msgid "Release date: %s"
+msgstr "公開日時: %s"
+
+msgid "Remove selected track(s) from the queue"
+msgstr "選択したトラックをキューから削除する"
+
+msgid "Rename playlist"
+msgstr "プレイリストの名前を変更する"
+
+msgid "Rename the selected item"
+msgstr "選択されたアイテムの名前を変更する"
+
+msgid "Rename"
+msgstr "名前を変更する"
+
+msgid "Repeat mode"
+msgstr "リピートモード"
+
+msgid "Repeat"
+msgstr "リピート"
+
+msgid "Replace playlist"
+msgstr "プレイリストを置き替える"
+
+msgid "Replace the queue"
+msgstr "キューを置き替える"
+
+msgid "Rescan all files"
+msgstr "全てのファイルを再スキャンする"
+
+msgid "Rescan selected item"
+msgstr "選択したファイルを再スキャンする"
+
+msgid "Save into playlist"
+msgstr "プレイリストとして保存する"
+
+msgid "Save selected tracks only"
+msgstr "選択されたトラックのみ保存する"
+
+msgid "Save the play queue as a playlist"
+msgstr "プレイリストとしてキューを保存する"
+
+msgid "Save ▾"
+msgstr "保存 ▾"
+
+msgid "Search the library"
+msgstr "ライブラリを検索する"
+
+msgid "Search"
+msgstr "検索"
+
+msgid "Search…"
+msgstr "検索する"
+
+msgid "Select columns to display in the play queue, and their order."
+msgstr "選択されたカラムがキューに表示され、整列させることができます。"
+
+msgid "Shuffle mode"
+msgstr "シャッフルモード"
+
+msgid "Shuffle the queue"
+msgstr "キューをシャッフルする"
+
+msgid "Shuffle"
+msgstr "シャッフル"
+
+msgid "Sort queue by"
+msgstr "整列する項目"
+
+msgid "Sort the play queue"
+msgstr "キューを整列する"
+
+msgid "Sort ▾"
+msgstr "整列 ▾"
+
+msgid "Stop playback"
+msgstr "停止"
+
+msgid "Stop"
+msgstr "停止する"
+
+msgid "Stream name"
+msgstr "ラジオ配信名"
+
+msgid "Stream name:"
+msgstr "ラジオ配信名:"
+
+msgid "Stream URI:"
+msgstr "配信URI:"
+
+msgid "Streams"
+msgstr "ラジオ配信"
+
+msgid "Switch to Library tab"
+msgstr "ライブラリタブへ切り替え"
+
+msgid "Switch to Queue tab"
+msgstr "キュータブへ切り替え"
+
+msgid "Switch to Streams tab"
+msgstr "ラジオ配信タブへ切り替え"
+
+msgid "Template error"
+msgstr "テンプレートエラー"
+
+msgid "Title"
+msgstr "タイトル"
+
+msgid "Toggle consume mode"
+msgstr "コンシュームモードに切り替える"
+
+msgid "Toggle play/pause"
+msgstr "再生/一時停止を切り替える"
+
+msgid "Toggle random mode"
+msgstr "ランダムモードを切り替える"
+
+msgid "Toggle repeat mode"
+msgstr "リピートモードを切り替える"
+
+msgid "Total playing time:"
+msgstr "合計再生時間:"
+
+msgid "Track attribute(s) to search"
+msgstr "要素を指定する"
+
+msgid "Track length"
+msgstr "トラックの長さ"
+
+msgid "Track number"
+msgstr "トラック番号"
+
+msgid "Track title template:"
+msgstr "トラックタイトルのテンプレート:"
+
+msgid "Track title"
+msgstr "トラックタイトル"
+
+msgid "Track"
+msgstr "トラック"
+
+msgid "Unnamed"
+msgstr "名前のない"
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Update entire library"
+msgstr "音楽ライブラリの全体を更新する"
+
+msgid "Update selected item"
+msgstr "選択したファイルを更新する"
+
+msgid "Update the entire music database"
+msgstr "データベースの全体を更新する"
+
+msgid "Update the entire music database, including unmodified files"
+msgstr "編集されていないファイルを含む、データベースの全体を更新する"
+
+msgid "Update the music library"
+msgstr "音楽ライブラリを更新する"
+
+msgid "Update the selected item in music database"
+msgstr "データベース内の選択されたアイテムを更新する"
+
+msgid "Update the selected item, including unmodified files"
+msgstr "編集されていないファイルを含む、選択されたアイテムを更新する"
+
+msgid "Update ▾"
+msgstr "更新▾"
+
+msgid "updating database…"
+msgstr "データベースを更新しています……"
+
+msgid "verbose logging"
+msgstr "詳細なログ"
+
+msgid "Work"
+msgstr "作品"
+
+msgid "Year"
+msgstr "年代"
+
+msgid "Ymuse version %s; %s; released %s"
+msgstr "Ymuse バージョン %s; %s;  %s にリリースされました"
