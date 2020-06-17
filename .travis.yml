@@ -33,6 +33,10 @@ script:
     # Verify goreleaser config
     - curl -sfL https://git.io/goreleaser | bash -s -- check
 
+after_success:
+    # Make a snap
+    - snapcraft
+
 deploy:
     - provider: script
       skip_cleanup: true
@@ -41,11 +45,6 @@ deploy:
           branch: master
           tags: true
           condition: $TRAVIS_OS_NAME = linux
-
-    # Build a snap package
-    - provider: script
-      skip_cleanup: true
-      script: snapcraft
 
     # Publish dev branch builds to the edge channel
     - provider: snap
