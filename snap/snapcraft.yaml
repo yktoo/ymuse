@@ -29,6 +29,7 @@ parts:
     plugin: go
     source: .
     build-packages:
+      - git
       - gcc
       - gettext
 
@@ -43,7 +44,7 @@ parts:
     override-build: |
       set -eu
       go generate
-      go build -ldflags '-s -w' -o "${SNAPCRAFT_PART_INSTALL}"
+      go build -ldflags "-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)" -o "${SNAPCRAFT_PART_INSTALL}"
 
   resources:
     plugin: dump
