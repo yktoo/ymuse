@@ -1,6 +1,6 @@
 name: ymuse
 base: core18
-version: 'git'
+version: git
 summary: Easy, functional, and snappy client for Music Player Daemon
 title: Ymuse
 description: |
