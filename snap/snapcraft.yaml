@@ -1,6 +1,6 @@
 name: ymuse
 base: core18
-version: git
+adopt-info: ymuse
 summary: Easy, functional, and snappy client for Music Player Daemon
 title: Ymuse
 description: |
@@ -9,7 +9,6 @@ description: |
   filtering, music library browsing and search, Internet streams, and
   provides broad customisation possibilities.
 
-grade: devel
 icon: resources/icons/hicolor/scalable/apps/icon.svg
 license: Apache-2.0
 confinement: strict
@@ -32,6 +31,14 @@ parts:
     build-packages:
       - gcc
       - gettext
+
+    override-pull: |
+      snapcraftctl pull
+
+      # Use version from git
+      version="$(git describe --always --tags)"
+      snapcraftctl set-version "$version"
+      snapcraftctl set-grade "$(echo $version | grep -q '-' && echo devel || echo stable)"
 
     override-build: |
       set -eu

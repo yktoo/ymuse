@@ -39,6 +39,7 @@ changelog:
             - '^ci:'
             - '^code:'
             - '^docs:'
+            - '^snap:'
             - '^test:'
 
 release:
