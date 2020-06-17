@@ -40,3 +40,18 @@ deploy:
           branch: master
           tags: true
           condition: $TRAVIS_OS_NAME = linux
+
+    - provider: snap
+      snap: ymuse_*.snap
+      channel: edge
+      skip_cleanup: true
+      on:
+          branch: dev
+
+    - provider: snap
+      snap: ymuse_*.snap
+      channel: stable
+      skip_cleanup: true
+      on:
+          branch: master
+          tags: true
