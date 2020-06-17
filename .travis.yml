@@ -36,7 +36,7 @@ script:
 
 after_success:
     # Make a snap
-    - snapcraft
+    - snapcraft snap --destructive-mode
 
 deploy:
     - provider: script
