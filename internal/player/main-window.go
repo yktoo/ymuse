@@ -148,7 +148,8 @@ type MainWindow struct {
 	currentQueueSize  int // Number of items in the play queue
 	currentQueueIndex int // Queue's track index (last) marked as current
 
-	libPath *LibraryPath // Current library path
+	libPath                *LibraryPath // Current library path
+	libPathElementToSelect string       // Library path element to select after list load (serialised)
 
 	playerTitleTemplate *template.Template // Compiled template for player's track title
 
@@ -363,7 +364,7 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 	// Backspace: go level up (not in search mode)
 	case gdk.KEY_BackSpace:
 		if state == 0 && !w.LibrarySearchToolButton.GetActive() {
-			w.libPath.LevelUp()
+			w.libraryLevelUp()
 		}
 
 	// Escape: deactivate search mode
@@ -697,7 +698,7 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 
 	// Level-up element
 	if _, ok := e.(*LevelUpLibElement); ok {
-		w.libPath.LevelUp()
+		w.libraryLevelUp()
 
 	} else if replace == tbNone && e.IsFolder() {
 		// Default for folders is entering into
@@ -1011,6 +1012,16 @@ func (w *MainWindow) libraryDelete() {
 			// Check for error (outside IfConnected() because it would keep the client locked)
 			w.errCheckDialog(err, glib.Local("Failed to delete the playlist"))
 		}
+	}
+}
+
+// libraryLevelUp navigates to the library element at the upper level
+func (w *MainWindow) libraryLevelUp() {
+	if e := w.libPath.Last(); e != nil {
+		// Save the currently active path element for subsequent selection
+		w.libPathElementToSelect = e.Marshal()
+		// Move up a level
+		w.libPath.LevelUp()
 	}
 }
 
@@ -1706,8 +1717,8 @@ func (w *MainWindow) updateLibrary() {
 			return
 		}
 
-		// First row will be selected
-		if rowToSelect == nil {
+		// If no specific row to select, pick the first one. Otherwise check for a matching marshalled form
+		if rowToSelect == nil && (w.libPathElementToSelect == "" || w.libPathElementToSelect == element.Marshal()) {
 			rowToSelect = row
 		}
 
@@ -1733,9 +1744,8 @@ func (w *MainWindow) updateLibrary() {
 	w.LibraryListBox.ShowAll()
 
 	// Select the required row
-	if rowToSelect != nil {
-		w.LibraryListBox.SelectRow(rowToSelect)
-	}
+	w.LibraryListBox.SelectRow(rowToSelect)
+	w.libPathElementToSelect = ""
 
 	// Compose info
 	info := ""
@@ -1809,7 +1819,15 @@ func (w *MainWindow) updateLibraryPath() {
 			"",
 			element.Icon(),
 			element == w.libPath.Last(),
-			func() { w.libPath.SetLength(i + 1) })
+			func() {
+				// Save the first path element from the chopped-off tail for subsequent selection
+				if e := w.libPath.ElementAt(i + 1); e != nil {
+					w.libPathElementToSelect = e.Marshal()
+				}
+
+				// Move to the selected level
+				w.libPath.SetLength(i + 1)
+			})
 	}
 
 	// Show all buttons

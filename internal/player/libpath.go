@@ -174,6 +174,14 @@ func (p *LibraryPath) AsFilter(extraElements ...LibraryPathElement) (result []st
 	return
 }
 
+// ElementAt returns the element at the given index, or nil if no such element exists
+func (p *LibraryPath) ElementAt(index int) LibraryPathElement {
+	if index >= 0 && index < len(p.elements) {
+		return p.elements[index]
+	}
+	return nil
+}
+
 // Elements returns the elements slice
 func (p *LibraryPath) Elements() []LibraryPathElement {
 	return p.elements
