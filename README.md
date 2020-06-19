@@ -15,7 +15,10 @@ It supports library browsing and search, playlists, streams etc.
 
 ## Installing
 
-You can use one of the binary packages from the [Releases](https://github.com/yktoo/ymuse/releases) section.
+You can:
+
+* If your distribution supports snap packages: `sudo snap install ymuse`
+* Otherwise, you can use a binary package from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
 ## Building from the source
 
@@ -49,7 +52,6 @@ See [COPYING](COPYING).
 ## TODO
 
 * Automated UI testing.
-* Packaging in a snap (in progress).
 * Displaying album artwork.
 * Drag’n’drop in the play queue.
 * More settings.
