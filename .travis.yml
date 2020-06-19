@@ -57,7 +57,7 @@ deploy:
       channel: edge
       skip_cleanup: true
       on:
-          branch: develop
+          branch: dev
 
     # Publish master branch builds to the stable channel
     - provider: snap
