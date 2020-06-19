@@ -42,7 +42,7 @@ after_success:
 deploy:
     - provider: script
       skip_cleanup: true
-      script: curl -sfL https://git.io/goreleaser | bash
+      script: curl -sfL https://git.io/goreleaser | bash -s -- build --skip-validate
       on:
           branch: master
           tags: true
