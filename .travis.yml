@@ -19,7 +19,7 @@ addons:
 before_install:
     # Run in Xvfb
     - "export DISPLAY=:99.0"
-    - sudo /usr/bin/Xvfb $DISPLAY 2>1 > /dev/null &
+    - sudo /usr/bin/Xvfb $DISPLAY &>/dev/null &
 
 install:
     - go generate
