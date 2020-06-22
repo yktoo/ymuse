@@ -854,10 +854,21 @@ func (w *MainWindow) information() {
 	// Fetch information
 	var version string
 	var stats mpd.Attrs
+	var decoders []mpd.Attrs
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
+		// Fetch client version
 		version = client.Version()
+		// Fetch stats
 		stats, err = client.Stats()
+		if errCheck(err, "Stats() failed") {
+			return
+		}
+		// Fetch decoder configuration
+		decoders, err = client.Command("decoders").AttrsList("plugin")
+		if errCheck(err, "Command(decoders) failed") {
+			return
+		}
 	})
 	if w.errCheckDialog(err, glib.Local("Failed to retrieve information from MPD")) || stats == nil {
 		return
@@ -869,30 +880,55 @@ func (w *MainWindow) information() {
 		updateTime = time.Unix(i, 0).Format("2006-01-02 15:04:05")
 	}
 
-	// Show an info dialog
-	dlg := gtk.MessageDialogNew(w.AppWindow, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "")
-	defer dlg.Destroy()
-	dlg.SetMarkup(fmt.Sprintf(
-		"<big><b>%s</b></big>\n\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s\n"+
-			"<b>%s</b> %s",
-		glib.Local("MPD Information"),
-		glib.Local("Daemon version:"), version,
-		glib.Local("Number of artists:"), stats["artists"],
-		glib.Local("Number of albums:"), stats["albums"],
-		glib.Local("Number of tracks:"), stats["songs"],
-		glib.Local("Total playing time:"), util.FormatSecondsStr(stats["db_playtime"]),
-		glib.Local("Last database update:"), updateTime,
-		glib.Local("Daemon uptime:"), util.FormatSecondsStr(stats["uptime"]),
-		glib.Local("Listening time:"), util.FormatSecondsStr(stats["playtime"]),
-	))
-	dlg.Run()
+	// Load widgets from Glade file
+	var dlg struct {
+		MPDInfoDialog           *gtk.MessageDialog
+		PropertyGrid            *gtk.Grid
+		DaemonVersionLabel      *gtk.Label
+		NumberOfArtistsLabel    *gtk.Label
+		NumberOfAlbumsLabel     *gtk.Label
+		NumberOfTracksLabel     *gtk.Label
+		TotalPlayingTimeLabel   *gtk.Label
+		LastDatabaseUpdateLabel *gtk.Label
+		DaemonUptimeLabel       *gtk.Label
+		ListeningTimeLabel      *gtk.Label
+		DecoderPluginsExpander  *gtk.Expander
+		DecoderPluginsGrid      *gtk.Grid
+	}
+	builder, err := NewBuilder(generated.GetMpdInfoGlade())
+	if err == nil {
+		err = builder.BindWidgets(&dlg)
+	}
+	if w.errCheckDialog(err, glib.Local("Failed to load UI widgets")) {
+		return
+	}
+	defer dlg.MPDInfoDialog.Destroy()
+
+	// Set info properties
+	dlg.DaemonVersionLabel.SetLabel(version)
+	dlg.NumberOfArtistsLabel.SetLabel(stats["artists"])
+	dlg.NumberOfAlbumsLabel.SetLabel(stats["albums"])
+	dlg.NumberOfTracksLabel.SetLabel(stats["songs"])
+	dlg.TotalPlayingTimeLabel.SetLabel(util.FormatSecondsStr(stats["db_playtime"]))
+	dlg.LastDatabaseUpdateLabel.SetLabel(updateTime)
+	dlg.DaemonUptimeLabel.SetLabel(util.FormatSecondsStr(stats["uptime"]))
+	dlg.ListeningTimeLabel.SetLabel(util.FormatSecondsStr(stats["playtime"]))
+
+	// Add decoder plugins
+	for i, decoder := range decoders {
+		dlg.DecoderPluginsGrid.Attach(util.NewLabel(decoder["plugin"]), 0, i, 1, 1)
+		if s, ok := decoder["suffix"]; ok {
+			dlg.DecoderPluginsGrid.Attach(util.NewLabel("."+s), 1, i, 1, 1)
+		}
+		if s, ok := decoder["mime_type"]; ok {
+			dlg.DecoderPluginsGrid.Attach(util.NewLabel(s), 2, i, 1, 1)
+		}
+	}
+
+	// Set up and show the dialog
+	dlg.MPDInfoDialog.SetTransientFor(w.AppWindow)
+	dlg.MPDInfoDialog.ShowAll()
+	dlg.MPDInfoDialog.Run()
 }
 
 // initLibraryWidgets initialises library widgets and actions

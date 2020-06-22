@@ -75,7 +75,7 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 
 	// Check for errors
 	if errCheck(err, "PreferencesDialog(): failed to initialise dialog") {
-		util.ErrorDialog(parent, fmt.Sprintf("Failed to open the Preferences Dialog: %v", err))
+		util.ErrorDialog(parent, fmt.Sprint(glib.Local("Failed to load UI widgets"), err))
 		return
 	}
 	defer d.PreferencesDialog.Destroy()

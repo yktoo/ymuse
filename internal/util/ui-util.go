@@ -91,6 +91,16 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 	return btn
 }
 
+// NewLabel instantiates and returns a new label
+func NewLabel(label string) *gtk.Label {
+	lbl, err := gtk.LabelNew(label)
+	if errCheck(err, "LabelNew() failed") {
+		return nil
+	}
+	lbl.SetXAlign(0)
+	return lbl
+}
+
 // NewListBoxRow adds a new row to the list box, a horizontal box, an image and a label to it
 // listBox: list box instance
 // useMarkup: whether label is markup

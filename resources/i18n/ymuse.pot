@@ -189,6 +189,9 @@ msgstr ""
 msgid "days"
 msgstr ""
 
+msgid "Decoder plugins"
+msgstr ""
+
 msgid "Delete playlist"
 msgstr ""
 
@@ -250,6 +253,9 @@ msgid "Failed to delete the playlist"
 msgstr ""
 
 msgid "Failed to delete tracks from the queue"
+msgstr ""
+
+msgid "Failed to load UI widgets"
 msgstr ""
 
 msgid "Failed to play the selected track"
