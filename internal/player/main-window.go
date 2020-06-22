@@ -354,10 +354,10 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 		case 0:
 			w.applyLibrarySelection(tbNone)
 		// Ctrl+Enter: replace
-		case gdk.GDK_CONTROL_MASK:
+		case gdk.CONTROL_MASK:
 			w.applyLibrarySelection(tbTrue)
 		// Shift+Enter: append
-		case gdk.GDK_SHIFT_MASK:
+		case gdk.SHIFT_MASK:
 			w.applyLibrarySelection(tbFalse)
 		}
 
@@ -375,7 +375,7 @@ func (w *MainWindow) onLibraryListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) 
 
 	// Ctrl+F: activate search mode
 	case gdk.KEY_f:
-		if state == gdk.GDK_CONTROL_MASK {
+		if state == gdk.CONTROL_MASK {
 			w.LibrarySearchToolButton.SetActive(true)
 		}
 	}
@@ -514,7 +514,7 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 		case 0:
 			w.queueDelete()
 		// Ctrl+Delete: clear queue
-		case gdk.GDK_CONTROL_MASK:
+		case gdk.CONTROL_MASK:
 			w.queueClear()
 		}
 	// Space
@@ -524,7 +524,7 @@ func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) 
 		}
 	// Ctrl+F: activate search bar
 	case gdk.KEY_f:
-		if state == gdk.GDK_CONTROL_MASK {
+		if state == gdk.CONTROL_MASK {
 			w.QueueSearchBar.SetSearchMode(true)
 		}
 	}
@@ -610,10 +610,10 @@ func (w *MainWindow) onStreamListBoxKeyPress(_ *gtk.ListBox, event *gdk.Event) {
 		case 0:
 			w.applyStreamSelection(tbNone)
 		// Ctrl+Enter: replace
-		case gdk.GDK_CONTROL_MASK:
+		case gdk.CONTROL_MASK:
 			w.applyStreamSelection(tbTrue)
 		// Shift+Enter: append
-		case gdk.GDK_SHIFT_MASK:
+		case gdk.SHIFT_MASK:
 			w.applyStreamSelection(tbFalse)
 		}
 	}
@@ -807,7 +807,7 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 
 	// Get selected nodes' indices
 	var indices []int
-	err = sel.SelectedForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) {
+	sel.SelectedForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) {
 		// Convert the provided tree (filtered) path into unfiltered one
 		if queuePath := w.QueueTreeModelFilter.ConvertPathToChildPath(path); queuePath != nil {
 			if ix := queuePath.GetIndices(); len(ix) > 0 {
@@ -815,9 +815,6 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 			}
 		}
 	})
-	if errCheck(err, "getQueueSelectedIndices(): SelectedForEach() failed") {
-		return nil
-	}
 	return indices
 }
 
@@ -1218,7 +1215,7 @@ func (w *MainWindow) queueFilter() {
 
 	// Iterate all rows in the list store
 	count := 0
-	err := w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) bool {
+	w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) bool {
 		// Show all rows if no search pattern given
 		visible := substr == ""
 		if !visible {
@@ -1255,10 +1252,6 @@ func (w *MainWindow) queueFilter() {
 		// Proceed to the next row
 		return false
 	})
-	if errCheck(err, "QueueListStore.ForEach() failed") {
-		return
-	}
-
 	w.QueueFilterLabel.SetText(fmt.Sprintf(glib.Local("%d track(s) displayed"), count))
 }
 
@@ -2301,7 +2294,7 @@ func (w *MainWindow) updateStyle() {
 		w.colourBgActive = bgActive
 		w.currentQueueIndex = -1
 
-		err := w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData interface{}) bool {
+		w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) bool {
 			// Update item's background color
 			if err := w.QueueListStore.SetValue(iter, config.QueueColumnBgColor, w.colourBgNormal); errCheck(err, "updateStyle(): SetValue() failed") {
 				return true
@@ -2310,9 +2303,6 @@ func (w *MainWindow) updateStyle() {
 			// Proceed to the next row
 			return false
 		})
-		if errCheck(err, "QueueListStore.ForEach() failed") {
-			return
-		}
 
 		// Update the active row, if the app has been initialised
 		if w.connector != nil {

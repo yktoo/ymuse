@@ -201,7 +201,7 @@ func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool
 	validate := func() {
 		if w, err := dlg.GetWidgetForResponse(gtk.RESPONSE_OK); err == nil {
 			text, err := entry.GetText()
-			w.SetSensitive(err == nil && text != "")
+			w.ToWidget().SetSensitive(err == nil && text != "")
 		}
 	}
 	_, _ = entry.Connect("changed", validate)
