@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-06-08 19:09+0200\n"
+"PO-Revision-Date: 2020-06-23 10:41+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -37,8 +37,8 @@ msgid ""
 msgstr ""
 "{{- if or .Title .Album | or .Artist -}}\n"
 "<big><b>{{ .Title | default \"(неизвестное название)\" }}</b></big>\n"
-"Исполняет <b>{{ .Artist | default \"(неизвестно)\" }}</b> из альбома "
-"<b>{{ .Album | default \"(неизвестно)\" }}</b>\n"
+"Исполняет <b>{{ .Artist | default \"(неизвестно)\" }}</b> из альбома <b>{{ ."
+"Album | default \"(неизвестно)\" }}</b>\n"
 "{{- else if .Name -}}\n"
 "<big><b>{{ .Name }}</b></big>\n"
 "{{- else if .file -}}\n"
@@ -83,6 +83,9 @@ msgstr "<b>Библиотека</b>"
 
 msgid "<b>MPD connection</b>"
 msgstr "<b>Подключение к MPD</b>"
+
+msgid "<b><big>MPD Information</big></b>"
+msgstr "<b><big>Информация об MPD</big></b>"
 
 msgid "<b>Player</b>"
 msgstr "<b>Плеер</b>"
@@ -207,6 +210,9 @@ msgstr "Версия демона:"
 msgid "days"
 msgstr "дней"
 
+msgid "Decoder plugins"
+msgstr "Плагины для декодирования"
+
 msgid "Delete playlist"
 msgstr "Удалить плейлист"
 
@@ -269,6 +275,9 @@ msgstr "Не удалось удалить плейлист"
 
 msgid "Failed to delete tracks from the queue"
 msgstr "Не удалось удалить треки из очереди"
+
+msgid "Failed to load UI widgets"
+msgstr "Не удалось загрузить виджеты графического интерфейса"
 
 msgid "Failed to play the selected track"
 msgstr "Не удалось воспроизвести выделенный трек"
@@ -385,9 +394,9 @@ msgid "Move up"
 msgstr "Передвинуть вверх"
 
 msgid "MPD _information…"
-msgstr "Информация об _MPD"
+msgstr "Информация об _MPD…"
 
-msgid "MPD information"
+msgid "MPD Information"
 msgstr "Информация об MPD"
 
 msgid "Name"

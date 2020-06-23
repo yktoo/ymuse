@@ -389,7 +389,7 @@ msgstr "上へ移動する"
 msgid "MPD _information…"
 msgstr "MPDサーバの情報"
 
-msgid "MPD information"
+msgid "MPD Information"
 msgstr "MPDサーバの情報"
 
 msgid "Name"

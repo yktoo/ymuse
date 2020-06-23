@@ -66,6 +66,9 @@ msgstr ""
 msgid "<b>MPD connection</b>"
 msgstr ""
 
+msgid "<b><big>MPD Information</big></b>"
+msgstr ""
+
 msgid "<b>Player</b>"
 msgstr ""
 
@@ -375,7 +378,7 @@ msgstr ""
 msgid "MPD _information…"
 msgstr ""
 
-msgid "MPD information"
+msgid "MPD Information"
 msgstr ""
 
 msgid "Name"
