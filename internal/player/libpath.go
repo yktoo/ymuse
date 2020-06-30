@@ -79,7 +79,10 @@ var elementConstructors = map[string]func() LibraryPathElement{
 	"track":      NewTrackLibElement,
 }
 
-const pathFieldSeparator = "\u0001"
+const (
+	pathFieldSeparator   = "\u0001"
+	pathElementSeparator = "\u0002"
+)
 
 // UnmarshalLibPathElement instantiates and initialises a library path element from the given serialised string form
 func UnmarshalLibPathElement(data string) (LibraryPathElement, error) {
@@ -208,6 +211,18 @@ func (p *LibraryPath) LevelUp() {
 	}
 }
 
+// Marshal serialises the current path as a string
+func (p *LibraryPath) Marshal() string {
+	s := ""
+	for _, e := range p.elements {
+		if s != "" {
+			s += pathElementSeparator
+		}
+		s += MarshalLibPathElement(e)
+	}
+	return s
+}
+
 // SetLength limits the length of the path at the given figure
 func (p *LibraryPath) SetLength(length int) {
 	if length > len(p.elements) {
@@ -215,6 +230,24 @@ func (p *LibraryPath) SetLength(length int) {
 	}
 	p.elements = p.elements[:length]
 	p.onChanged()
+}
+
+// Unmarshal deserialises the path from a string
+func (p *LibraryPath) Unmarshal(s string) error {
+	// Iterate tab-separate serialised elements
+	var elements []LibraryPathElement
+	for _, s := range strings.Split(s, pathElementSeparator) {
+		element, err := UnmarshalLibPathElement(s)
+		if err != nil {
+			return err
+		}
+		elements = append(elements, element)
+	}
+
+	// Succeeded
+	p.elements = elements
+	p.onChanged()
+	return nil
 }
 
 //----------------------------------------------------------------------------------------------------------------------

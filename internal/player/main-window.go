@@ -240,8 +240,12 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Register the main window with the app
 	application.AddWindow(w.AppWindow)
 
+	// Restore library path
+	cfg := config.GetConfig()
+	errCheck(w.libPath.Unmarshal(cfg.LibraryPath), "Failed to restore library path")
+
 	// Restore window dimensions
-	dim := config.GetConfig().MainWindowDimensions
+	dim := cfg.MainWindowDimensions
 	if dim.Width > 0 && dim.Height > 0 {
 		w.AppWindow.Resize(dim.Width, dim.Height)
 	}
@@ -314,18 +318,21 @@ func (w *MainWindow) onMap() {
 func (w *MainWindow) onDelete() {
 	log.Debug("MainWindow.onDelete()")
 	w.mapped = false
+	cfg := config.GetConfig()
 
-	// Disconnect from MPD
-	w.disconnect()
+	// Save the current library path
+	cfg.LibraryPath = w.libPath.Marshal()
 
 	// Save the current window dimensions in the config
-	cfg := config.GetConfig()
 	x, y := w.AppWindow.GetPosition()
 	width, height := w.AppWindow.GetSize()
 	cfg.MainWindowDimensions = config.Dimensions{X: x, Y: y, Width: width, Height: height}
 
 	// Write out the config
 	cfg.Save()
+
+	// Disconnect from MPD
+	w.disconnect()
 }
 
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
@@ -410,9 +417,12 @@ func (w *MainWindow) onLibraryStopSearch() {
 }
 
 func (w *MainWindow) onLibraryPathChanged() {
-	w.updateLibraryPath()
-	w.updateLibrary()
-	w.focusMainList()
+	// Ignore when not mapped
+	if w.mapped {
+		w.updateLibraryPath()
+		w.updateLibrary()
+		w.focusMainList()
+	}
 }
 
 func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) {

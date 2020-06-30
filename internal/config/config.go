@@ -87,6 +87,7 @@ type Config struct {
 	PlayerTitleTemplate    string       // Track's title formatting template for the player
 	MaxSearchResults       int          // Maximum number of displayed search results
 	Streams                []StreamSpec // Registered stream specifications
+	LibraryPath            string       // Last selected library path
 
 	MainWindowDimensions Dimensions // Main window dimensions
 }
