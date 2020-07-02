@@ -1904,8 +1904,12 @@ func (w *MainWindow) updatePlayer() {
 			errCheck(err, "CurrentSong() failed")
 		})
 
-		// Dump the current track for debug purposes
 		if err == nil {
+			// Enrich the current track with the status info
+			curSong["Bitrate"] = status["bitrate"]
+			curSong["Format"] = status["audio"]
+
+			// Dump the current track for debug purposes
 			log.Debugf("Current track: %#v", curSong)
 
 			// Apply track title template
