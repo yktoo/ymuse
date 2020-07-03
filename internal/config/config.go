@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
+	"github.com/yktoo/ymuse/internal/util"
 	"io/ioutil"
 	"os"
 	"path"
@@ -111,8 +112,8 @@ func GetConfig() *Config {
 // newConfig initialises and returns a config instance with all the defaults
 func newConfig() *Config {
 	return &Config{
-		MpdHost:          "",
-		MpdPort:          6600,
+		MpdHost:          os.Getenv("MPD_HOST"),
+		MpdPort:          util.AtoiDef(os.Getenv("MPD_PORT"), 6600),
 		MpdPassword:      "",
 		MpdAutoConnect:   true,
 		MpdAutoReconnect: true,
