@@ -265,13 +265,13 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 		c.onStatusChange()
 	}
 
-	// No connection (anymore), re-attempt connection if needed
-	if !connected && c.stayConnected {
-		c.startConnecting()
-	}
-
-	// Notify the heartbeat callback, if necessary
 	if heartbeat {
+		// No connection (anymore), re-attempt connection if needed, but not more frequently than once in a heartbeat
+		if !connected && c.stayConnected {
+			c.startConnecting()
+		}
+
+		// Notify the heartbeat callback
 		c.onHeartbeat()
 	}
 }
