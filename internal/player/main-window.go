@@ -749,7 +749,8 @@ func (w *MainWindow) connect() {
 
 	// Start connecting
 	cfg := config.GetConfig()
-	w.connector.Start(cfg.MpdAddress(), cfg.MpdPassword, cfg.MpdAutoReconnect)
+	network, addr := cfg.MpdNetworkAddress()
+	w.connector.Start(network, addr, cfg.MpdPassword, cfg.MpdAutoReconnect)
 }
 
 // disconnect starts disconnecting from MPD

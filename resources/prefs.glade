@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="MpdPortAdjustment">
@@ -21,7 +21,7 @@
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
     <signal name="map" handler="on_PreferencesDialog_map" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -84,7 +84,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">0</property>
+                                <property name="top_attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -95,11 +95,11 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">0</property>
+                                <property name="top_attach">2</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="MpdHostLabelRemark">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">(leave empty for localhost)</property>
@@ -107,7 +107,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">2</property>
-                                <property name="top_attach">0</property>
+                                <property name="top_attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -120,7 +120,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
+                                <property name="top_attach">3</property>
                               </packing>
                             </child>
                             <child>
@@ -131,7 +131,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
+                                <property name="top_attach">3</property>
                               </packing>
                             </child>
                             <child>
@@ -144,7 +144,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
+                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -156,7 +156,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">2</property>
+                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -170,7 +170,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">3</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -184,7 +184,7 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">6</property>
                               </packing>
                             </child>
                             <child>
@@ -200,8 +200,67 @@
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">5</property>
+                                <property name="top_attach">7</property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="MpdPathEntry">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="MpdPathLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Path:</property>
+                                <property name="justify">right</property>
+                                <property name="xalign">1</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="MpdNetworkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Network:</property>
+                                <property name="justify">right</property>
+                                <property name="xalign">1</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="MpdNetworkComboBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="active">1</property>
+                                <items>
+                                  <item id="unix" translatable="yes">Unix socket</item>
+                                  <item id="tcp" translatable="yes">TCP</item>
+                                </items>
+                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                             <child>
                               <placeholder/>

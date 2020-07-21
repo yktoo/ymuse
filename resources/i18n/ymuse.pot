@@ -384,6 +384,9 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Network:"
+msgstr ""
+
 msgid "New playlist name"
 msgstr ""
 
@@ -436,6 +439,9 @@ msgid "Password:"
 msgstr ""
 
 msgid "Path"
+msgstr ""
+
+msgid "Path:"
 msgstr ""
 
 msgid "Pause or resume playback"
@@ -591,6 +597,9 @@ msgstr ""
 msgid "Switch to Streams tab"
 msgstr ""
 
+msgid "TCP"
+msgstr ""
+
 msgid "Template error"
 msgstr ""
 
@@ -628,6 +637,9 @@ msgid "Track title"
 msgstr ""
 
 msgid "Track"
+msgstr ""
+
+msgid "Unix socket"
 msgstr ""
 
 msgid "Unnamed"

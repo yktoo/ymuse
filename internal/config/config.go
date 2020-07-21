@@ -75,8 +75,10 @@ type StreamSpec struct {
 
 // Config represents (storable) application configuration
 type Config struct {
-	MpdHost                string       // MPD's IP address or hostname
-	MpdPort                int          // MPD's port number
+	MpdNetwork             string       // Network to use to connect to MPD, either 'tcp' or 'unix'
+	MpdSocketPath          string       // Path to the MPD's Unix socket (only if MpdNetwork == 'unix')
+	MpdHost                string       // MPD's IP address or hostname (only if MpdNetwork == 'tcp')
+	MpdPort                int          // MPD's port number (only if MpdNetwork == 'tcp')
 	MpdPassword            string       // MPD's password (optional)
 	MpdAutoConnect         bool         // Whether to automatically connect to MPD on startup
 	MpdAutoReconnect       bool         // Whether to automatically reconnect to MPD after connection is lost
@@ -112,6 +114,8 @@ func GetConfig() *Config {
 // newConfig initialises and returns a config instance with all the defaults
 func newConfig() *Config {
 	return &Config{
+		MpdNetwork:       "tcp",
+		MpdSocketPath:    os.Getenv("XDG_RUNTIME_DIR") + "/mpd/socket",
 		MpdHost:          os.Getenv("MPD_HOST"),
 		MpdPort:          util.AtoiDef(os.Getenv("MPD_PORT"), 6600),
 		MpdPassword:      "",
@@ -167,9 +171,12 @@ func (c *Config) Load() {
 	log.Debugf("Loaded configuration from %s", file)
 }
 
-// MpdAddress returns the MPD address string constructed from host and port
-func (c *Config) MpdAddress() string {
-	return fmt.Sprintf("%s:%d", c.MpdHost, c.MpdPort)
+// MpdNetworkAddress returns the MPD network and the address string
+func (c *Config) MpdNetworkAddress() (string, string) {
+	if c.MpdNetwork == "unix" {
+		return "unix", c.MpdSocketPath
+	}
+	return "tcp", fmt.Sprintf("%s:%d", c.MpdHost, c.MpdPort)
 }
 
 // Save writes out the config to the default file

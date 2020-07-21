@@ -24,6 +24,7 @@ import (
 
 // Connector encapsulates functionality for connecting to MPD and watch for its changes
 type Connector struct {
+	mpdNetwork    string // MPD network
 	mpdAddress    string // MPD address
 	mpdPassword   string // MPD password
 	stayConnected bool   // Whether a connection is supposed to be kept alive
@@ -62,7 +63,8 @@ func NewConnector(onStatusChange func(), onHeartbeat func(), onSubsystemChange f
 
 // Start initialises the connector
 // stayConnected: whether the connection must be automatically re-established when lost
-func (c *Connector) Start(mpdAddress, mpdPassword string, stayConnected bool) {
+func (c *Connector) Start(mpdNetwork, mpdAddress, mpdPassword string, stayConnected bool) {
+	c.mpdNetwork = mpdNetwork
 	c.mpdAddress = mpdAddress
 	c.mpdPassword = mpdPassword
 	c.stayConnected = stayConnected
@@ -201,8 +203,8 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 		c.onStatusChange()
 
 		// Try to connect
-		log.Debug("Connecting to MPD")
-		if client, err = mpd.DialAuthenticated("tcp", c.mpdAddress, c.mpdPassword); err == nil {
+		log.Debugf("Connecting to MPD (network=%v, address=%v)", c.mpdNetwork, c.mpdAddress)
+		if client, err = mpd.DialAuthenticated(c.mpdNetwork, c.mpdAddress, c.mpdPassword); err == nil {
 			connected = true
 		} else {
 			err = errors.Errorf("DialAuthenticated() failed: %v", err)
@@ -299,7 +301,7 @@ func (c *Connector) watch() {
 
 			// If no watcher yet
 			if mpdWatcher == nil {
-				watcher, err := mpd.NewWatcher("tcp", c.mpdAddress, c.mpdPassword)
+				watcher, err := mpd.NewWatcher(c.mpdNetwork, c.mpdAddress, c.mpdPassword)
 				// Failed to connect
 				if err != nil {
 					log.Warning("Failed to watch MPD", err)

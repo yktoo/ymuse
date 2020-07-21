@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-06-23 10:45+0200\n"
+"PO-Revision-Date: 2020-07-21 10:59+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -398,6 +398,9 @@ msgstr "MPD Informatie"
 msgid "Name"
 msgstr "Naam"
 
+msgid "Network:"
+msgstr "Netwerk:"
+
 msgid "New playlist name"
 msgstr "Nieuwe afspeellijst naam"
 
@@ -451,6 +454,9 @@ msgstr "Wachtwoord:"
 
 msgid "Path"
 msgstr "Pad"
+
+msgid "Path:"
+msgstr "Pad:"
 
 msgid "Pause or resume playback"
 msgstr "Afspelen pauzeren of hervatten"
@@ -605,6 +611,9 @@ msgstr "Naar het Wachtrij tabblad"
 msgid "Switch to Streams tab"
 msgstr "Naar het Streams tabblad"
 
+msgid "TCP"
+msgstr "TCP"
+
 msgid "Template error"
 msgstr "Sjabloonfout"
 
@@ -643,6 +652,9 @@ msgstr "Tracktitel"
 
 msgid "Track"
 msgstr "Track"
+
+msgid "Unix socket"
+msgstr "Unix socket"
 
 msgid "Unnamed"
 msgstr "Zonder naam"

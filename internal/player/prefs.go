@@ -34,7 +34,14 @@ type queueCol struct {
 type PrefsDialog struct {
 	PreferencesDialog *gtk.Dialog
 	// General page widgets
+	MpdNetworkComboBox          *gtk.ComboBoxText
+	MpdPathEntry                *gtk.Entry
+	MpdPathLabel                *gtk.Label
 	MpdHostEntry                *gtk.Entry
+	MpdHostLabel                *gtk.Label
+	MpdHostLabelRemark          *gtk.Label
+	MpdPortSpinButton           *gtk.SpinButton
+	MpdPortLabel                *gtk.Label
 	MpdPortAdjustment           *gtk.Adjustment
 	MpdPasswordEntry            *gtk.Entry
 	MpdAutoConnectCheckButton   *gtk.CheckButton
@@ -107,11 +114,14 @@ func (d *PrefsDialog) onMap() {
 	// Initialise widgets
 	cfg := config.GetConfig()
 	// General page
+	d.MpdNetworkComboBox.SetActiveID(cfg.MpdNetwork)
+	d.MpdPathEntry.SetText(cfg.MpdSocketPath)
 	d.MpdHostEntry.SetText(cfg.MpdHost)
 	d.MpdPortAdjustment.SetValue(float64(cfg.MpdPort))
 	d.MpdPasswordEntry.SetText(cfg.MpdPassword)
 	d.MpdAutoConnectCheckButton.SetActive(cfg.MpdAutoConnect)
 	d.MpdAutoReconnectCheckButton.SetActive(cfg.MpdAutoReconnect)
+	d.updateGeneralWidgets()
 	// Interface page
 	d.LibraryDefaultReplaceRadioButton.SetActive(cfg.TrackDefaultReplace)
 	d.LibraryDefaultAppendRadioButton.SetActive(!cfg.TrackDefaultReplace)
@@ -262,15 +272,16 @@ func (d *PrefsDialog) onSettingChange() {
 	// Collect settings
 	cfg := config.GetConfig()
 	// General page
-	if s, err := d.MpdHostEntry.GetText(); !errCheck(err, "MpdHostEntry.GetText() failed") {
-		cfg.MpdHost = s
-	}
+	cfg.MpdNetwork = d.MpdNetworkComboBox.GetActiveID()
+	cfg.MpdSocketPath = util.EntryText(d.MpdPathEntry, "")
+	cfg.MpdHost = util.EntryText(d.MpdHostEntry, "")
 	cfg.MpdPort = int(d.MpdPortAdjustment.GetValue())
 	if s, err := d.MpdPasswordEntry.GetText(); !errCheck(err, "MpdPasswordEntry.GetText() failed") {
 		cfg.MpdPassword = s
 	}
 	cfg.MpdAutoConnect = d.MpdAutoConnectCheckButton.GetActive()
 	cfg.MpdAutoReconnect = d.MpdAutoReconnectCheckButton.GetActive()
+	d.updateGeneralWidgets()
 	// Interface page
 	cfg.TrackDefaultReplace = d.LibraryDefaultReplaceRadioButton.GetActive()
 	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
@@ -308,4 +319,17 @@ func (d *PrefsDialog) populateColumns() {
 		}
 	}
 	d.ColumnsListBox.ShowAll()
+}
+
+// updateGeneralWidgets updates widget states on the General tab
+func (d *PrefsDialog) updateGeneralWidgets() {
+	network := d.MpdNetworkComboBox.GetActiveID()
+	unix, tcp := network == "unix", network == "tcp"
+	d.MpdPathEntry.SetVisible(unix)
+	d.MpdPathLabel.SetVisible(unix)
+	d.MpdHostEntry.SetVisible(tcp)
+	d.MpdHostLabel.SetVisible(tcp)
+	d.MpdHostLabelRemark.SetVisible(tcp)
+	d.MpdPortSpinButton.SetVisible(tcp)
+	d.MpdPortLabel.SetVisible(tcp)
 }

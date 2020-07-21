@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-06-23 10:41+0200\n"
+"PO-Revision-Date: 2020-07-21 10:57+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -402,6 +402,9 @@ msgstr "Информация об MPD"
 msgid "Name"
 msgstr "Наименование"
 
+msgid "Network:"
+msgstr "Сеть:"
+
 msgid "New playlist name"
 msgstr "Название нового плейлиста"
 
@@ -457,6 +460,9 @@ msgstr "Пароль:"
 
 msgid "Path"
 msgstr "Путь"
+
+msgid "Path:"
+msgstr "Путь:"
 
 msgid "Pause or resume playback"
 msgstr "Приостановить или возобновить воспроизведение"
@@ -611,6 +617,9 @@ msgstr "Переключиться во вкладку «Очередь»"
 msgid "Switch to Streams tab"
 msgstr "Переключиться во вкладку «Потоки»"
 
+msgid "TCP"
+msgstr "TCP"
+
 msgid "Template error"
 msgstr "Ошибка в шаблоне"
 
@@ -649,6 +658,9 @@ msgstr "Название трека"
 
 msgid "Track"
 msgstr "Трек"
+
+msgid "Unix socket"
+msgstr "Unix-сокет"
 
 msgid "Unnamed"
 msgstr "Безымянный"
