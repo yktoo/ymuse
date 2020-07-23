@@ -230,6 +230,9 @@ func (d *PrefsDialog) moveSelectedColumnRow(up bool) {
 	d.ColumnsListBox.SelectRow(nil)
 	d.ColumnsListBox.SelectRow(d.ColumnsListBox.GetRowAtIndex(index))
 
+	// Scroll the listbox to center the row
+	util.WhenIdle("ListBoxScrollToSelected()", util.ListBoxScrollToSelected, d.ColumnsListBox)
+
 	// Update the queue's columns
 	d.notifyColumnsChanged()
 }

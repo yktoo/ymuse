@@ -157,6 +157,21 @@ func NewListBoxRow(listBox *gtk.ListBox, useMarkup bool, label, name, icon strin
 	return row, hbx, nil
 }
 
+// ListBoxScrollToSelected scrolls the provided list box so that the selected row is centered in the window
+func ListBoxScrollToSelected(listBox *gtk.ListBox) {
+	// If there's selection
+	if row := listBox.GetSelectedRow(); row != nil {
+		// Convert the row's Y coordinate into the list box's coordinate
+		if _, y, _ := row.TranslateCoordinates(listBox, 0, 0); y >= 0 {
+			// Scroll the vertical adjustment to center the row in the viewport
+			if adj := listBox.GetAdjustment(); adj != nil {
+				_, rowHeight := row.GetPreferredHeight()
+				adj.SetValue(float64(y) - (adj.GetPageSize()-float64(rowHeight))/2)
+			}
+		}
+	}
+}
+
 // ConfirmDialog shows a confirmation message dialog
 func ConfirmDialog(parent gtk.IWindow, title, text string) bool {
 	dlg := gtk.MessageDialogNew(parent, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")

@@ -1783,8 +1783,9 @@ func (w *MainWindow) updateLibrary() {
 	// Show all rows
 	w.LibraryListBox.ShowAll()
 
-	// Select the required row
+	// Select the required row and scroll to it (later)
 	w.LibraryListBox.SelectRow(rowToSelect)
+	util.WhenIdle("ListBoxScrollToSelected()", util.ListBoxScrollToSelected, w.LibraryListBox)
 	w.libPathElementToSelect = ""
 
 	// Compose info
