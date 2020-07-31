@@ -223,6 +223,12 @@ func (p *LibraryPath) Marshal() string {
 	return s
 }
 
+// SetElements updates the elements to the given slice
+func (p *LibraryPath) SetElements(elements []LibraryPathElement) {
+	p.elements = elements
+	p.onChanged()
+}
+
 // SetLength limits the length of the path at the given figure
 func (p *LibraryPath) SetLength(length int) {
 	if length > len(p.elements) {
@@ -495,9 +501,7 @@ func (e *PlaylistsLibElement) Unmarshal(string) error {
 }
 
 func (e *PlaylistsLibElement) NewChild(name string) LibraryPathElement {
-	c := NewPlaylistLibElement()
-	c.(*PlaylistLibElement).name = name
-	return c
+	return NewPlaylistLibElementName(name)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -509,7 +513,11 @@ type PlaylistLibElement struct {
 }
 
 func NewPlaylistLibElement() LibraryPathElement {
-	return &PlaylistLibElement{}
+	return NewPlaylistLibElementName("")
+}
+
+func NewPlaylistLibElementName(name string) LibraryPathElement {
+	return &PlaylistLibElement{name: name}
 }
 
 func (e *PlaylistLibElement) Icon() string {
@@ -592,9 +600,7 @@ func (e *GenresLibElement) ChildAttributeID() int {
 }
 
 func (e *GenresLibElement) NewChild(value string) LibraryPathElement {
-	c := NewGenreLibElement()
-	c.(*GenreLibElement).attrValue = value
-	return c
+	return NewGenreLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -606,7 +612,11 @@ type GenreLibElement struct {
 }
 
 func NewGenreLibElement() LibraryPathElement {
-	return &GenreLibElement{BaseAttrHolder{attrID: config.MTAttrGenre}}
+	return NewGenreLibElementVal("")
+}
+
+func NewGenreLibElementVal(value string) LibraryPathElement {
+	return &GenreLibElement{BaseAttrHolder{attrID: config.MTAttrGenre, attrValue: value}}
 }
 
 func (e *GenreLibElement) Icon() string {
@@ -650,9 +660,7 @@ func (e *GenreLibElement) ChildAttributeID() int {
 }
 
 func (e *GenreLibElement) NewChild(value string) LibraryPathElement {
-	c := NewArtistLibElement()
-	c.(*ArtistLibElement).attrValue = value
-	return c
+	return NewArtistLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -698,9 +706,7 @@ func (e *ArtistsLibElement) ChildAttributeID() int {
 }
 
 func (e *ArtistsLibElement) NewChild(value string) LibraryPathElement {
-	c := NewArtistLibElement()
-	c.(*ArtistLibElement).attrValue = value
-	return c
+	return NewArtistLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -712,7 +718,11 @@ type ArtistLibElement struct {
 }
 
 func NewArtistLibElement() LibraryPathElement {
-	return &ArtistLibElement{BaseAttrHolder{attrID: config.MTAttrArtist}}
+	return NewArtistLibElementVal("")
+}
+
+func NewArtistLibElementVal(value string) LibraryPathElement {
+	return &ArtistLibElement{BaseAttrHolder{attrID: config.MTAttrArtist, attrValue: value}}
 }
 
 func (e *ArtistLibElement) Icon() string {
@@ -756,9 +766,7 @@ func (e *ArtistLibElement) ChildAttributeID() int {
 }
 
 func (e *ArtistLibElement) NewChild(value string) LibraryPathElement {
-	c := NewAlbumLibElement()
-	c.(*AlbumLibElement).attrValue = value
-	return c
+	return NewAlbumLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -804,9 +812,7 @@ func (e *AlbumsLibElement) ChildAttributeID() int {
 }
 
 func (e *AlbumsLibElement) NewChild(value string) LibraryPathElement {
-	c := NewAlbumLibElement()
-	c.(*AlbumLibElement).attrValue = value
-	return c
+	return NewAlbumLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -818,7 +824,11 @@ type AlbumLibElement struct {
 }
 
 func NewAlbumLibElement() LibraryPathElement {
-	return &AlbumLibElement{BaseAttrHolder{attrID: config.MTAttrAlbum}}
+	return NewAlbumLibElementVal("")
+}
+
+func NewAlbumLibElementVal(value string) LibraryPathElement {
+	return &AlbumLibElement{BaseAttrHolder{attrID: config.MTAttrAlbum, attrValue: value}}
 }
 
 func (e *AlbumLibElement) Icon() string {
@@ -862,9 +872,7 @@ func (e *AlbumLibElement) ChildAttributeID() int {
 }
 
 func (e *AlbumLibElement) NewChild(value string) LibraryPathElement {
-	c := NewTrackLibElement()
-	c.(*TrackLibElement).attrValue = value
-	return c
+	return NewTrackLibElementVal(value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -876,7 +884,11 @@ type TrackLibElement struct {
 }
 
 func NewTrackLibElement() LibraryPathElement {
-	return &TrackLibElement{BaseAttrHolder{attrID: config.MTAttrTrack}}
+	return NewTrackLibElementVal("")
+}
+
+func NewTrackLibElementVal(value string) LibraryPathElement {
+	return &TrackLibElement{BaseAttrHolder{attrID: config.MTAttrTrack, attrValue: value}}
 }
 
 func (e *TrackLibElement) Icon() string {

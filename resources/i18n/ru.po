@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-07-21 10:57+0200\n"
+"PO-Revision-Date: 2020-07-31 13:52+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Poedit-Basepath: ..\n"
@@ -275,6 +275,15 @@ msgstr "Не удалось удалить плейлист"
 
 msgid "Failed to delete tracks from the queue"
 msgstr "Не удалось удалить треки из очереди"
+
+msgid "Failed to get album information"
+msgstr "Не удалось получить информацию об альбоме"
+
+msgid "Failed to get artist information"
+msgstr "Не удалось получить информацию об исполнителе"
+
+msgid "Failed to get genre information"
+msgstr "Не удалось получить информацию о жанре"
 
 msgid "Failed to load UI widgets"
 msgstr "Не удалось загрузить виджеты графического интерфейса"
@@ -571,6 +580,15 @@ msgstr "Поиск…"
 
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Выберите столбцы для отображения и их порядок."
+
+msgid "Show album in Library"
+msgstr "Показать альбом в библиотеке"
+
+msgid "Show artist in Library"
+msgstr "Показать исполнителя в библиотеке"
+
+msgid "Show genre in Library"
+msgstr "Показать жанр в библиотеке"
 
 msgid "Shuffle mode"
 msgstr "Режим случайного порядка"

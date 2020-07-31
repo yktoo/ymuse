@@ -54,21 +54,24 @@ type MainWindow struct {
 	PlayPositionScale      *gtk.Scale
 	PlayPositionAdjustment *gtk.Adjustment
 	// Queue widgets
-	QueueBox                *gtk.Box
-	QueueInfoLabel          *gtk.Label
-	QueueTreeView           *gtk.TreeView
-	QueueSortPopoverMenu    *gtk.PopoverMenu
-	QueueSavePopoverMenu    *gtk.PopoverMenu
-	QueueMenu               *gtk.Menu
-	QueueNowPlayingMenuItem *gtk.MenuItem
-	QueueClearMenuItem      *gtk.MenuItem
-	QueueDeleteMenuItem     *gtk.MenuItem
-	QueueFilterToolButton   *gtk.ToggleToolButton
-	QueueSearchBar          *gtk.SearchBar
-	QueueSearchEntry        *gtk.SearchEntry
-	QueueFilterLabel        *gtk.Label
-	QueueListStore          *gtk.ListStore
-	QueueTreeModelFilter    *gtk.TreeModelFilter
+	QueueBox                         *gtk.Box
+	QueueInfoLabel                   *gtk.Label
+	QueueTreeView                    *gtk.TreeView
+	QueueSortPopoverMenu             *gtk.PopoverMenu
+	QueueSavePopoverMenu             *gtk.PopoverMenu
+	QueueMenu                        *gtk.Menu
+	QueueNowPlayingMenuItem          *gtk.MenuItem
+	QueueShowAlbumInLibraryMenuItem  *gtk.MenuItem
+	QueueShowArtistInLibraryMenuItem *gtk.MenuItem
+	QueueShowGenreInLibraryMenuItem  *gtk.MenuItem
+	QueueClearMenuItem               *gtk.MenuItem
+	QueueDeleteMenuItem              *gtk.MenuItem
+	QueueFilterToolButton            *gtk.ToggleToolButton
+	QueueSearchBar                   *gtk.SearchBar
+	QueueSearchEntry                 *gtk.SearchEntry
+	QueueFilterLabel                 *gtk.Label
+	QueueListStore                   *gtk.ListStore
+	QueueTreeModelFilter             *gtk.TreeModelFilter
 	// Queue sort popup
 	QueueSortByComboBox *gtk.ComboBoxText
 	// Queue save popup
@@ -200,41 +203,42 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 
 	// Map the handlers to callback functions
 	builder.ConnectSignals(map[string]interface{}{
-		"on_MainWindow_delete":              w.onDelete,
-		"on_MainWindow_map":                 w.onMap,
-		"on_MainWindow_styleUpdated":        w.updateStyle,
-		"on_MainStack_switched":             w.focusMainList,
-		"on_QueueTreeView_buttonPress":      w.onQueueTreeViewButtonPress,
-		"on_QueueTreeView_keyPress":         w.onQueueTreeViewKeyPress,
-		"on_QueueTreeSelection_changed":     w.updateQueueActions,
-		"on_QueueSearchBar_searchMode":      w.onQueueSearchMode,
-		"on_QueueSearchEntry_searchChanged": w.queueFilter,
-		"on_LibraryListBox_buttonPress":     w.onLibraryListBoxButtonPress,
-		"on_LibraryListBox_keyPress":        w.onLibraryListBoxKeyPress,
-		"on_LibraryListBox_selectionChange": w.updateLibraryActions,
-		"on_LibrarySearchChanged":           w.updateLibrary,
-		"on_LibrarySearchStop":              w.onLibraryStopSearch,
-		"on_StreamsListBox_buttonPress":     w.onStreamListBoxButtonPress,
-		"on_StreamsListBox_keyPress":        w.onStreamListBoxKeyPress,
-		"on_StreamsListBox_selectionChange": w.updateStreamsActions,
-		"on_StreamPropsChanged":             w.onStreamPropsChanged,
-		"on_QueueSavePopoverMenu_validate":  w.onQueueSavePopoverValidate,
-		"on_PlayPositionScale_buttonEvent":  w.onPlayPositionButtonEvent,
-		"on_PlayPositionScale_valueChanged": w.updatePlayerSeekBar,
-
-		// For some reason binding actions to menu items keeps them grayed out, so old-school signals are used here
-		"on_QueueNowPlayingMenuItem_activate":  w.updateQueueNowPlaying,
-		"on_QueueClearMenuItem_activate":       w.queueClear,
-		"on_QueueDeleteMenuItem_activate":      w.queueDelete,
-		"on_LibraryAppendMenuItem_activate":    func() { w.applyLibrarySelection(tbFalse) },
-		"on_LibraryReplaceMenuItem_activate":   func() { w.applyLibrarySelection(tbTrue) },
-		"on_LibraryRenameMenuItem_activate":    w.libraryRename,
-		"on_LibraryDeleteMenuItem_activate":    w.libraryDelete,
-		"on_LibraryUpdateSelMenuItem_activate": func() { w.libraryUpdate(false, true) },
-		"on_StreamsAppendMenuItem_activate":    func() { w.applyStreamSelection(tbFalse) },
-		"on_StreamsReplaceMenuItem_activate":   func() { w.applyStreamSelection(tbTrue) },
-		"on_StreamsEditMenuItem_activate":      w.onStreamEdit,
-		"on_StreamsDeleteMenuItem_activate":    w.onStreamDelete,
+		"on_MainWindow_delete":                         w.onDelete,
+		"on_MainWindow_map":                            w.onMap,
+		"on_MainWindow_styleUpdated":                   w.updateStyle,
+		"on_MainStack_switched":                        w.focusMainList,
+		"on_QueueTreeView_buttonPress":                 w.onQueueTreeViewButtonPress,
+		"on_QueueTreeView_keyPress":                    w.onQueueTreeViewKeyPress,
+		"on_QueueTreeSelection_changed":                w.updateQueueActions,
+		"on_QueueSearchBar_searchMode":                 w.onQueueSearchMode,
+		"on_QueueSearchEntry_searchChanged":            w.queueFilter,
+		"on_LibraryListBox_buttonPress":                w.onLibraryListBoxButtonPress,
+		"on_LibraryListBox_keyPress":                   w.onLibraryListBoxKeyPress,
+		"on_LibraryListBox_selectionChange":            w.updateLibraryActions,
+		"on_LibrarySearchChanged":                      w.updateLibrary,
+		"on_LibrarySearchStop":                         w.onLibraryStopSearch,
+		"on_StreamsListBox_buttonPress":                w.onStreamListBoxButtonPress,
+		"on_StreamsListBox_keyPress":                   w.onStreamListBoxKeyPress,
+		"on_StreamsListBox_selectionChange":            w.updateStreamsActions,
+		"on_StreamPropsChanged":                        w.onStreamPropsChanged,
+		"on_QueueSavePopoverMenu_validate":             w.onQueueSavePopoverValidate,
+		"on_PlayPositionScale_buttonEvent":             w.onPlayPositionButtonEvent,
+		"on_PlayPositionScale_valueChanged":            w.updatePlayerSeekBar,
+		"on_QueueNowPlayingMenuItem_activate":          w.updateQueueNowPlaying,
+		"on_QueueShowAlbumInLibraryMenuItem_activate":  w.libraryShowAlbumFromQueue,
+		"on_QueueShowArtistInLibraryMenuItem_activate": w.libraryShowArtistFromQueue,
+		"on_QueueShowGenreInLibraryMenuItem_activate":  w.libraryShowGenreFromQueue,
+		"on_QueueClearMenuItem_activate":               w.queueClear,
+		"on_QueueDeleteMenuItem_activate":              w.queueDelete,
+		"on_LibraryAppendMenuItem_activate":            func() { w.applyLibrarySelection(tbFalse) },
+		"on_LibraryReplaceMenuItem_activate":           func() { w.applyLibrarySelection(tbTrue) },
+		"on_LibraryRenameMenuItem_activate":            w.libraryRename,
+		"on_LibraryDeleteMenuItem_activate":            w.libraryDelete,
+		"on_LibraryUpdateSelMenuItem_activate":         func() { w.libraryUpdate(false, true) },
+		"on_StreamsAppendMenuItem_activate":            func() { w.applyStreamSelection(tbFalse) },
+		"on_StreamsReplaceMenuItem_activate":           func() { w.applyStreamSelection(tbTrue) },
+		"on_StreamsEditMenuItem_activate":              w.onStreamEdit,
+		"on_StreamsDeleteMenuItem_activate":            w.onStreamDelete,
 	})
 
 	// Register the main window with the app
@@ -800,12 +804,11 @@ func (w *MainWindow) focusMainList() {
 }
 
 // getQueueHasSelection returns whether there's any selected rows in the queue
-func (w *MainWindow) getQueueHasSelection() bool {
-	if sel, err := w.QueueTreeView.GetSelection(); errCheck(err, "getQueueHasSelection(): QueueTreeView.GetSelection() failed") {
-		return false
-	} else {
-		return sel.CountSelectedRows() > 0
+func (w *MainWindow) getQueueSelectedCount() int {
+	if sel, err := w.QueueTreeView.GetSelection(); !errCheck(err, "getQueueHasSelection(): QueueTreeView.GetSelection() failed") {
+		return sel.CountSelectedRows()
 	}
+	return 0
 }
 
 // getQueueSelectedIndices returns indices of the currently selected rows in the queue
@@ -827,6 +830,33 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 		}
 	})
 	return indices
+}
+
+// getQueueSelectedTrackAttrs returns attributes of the first currently selected row in the queue
+func (w *MainWindow) getQueueSelectedTrackAttrs() (mpd.Attrs, error) {
+	// Get the tree's selection
+	if indices := w.getQueueSelectedIndices(); len(indices) > 0 {
+		// Fetch the attrs of the first selected index
+		var err error
+		var attrs []mpd.Attrs
+		w.connector.IfConnected(func(client *mpd.Client) {
+			attrs, err = client.PlaylistInfo(indices[0], -1)
+		})
+
+		// If there's an error
+		if err != nil {
+			return nil, err
+		}
+
+		// If no data returned
+		if len(attrs) == 0 {
+			return nil, errors.New("No data returned by MPD for the current selection")
+		}
+
+		// All OK
+		return attrs[0], nil
+	}
+	return nil, errors.New("No selection in the queue")
 }
 
 // getSelectedLibraryElement returns the path element of the currently selected library item or nil if there's an error
@@ -1081,6 +1111,49 @@ func (w *MainWindow) libraryRename() {
 			// Check for error (outside IfConnected() because it would keep the client locked)
 			w.errCheckDialog(err, glib.Local("Failed to rename the playlist"))
 		}
+	}
+}
+
+// libraryShowAlbumFromQueue opens the currently selected queue album in the library
+func (w *MainWindow) libraryShowAlbumFromQueue() {
+	if attrs, err := w.getQueueSelectedTrackAttrs(); !w.errCheckDialog(err, glib.Local("Failed to get album information")) {
+		// Update the current library path
+		w.libPath.SetElements([]LibraryPathElement{
+			NewArtistsLibElement(),
+			NewArtistLibElementVal(attrs[config.MpdTrackAttributes[config.MTAttrArtist].AttrName]),
+			NewAlbumLibElementVal(attrs[config.MpdTrackAttributes[config.MTAttrAlbum].AttrName]),
+		})
+
+		// Switch to the library tab
+		w.MainStack.SetVisibleChild(w.LibraryBox)
+	}
+}
+
+// libraryShowArtistFromQueue opens the currently selected queue artist in the library
+func (w *MainWindow) libraryShowArtistFromQueue() {
+	if attrs, err := w.getQueueSelectedTrackAttrs(); !w.errCheckDialog(err, glib.Local("Failed to get artist information")) {
+		// Update the current library path
+		w.libPath.SetElements([]LibraryPathElement{
+			NewArtistsLibElement(),
+			NewArtistLibElementVal(attrs[config.MpdTrackAttributes[config.MTAttrArtist].AttrName]),
+		})
+
+		// Switch to the library tab
+		w.MainStack.SetVisibleChild(w.LibraryBox)
+	}
+}
+
+// libraryShowGenreFromQueue opens the currently selected queue genre in the library
+func (w *MainWindow) libraryShowGenreFromQueue() {
+	if attrs, err := w.getQueueSelectedTrackAttrs(); !w.errCheckDialog(err, glib.Local("Failed to get genre information")) {
+		// Update the current library path
+		w.libPath.SetElements([]LibraryPathElement{
+			NewGenresLibElement(),
+			NewGenreLibElementVal(attrs[config.MpdTrackAttributes[config.MTAttrGenre].AttrName]),
+		})
+
+		// Switch to the library tab
+		w.MainStack.SetVisibleChild(w.LibraryBox)
 	}
 }
 
@@ -1377,7 +1450,7 @@ func (w *MainWindow) queuePlaylist(replace triBool, uri string) {
 // queueSave shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
 func (w *MainWindow) queueSave() {
 	// Tweak widgets
-	selection := w.getQueueHasSelection()
+	selection := w.getQueueSelectedCount() > 0
 	w.QueueSaveSelectedOnlyCheckButton.SetVisible(selection)
 	w.QueueSaveSelectedOnlyCheckButton.SetActive(selection)
 	w.QueueSavePlaylistNameEntry.SetText("")
@@ -2217,7 +2290,9 @@ func (w *MainWindow) updateQueueColumns() {
 func (w *MainWindow) updateQueueActions() {
 	connected, _ := w.connector.ConnectStatus()
 	notEmpty := connected && w.currentQueueSize > 0
-	selection := notEmpty && w.getQueueHasSelection()
+	selCount := w.getQueueSelectedCount()
+	selection := notEmpty && selCount > 0
+	selOne := notEmpty && selCount == 1
 	// Actions
 	w.aQueueNowPlaying.SetEnabled(notEmpty)
 	w.aQueueClear.SetEnabled(notEmpty)
@@ -2229,6 +2304,9 @@ func (w *MainWindow) updateQueueActions() {
 	w.aQueueSave.SetEnabled(notEmpty)
 	// Menu items
 	w.QueueNowPlayingMenuItem.SetSensitive(notEmpty)
+	w.QueueShowAlbumInLibraryMenuItem.SetSensitive(selOne)
+	w.QueueShowArtistInLibraryMenuItem.SetSensitive(selOne)
+	w.QueueShowGenreInLibraryMenuItem.SetSensitive(selOne)
 	w.QueueClearMenuItem.SetSensitive(notEmpty)
 	w.QueueDeleteMenuItem.SetSensitive(selection)
 }

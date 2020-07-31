@@ -258,6 +258,15 @@ msgstr ""
 msgid "Failed to delete tracks from the queue"
 msgstr ""
 
+msgid "Failed to get album information"
+msgstr ""
+
+msgid "Failed to get artist information"
+msgstr ""
+
+msgid "Failed to get genre information"
+msgstr ""
+
 msgid "Failed to load UI widgets"
 msgstr ""
 
@@ -550,6 +559,15 @@ msgid "Search…"
 msgstr ""
 
 msgid "Select columns to display in the play queue, and their order."
+msgstr ""
+
+msgid "Show album in Library"
+msgstr ""
+
+msgid "Show artist in Library"
+msgstr ""
+
+msgid "Show genre in Library"
 msgstr ""
 
 msgid "Shuffle mode"

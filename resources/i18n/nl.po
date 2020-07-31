@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-07-21 10:59+0200\n"
+"PO-Revision-Date: 2020-07-31 13:56+0200\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid ""
@@ -271,6 +271,15 @@ msgstr "Het is niet gelukt om de afspeellijst te verwijderen"
 
 msgid "Failed to delete tracks from the queue"
 msgstr "Het is niet gelukt om tracks uit de wachtrij te halen"
+
+msgid "Failed to get album information"
+msgstr "Het is niet gelukt om album gegevens op te halen"
+
+msgid "Failed to get artist information"
+msgstr "Het is niet gelukt om artiest gegevens op te halen"
+
+msgid "Failed to get genre information"
+msgstr "Het is niet gelukt om genre gegevens op te halen"
 
 msgid "Failed to load UI widgets"
 msgstr "Het is niet gelukt om UI-widgets te laden"
@@ -565,6 +574,15 @@ msgstr "Doorzoeken…"
 
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Selecteer kolommen om weer te geven in de wachtrij, en hun volgorde."
+
+msgid "Show album in Library"
+msgstr "Album in Mediatheek tonen"
+
+msgid "Show artist in Library"
+msgstr "Artiest in Mediatheek tonen"
+
+msgid "Show genre in Library"
+msgstr "Genre in Mediatheek tonen"
 
 msgid "Shuffle mode"
 msgstr "Willekeurigmodus"
