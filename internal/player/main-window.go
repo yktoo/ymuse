@@ -2345,9 +2345,10 @@ func (w *MainWindow) updateStreams() {
 	sort.Slice(cfg.Streams, func(i, j int) bool { return cfg.Streams[i].Name < cfg.Streams[j].Name })
 
 	// Repopulate the streams list
+	var rowToSelect *gtk.ListBoxRow
 	for _, stream := range config.GetConfig().Streams {
 		stream := stream // Make an in-loop copy of the var
-		_, _, err := util.NewListBoxRow(
+		row, _, err := util.NewListBoxRow(
 			w.StreamsListBox,
 			false,
 			stream.Name,
@@ -2359,10 +2360,18 @@ func (w *MainWindow) updateStreams() {
 		if errCheck(err, "NewListBoxRow() failed") {
 			return
 		}
+
+		// Select the first row in the list
+		if rowToSelect == nil {
+			rowToSelect = row
+		}
 	}
 
 	// Show all rows
 	w.StreamsListBox.ShowAll()
+
+	// Select the required row
+	w.StreamsListBox.SelectRow(rowToSelect)
 
 	// Compose info
 	var info string
