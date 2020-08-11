@@ -53,6 +53,7 @@ type MainWindow struct {
 	ConsumeButton          *gtk.ToggleToolButton
 	PlayPositionScale      *gtk.Scale
 	PlayPositionAdjustment *gtk.Adjustment
+	AlbumArtworkImage      *gtk.Image
 	// Queue widgets
 	QueueBox                         *gtk.Box
 	QueueInfoLabel                   *gtk.Label
@@ -154,7 +155,8 @@ type MainWindow struct {
 	libPath                *LibraryPath // Current library path
 	libPathElementToSelect string       // Library path element to select after list load (serialised)
 
-	playerTitleTemplate *template.Template // Compiled template for player's track title
+	playerTitleTemplate      *template.Template // Compiled template for player's track title
+	playerCurrentAlbumArtUri string             // URI of the current player's album art
 
 	playPosUpdating bool // Play position manual update flag
 	optionsUpdating bool // Options update flag
@@ -168,6 +170,8 @@ const (
 
 	queueSaveNewPlaylistID = "\u0001new"
 	librarySearchAllAttrID = "\u0001any"
+
+	playerArtworkSize = 80 // Album artwork size in pixels
 )
 
 type triBool int
@@ -195,8 +199,8 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Initialise queue filter model
 	w.QueueTreeModelFilter.SetVisibleColumn(config.QueueColumnVisible)
 
-	// Initialise player title template
-	w.updatePlayerTitleTemplate()
+	// Initialise player settings
+	w.applyPlayerSettings()
 
 	// Initialise widgets and actions
 	w.initWidgets()
@@ -721,6 +725,28 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 	} else {
 		// Queue the element up otherwise
 		w.queueLibraryElement(replace, e)
+	}
+}
+
+// applyPlayerSettings compiles the player title template and updates the player
+func (w *MainWindow) applyPlayerSettings() {
+	tmpl, err := template.New("playerTitle").
+		Funcs(template.FuncMap{
+			"default":  util.Default,
+			"dirname":  path.Dir,
+			"basename": path.Base,
+		}).
+		Parse(config.GetConfig().PlayerTitleTemplate)
+	if errCheck(err, "Template parse error") {
+		w.playerTitleTemplate = template.Must(
+			template.New("error").Parse("<span foreground=\"red\">[" + glib.Local("Player title template error, check log") + "]</span>"))
+	} else {
+		w.playerTitleTemplate = tmpl
+	}
+
+	// Update the displayed title/artwork if the connector is initialised
+	if w.connector != nil {
+		w.updatePlayer()
 	}
 }
 
@@ -1285,7 +1311,7 @@ func (w *MainWindow) playerToggleRepeat() {
 
 // preferences shows the preferences dialog
 func (w *MainWindow) preferences() {
-	PreferencesDialog(w.AppWindow, w.connect, w.updateQueueColumns, w.updatePlayerTitleTemplate)
+	PreferencesDialog(w.AppWindow, w.connect, w.updateQueueColumns, w.applyPlayerSettings)
 }
 
 // queueClear empties MPD's play queue
@@ -1964,6 +1990,7 @@ func (w *MainWindow) updatePlayer() {
 	status := w.connector.Status()
 	var statusHTML string
 	var err error
+	curURI := ""
 
 	switch {
 	// Still connecting
@@ -1994,6 +2021,9 @@ func (w *MainWindow) updatePlayer() {
 			} else {
 				statusHTML = buffer.String()
 			}
+
+			// Get the current URI
+			curURI = curSong["file"]
 		}
 
 		// Update play/pause button's appearance
@@ -2014,6 +2044,9 @@ func (w *MainWindow) updatePlayer() {
 		statusHTML += fmt.Sprintf(" — <span foreground=\"red\">%s</span>", html.EscapeString(errMsg))
 	}
 
+	// Update the album art
+	w.updatePlayerAlbumArt(curURI)
+
 	// Update status text
 	w.StatusLabel.SetMarkup(statusHTML)
 
@@ -2031,6 +2064,55 @@ func (w *MainWindow) updatePlayer() {
 
 	// Update the seek bar
 	w.updatePlayerSeekBar()
+}
+
+// updatePlayerAlbumArt updates player's album art image appearance and visibility
+func (w *MainWindow) updatePlayerAlbumArt(uri string) {
+	// Check if the album art is to be shown
+	show := false
+	if uri != "" && config.GetConfig().PlayerAlbumArt {
+		// Avoid updating album art if there's no change in the URI
+		if w.playerCurrentAlbumArtUri == uri {
+			show = true
+		} else {
+			// Try to fetch the album art
+			var albumArt []byte
+			w.connector.IfConnected(func(client *mpd.Client) {
+				var err error
+				if albumArt, err = client.AlbumArt(uri); err != nil {
+					albumArt = nil
+				}
+			})
+
+			// If succeeded
+			if len(albumArt) > 0 {
+				// Make a pixbuf from the data bytes
+				if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
+					// Downscale the image if needed
+					if px, err = px.ScaleSimple(playerArtworkSize, playerArtworkSize, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
+						w.AlbumArtworkImage.SetFromPixbuf(px)
+						show = true
+						// Save the last used URI
+						w.playerCurrentAlbumArtUri = uri
+					}
+				}
+			}
+		}
+	}
+
+	// Show or hide the album art
+	if !show {
+		w.AlbumArtworkImage.Clear()
+		w.playerCurrentAlbumArtUri = ""
+	}
+	w.AlbumArtworkImage.SetVisible(show)
+
+	// If the image isn't visible, center-justify the title. Otherwise use left justification
+	justification := gtk.JUSTIFY_CENTER
+	if show {
+		justification = gtk.JUSTIFY_LEFT
+	}
+	w.StatusLabel.SetJustify(justification)
 }
 
 // updatePlayerSeekBar updates the seek bar position and status
@@ -2073,28 +2155,6 @@ func (w *MainWindow) updatePlayerSeekBar() {
 		}
 	}
 	w.PositionLabel.SetMarkup(seekPos)
-}
-
-// updatePlayerTitleTemplate compiles the player title template
-func (w *MainWindow) updatePlayerTitleTemplate() {
-	tmpl, err := template.New("playerTitle").
-		Funcs(template.FuncMap{
-			"default":  util.Default,
-			"dirname":  path.Dir,
-			"basename": path.Base,
-		}).
-		Parse(config.GetConfig().PlayerTitleTemplate)
-	if errCheck(err, "Template parse error") {
-		w.playerTitleTemplate = template.Must(
-			template.New("error").Parse("<span foreground=\"red\">[" + glib.Local("Player title template error, check log") + "]</span>"))
-	} else {
-		w.playerTitleTemplate = tmpl
-	}
-
-	// Update the displayed title if the connector is initialised
-	if w.connector != nil {
-		w.updatePlayer()
-	}
 }
 
 // updateQueue updates the current play queue contents

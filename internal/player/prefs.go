@@ -22,6 +22,7 @@ import (
 	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
+	"time"
 )
 
 type queueCol struct {
@@ -53,6 +54,7 @@ type PrefsDialog struct {
 	PlaylistsDefaultAppendRadioButton  *gtk.RadioButton
 	StreamsDefaultReplaceRadioButton   *gtk.RadioButton
 	StreamsDefaultAppendRadioButton    *gtk.RadioButton
+	PlayerShowAlbumArtCheckButton      *gtk.CheckButton
 	PlayerTitleTemplateTextBuffer      *gtk.TextBuffer
 	// Columns page widgets
 	ColumnsListBox *gtk.ListBox
@@ -61,17 +63,19 @@ type PrefsDialog struct {
 	initialised bool
 	// Columns, in the same order as in the ColumnsListBox
 	queueColumns []queueCol
+	// Timer for delayed player setting change callback invocation
+	playerSettingChangeTimer *time.Timer
 	// Callbacks
-	onQueueColumnsChanged        func()
-	onPlayerTitleTemplateChanged func()
+	onQueueColumnsChanged  func()
+	onPlayerSettingChanged func()
 }
 
 // PreferencesDialog creates, shows and disposes of a Preferences dialog instance
-func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerTitleTemplateChanged func()) {
+func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerSettingChanged func()) {
 	// Create the dialog
 	d := &PrefsDialog{
-		onQueueColumnsChanged:        onQueueColumnsChanged,
-		onPlayerTitleTemplateChanged: onPlayerTitleTemplateChanged,
+		onQueueColumnsChanged:  onQueueColumnsChanged,
+		onPlayerSettingChanged: onPlayerSettingChanged,
 	}
 
 	// Load the dialog layout and map the widgets
@@ -129,6 +133,7 @@ func (d *PrefsDialog) onMap() {
 	d.PlaylistsDefaultAppendRadioButton.SetActive(!cfg.PlaylistDefaultReplace)
 	d.StreamsDefaultReplaceRadioButton.SetActive(cfg.StreamDefaultReplace)
 	d.StreamsDefaultAppendRadioButton.SetActive(!cfg.StreamDefaultReplace)
+	d.PlayerShowAlbumArtCheckButton.SetActive(cfg.PlayerAlbumArt)
 	d.PlayerTitleTemplateTextBuffer.SetText(cfg.PlayerTitleTemplate)
 	// Columns page
 	d.populateColumns()
@@ -289,10 +294,16 @@ func (d *PrefsDialog) onSettingChange() {
 	cfg.TrackDefaultReplace = d.LibraryDefaultReplaceRadioButton.GetActive()
 	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
 	cfg.StreamDefaultReplace = d.StreamsDefaultReplaceRadioButton.GetActive()
+
+	b := d.PlayerShowAlbumArtCheckButton.GetActive()
+	if b != cfg.PlayerAlbumArt {
+		cfg.PlayerAlbumArt = b
+		d.schedulePlayerSettingChange()
+	}
 	if s, err := util.GetTextBufferText(d.PlayerTitleTemplateTextBuffer); !errCheck(err, "util.GetTextBufferText() failed") {
 		if s != cfg.PlayerTitleTemplate {
 			cfg.PlayerTitleTemplate = s
-			d.onPlayerTitleTemplateChanged()
+			d.schedulePlayerSettingChange()
 		}
 	}
 }
@@ -322,6 +333,20 @@ func (d *PrefsDialog) populateColumns() {
 		}
 	}
 	d.ColumnsListBox.ShowAll()
+}
+
+func (d *PrefsDialog) schedulePlayerSettingChange() {
+	// Cancel the currently scheduled callback, if any
+	if d.playerSettingChangeTimer != nil {
+		d.playerSettingChangeTimer.Stop()
+	}
+	// Schedule a new callback
+	d.playerSettingChangeTimer = time.AfterFunc(time.Second, func() {
+		util.WhenIdle("onPlayerSettingChanged()", func() {
+			d.playerSettingChangeTimer = nil
+			d.onPlayerSettingChanged()
+		})
+	})
 }
 
 // updateGeneralWidgets updates widget states on the General tab

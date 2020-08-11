@@ -561,6 +561,9 @@ msgstr ""
 msgid "Select columns to display in the play queue, and their order."
 msgstr ""
 
+msgid "Show album art"
+msgstr ""
+
 msgid "Show album in Library"
 msgstr ""
 
