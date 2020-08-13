@@ -22,6 +22,7 @@ import (
 	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
+	"sync"
 	"time"
 )
 
@@ -65,6 +66,7 @@ type PrefsDialog struct {
 	queueColumns []queueCol
 	// Timer for delayed player setting change callback invocation
 	playerSettingChangeTimer *time.Timer
+	playerSettingChangeMutex sync.Mutex
 	// Callbacks
 	onQueueColumnsChanged  func()
 	onPlayerSettingChanged func()
@@ -337,15 +339,18 @@ func (d *PrefsDialog) populateColumns() {
 
 func (d *PrefsDialog) schedulePlayerSettingChange() {
 	// Cancel the currently scheduled callback, if any
+	d.playerSettingChangeMutex.Lock()
+	defer d.playerSettingChangeMutex.Unlock()
 	if d.playerSettingChangeTimer != nil {
 		d.playerSettingChangeTimer.Stop()
 	}
+
 	// Schedule a new callback
 	d.playerSettingChangeTimer = time.AfterFunc(time.Second, func() {
-		util.WhenIdle("onPlayerSettingChanged()", func() {
-			d.playerSettingChangeTimer = nil
-			d.onPlayerSettingChanged()
-		})
+		d.playerSettingChangeMutex.Lock()
+		d.playerSettingChangeTimer = nil
+		d.playerSettingChangeMutex.Unlock()
+		util.WhenIdle("onPlayerSettingChanged()", d.onPlayerSettingChanged)
 	})
 }
 
