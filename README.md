@@ -7,20 +7,23 @@
 
 **Ymuse** is an easy, functional, and snappy GTK front-end (client) for [Music Player Daemon](https://www.musicpd.org/) written in Go.
 
-[![Ymuse screenshot](https://res.cloudinary.com/yktoo/image/upload/blog/jskaqgrbxzjyi7ofxetn.png)](https://res.cloudinary.com/yktoo/image/upload/blog/jskaqgrbxzjyi7ofxetn.png)
+[![Ymuse screenshot](https://res.cloudinary.com/yktoo/image/upload/blog/vx7vpdn1lrskop110ts6.png)](https://res.cloudinary.com/yktoo/image/upload/blog/vx7vpdn1lrskop110ts6.png)
 
 It supports library browsing and search, playlists, streams etc.
 
-[![Ymuse screenshot](https://res.cloudinary.com/yktoo/image/upload/blog/zqu4ugqg0bvlh2hvajst.png)](https://res.cloudinary.com/yktoo/image/upload/blog/zqu4ugqg0bvlh2hvajst.png)
+[![Ymuse screenshot](https://res.cloudinary.com/yktoo/image/upload/t_s320/blog/tyje15w0q4m48tf1d2wz.png)](https://res.cloudinary.com/yktoo/image/upload/blog/tyje15w0q4m48tf1d2wz.png)
+[![Ymuse screenshot](https://res.cloudinary.com/yktoo/image/upload/t_s320/blog/xpqgooxdhya2ij0hgfka.png)](https://res.cloudinary.com/yktoo/image/upload/blog/xpqgooxdhya2ij0hgfka.png)
+
+Have a look at the [Feature Tour video](https://youtu.be/FuO7QWOaS1A) for more details.
 
 ## Installing
 
 You can:
 
-* If your distribution supports snap packages: `sudo snap install ymuse`
+* If your distribution supports [snap packages](https://dashboard.snapcraft.io/snaps/ymuse/): `sudo snap install ymuse`
 * Otherwise, you can use a binary package from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
-## Building from the source
+## Building from source
 
 ### Requirements
 
@@ -52,7 +55,6 @@ See [COPYING](COPYING).
 ## TODO
 
 * Automated UI testing.
-* Displaying album artwork.
 * Drag’n’drop in the play queue.
 * More settings.
 * Multiple MPD connections support.
