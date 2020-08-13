@@ -20,7 +20,7 @@ Have a look at the [Feature Tour video](https://youtu.be/FuO7QWOaS1A) for more d
 
 You can:
 
-* If your distribution supports [snap packages](https://dashboard.snapcraft.io/snaps/ymuse/): `sudo snap install ymuse`
+* If your distribution supports [snap packages](https://snapcraft.io/ymuse): `sudo snap install ymuse`
 * Otherwise, you can use a binary package from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
 ## Building from source
