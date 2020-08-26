@@ -32,11 +32,21 @@ You can:
 ### Getting started
 
 1. [Install Go](https://golang.org/doc/install)
-2. Clone the source and compile
+2. Make sure you have the following dependencies installed:
+   * `libc6`
+   * `libgtk-3-0`
+3. Clone the source and compile:
 ```bash
 git clone https://github.com/yktoo/ymuse.git
+cd ymuse
 go generate
 go build
+```
+4. Copy over the icons and localisations:
+```bash
+sudo cp -r resources/icons/* /usr/share/icons/
+sudo cp -r resources/i18n/generated/* /usr/share/locale/
+sudo update-icon-caches /usr/share/icons/hicolor/*
 ```
 
 This will create the application executable `ymuse` in the project root directory, which you can run straight away.

@@ -68,7 +68,7 @@ nfpms:
     conflicts:
     bindir: /usr/bin
     files:
-        "resources/icons/**/*": "/usr/share/icons"
+        "resources/icons/**/*": "/usr/share/icons/"
         "resources/*.desktop": "/usr/share/applications/"
         "resources/i18n/generated/**/*": "/usr/share/locale/"
     scripts:
