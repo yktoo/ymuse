@@ -3,7 +3,7 @@ language: go
 dist: bionic
 
 go:
-    - 1.14.x
+    - 1.14.7
 
 go_import_path: github.com/yktoo/ymuse
 
