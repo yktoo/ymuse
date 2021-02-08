@@ -83,6 +83,7 @@ type Config struct {
 	MpdAutoConnect         bool         // Whether to automatically connect to MPD on startup
 	MpdAutoReconnect       bool         // Whether to automatically reconnect to MPD after connection is lost
 	QueueColumns           []ColumnSpec // Displayed queue columns
+	QueueToolbar           bool         // Whether the queue toolbar is visible
 	DefaultSortAttrID      int          // ID of MPD attribute used as a default for queue sorting
 	TrackDefaultReplace    bool         // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool         // Whether the default action for double-clicking a playlist is replace rather than append
@@ -132,6 +133,7 @@ func newConfig() *Config {
 			{ID: MTAttrLength},
 			{ID: MTAttrGenre},
 		},
+		QueueToolbar:           true,
 		DefaultSortAttrID:      MTAttrPath,
 		TrackDefaultReplace:    false,
 		PlaylistDefaultReplace: true,

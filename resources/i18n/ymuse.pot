@@ -573,6 +573,9 @@ msgstr ""
 msgid "Show genre in Library"
 msgstr ""
 
+msgid "Show toolbar"
+msgstr ""
+
 msgid "Shuffle mode"
 msgstr ""
 

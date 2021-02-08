@@ -49,6 +49,7 @@ type PrefsDialog struct {
 	MpdAutoConnectCheckButton   *gtk.CheckButton
 	MpdAutoReconnectCheckButton *gtk.CheckButton
 	// Interface page widgets
+	QueueToolbarCheckButton            *gtk.CheckButton
 	LibraryDefaultReplaceRadioButton   *gtk.RadioButton
 	LibraryDefaultAppendRadioButton    *gtk.RadioButton
 	PlaylistsDefaultReplaceRadioButton *gtk.RadioButton
@@ -129,6 +130,7 @@ func (d *PrefsDialog) onMap() {
 	d.MpdAutoReconnectCheckButton.SetActive(cfg.MpdAutoReconnect)
 	d.updateGeneralWidgets()
 	// Interface page
+	d.QueueToolbarCheckButton.SetActive(cfg.QueueToolbar)
 	d.LibraryDefaultReplaceRadioButton.SetActive(cfg.TrackDefaultReplace)
 	d.LibraryDefaultAppendRadioButton.SetActive(!cfg.TrackDefaultReplace)
 	d.PlaylistsDefaultReplaceRadioButton.SetActive(cfg.PlaylistDefaultReplace)
@@ -293,12 +295,15 @@ func (d *PrefsDialog) onSettingChange() {
 	cfg.MpdAutoReconnect = d.MpdAutoReconnectCheckButton.GetActive()
 	d.updateGeneralWidgets()
 	// Interface page
+	if b := d.QueueToolbarCheckButton.GetActive(); b != cfg.QueueToolbar {
+		cfg.QueueToolbar = b
+		d.schedulePlayerSettingChange()
+	}
 	cfg.TrackDefaultReplace = d.LibraryDefaultReplaceRadioButton.GetActive()
 	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
 	cfg.StreamDefaultReplace = d.StreamsDefaultReplaceRadioButton.GetActive()
 
-	b := d.PlayerShowAlbumArtCheckButton.GetActive()
-	if b != cfg.PlayerAlbumArt {
+	if b := d.PlayerShowAlbumArtCheckButton.GetActive(); b != cfg.PlayerAlbumArt {
 		cfg.PlayerAlbumArt = b
 		d.schedulePlayerSettingChange()
 	}

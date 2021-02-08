@@ -56,6 +56,7 @@ type MainWindow struct {
 	AlbumArtworkImage      *gtk.Image
 	// Queue widgets
 	QueueBox                         *gtk.Box
+	QueueToolbar                     *gtk.Toolbar
 	QueueInfoLabel                   *gtk.Label
 	QueueTreeView                    *gtk.TreeView
 	QueueSortPopoverMenu             *gtk.PopoverMenu
@@ -733,13 +734,18 @@ func (w *MainWindow) applyLibrarySelection(replace triBool) {
 
 // applyPlayerSettings compiles the player title template and updates the player
 func (w *MainWindow) applyPlayerSettings() {
+	// Apply toolbar setting
+	cfg := config.GetConfig()
+	w.QueueToolbar.SetVisible(cfg.QueueToolbar)
+
+	// Compile and apply the track title template
 	tmpl, err := template.New("playerTitle").
 		Funcs(template.FuncMap{
 			"default":  util.Default,
 			"dirname":  path.Dir,
 			"basename": path.Base,
 		}).
-		Parse(config.GetConfig().PlayerTitleTemplate)
+		Parse(cfg.PlayerTitleTemplate)
 	if errCheck(err, "Template parse error") {
 		w.playerTitleTemplate = template.Must(
 			template.New("error").Parse("<span foreground=\"red\">[" + glib.Local("Player title template error, check log") + "]</span>"))
