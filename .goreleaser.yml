@@ -67,10 +67,13 @@ nfpms:
     suggests:
     conflicts:
     bindir: /usr/bin
-    files:
-        "resources/icons/**/*": "/usr/share/icons/"
-        "resources/*.desktop": "/usr/share/applications/"
-        "resources/i18n/generated/**/*": "/usr/share/locale/"
+    contents:
+        - src: "resources/icons/**/*"
+          dst: "/usr/share/icons/"
+        - src: "resources/*.desktop"
+          dst: "/usr/share/applications/"
+        - src: "resources/i18n/generated/**/*"
+          dst: "/usr/share/locale/"
     scripts:
         postinstall: "resources/scripts/postinst"
         postremove:  "resources/scripts/postrm"
