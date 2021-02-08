@@ -28,7 +28,7 @@ You can:
 
 ### Requirements
 
-* Go 1.14+
+* Go 1.15+
 
 ### Getting started
 
