@@ -497,18 +497,21 @@ func (w *MainWindow) onQueueTreeViewColClicked(col *gtk.TreeViewColumn, index in
 	w.queueSort(attr, descending)
 }
 
-func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Event) {
+func (w *MainWindow) onQueueTreeViewButtonPress(_ *gtk.TreeView, event *gdk.Event) bool {
 	switch btn := gdk.EventButtonNewFromEvent(event); btn.Type() {
 	// Mouse click
 	case gdk.EVENT_BUTTON_PRESS:
 		// Right click
 		if btn.Button() == 3 {
 			w.QueueMenu.PopupAtPointer(event)
+			// Stop event propagation
+			return true
 		}
 	// Double click
 	case gdk.EVENT_DOUBLE_BUTTON_PRESS:
 		w.applyQueueSelection()
 	}
+	return false
 }
 
 func (w *MainWindow) onQueueTreeViewKeyPress(_ *gtk.TreeView, event *gdk.Event) {
