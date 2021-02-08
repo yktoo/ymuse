@@ -51,6 +51,8 @@ type MainWindow struct {
 	RandomButton           *gtk.ToggleToolButton
 	RepeatButton           *gtk.ToggleToolButton
 	ConsumeButton          *gtk.ToggleToolButton
+	VolumeButton           *gtk.VolumeButton
+	VolumeAdjustment       *gtk.Adjustment
 	PlayPositionScale      *gtk.Scale
 	PlayPositionAdjustment *gtk.Adjustment
 	AlbumArtworkImage      *gtk.Image
@@ -159,6 +161,7 @@ type MainWindow struct {
 	playerTitleTemplate      *template.Template // Compiled template for player's track title
 	playerCurrentAlbumArtUri string             // URI of the current player's album art
 
+	volumeUpdating  bool // Volume button update (initiated by an MPD event) flag
 	playPosUpdating bool // Play position manual update flag
 	optionsUpdating bool // Options update flag
 	addingStream    bool // Whether the property popover is open to add a stream (rather than edit an existing one)
@@ -227,6 +230,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_StreamsListBox_selectionChange":            w.updateStreamsActions,
 		"on_StreamPropsChanged":                        w.onStreamPropsChanged,
 		"on_QueueSavePopoverMenu_validate":             w.onQueueSavePopoverValidate,
+		"on_VolumeButton_valueChanged":                 w.onVolumeValueChanged,
 		"on_PlayPositionScale_buttonEvent":             w.onPlayPositionButtonEvent,
 		"on_PlayPositionScale_valueChanged":            w.updatePlayerSeekBar,
 		"on_QueueNowPlayingMenuItem_activate":          w.updateQueueNowPlaying,
@@ -291,6 +295,8 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 	switch subsystem {
 	case "database", "update":
 		util.WhenIdle("updateLibrary()", w.updateLibrary)
+	case "mixer":
+		util.WhenIdle("updateVolume()", w.updateVolume)
 	case "options":
 		util.WhenIdle("updateOptions()", w.updateOptions)
 	case "player":
@@ -674,6 +680,16 @@ func (w *MainWindow) onStreamPropsChanged() {
 	w.aStreamPropsApply.SetEnabled(
 		util.EntryText(w.StreamPropsNameEntry, "") != "" &&
 			util.EntryText(w.StreamPropsUriEntry, "") != "")
+}
+
+func (w *MainWindow) onVolumeValueChanged() {
+	if !w.volumeUpdating {
+		vol := int(w.VolumeAdjustment.GetValue())
+		log.Debugf("Adjusting volume to %d", vol)
+		w.connector.IfConnected(func(client *mpd.Client) {
+			errCheck(client.SetVolume(vol), "SetVolume() failed")
+		})
+	}
 }
 
 // about shows the application's about dialog
@@ -1734,6 +1750,7 @@ func (w *MainWindow) updateAll() {
 	w.updateLibraryActions()
 	w.updateOptions()
 	w.updatePlayer()
+	w.updateVolume()
 }
 
 // updateLibrary updates the current library list contents
@@ -2516,5 +2533,19 @@ func (w *MainWindow) updateStyle() {
 		if w.connector != nil {
 			w.updateQueueNowPlaying()
 		}
+	}
+}
+
+// updateVolume synchronises the volume scale position to the current MPD volume
+func (w *MainWindow) updateVolume() {
+	// Update the volume button's state
+	connected, _ := w.connector.ConnectStatus()
+	w.VolumeButton.SetSensitive(connected)
+
+	// The update comes from MPD: adjust the volume bar position if there's a connection
+	if vol := util.AtoiDef(w.connector.Status()["volume"], -1); vol >= 0 && vol <= 100 {
+		w.volumeUpdating = true
+		w.VolumeAdjustment.SetValue(float64(vol))
+		w.volumeUpdating = false
 	}
 }
