@@ -220,17 +220,19 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 			c.mpdClientConnecting = false
 			c.mpdClient = client
 			c.mpdClientMutex.Unlock()
+			log.Info("Successfully connected to MPD")
 
 			// Start the watcher
 			go func() { c.chWatcherStart <- true }()
 		} else {
 			connected = false
-			err = errors.Errorf("Status() failed: %v", err)
+			err = errors.Errorf("Status() after dial failed: %v", err)
 			// Disconnect since we're not "fully connected"
 			errCheck(client.Close(), "doConnect(): Close() failed")
 		}
 
 	} else {
+		connected = false
 		// We didn't connect. Validate the existing connection, if any
 		c.IfConnected(func(client *mpd.Client) {
 			wasConnected = true
@@ -243,6 +245,8 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 
 		// Connection lost
 		if wasConnected && !connected {
+			log.Warning("Connection to MPD lost")
+
 			// Remove client connection
 			c.mpdClientMutex.Lock()
 			c.mpdClientConnecting = false
@@ -276,11 +280,6 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 		// Notify the heartbeat callback
 		c.onHeartbeat()
 	}
-}
-
-// stopWatching asks the watcher to suspend (quit == false) or stop entirely (quit == true)
-func (c *Connector) stopWatching(quit bool) {
-	go func() { c.chWatcherStop <- quit }()
 }
 
 // watch starts watching MPD subsystem changes
@@ -340,7 +339,7 @@ func (c *Connector) watch() {
 
 		// Watcher's error
 		case err := <-errorChannel:
-			log.Warning("Watcher error", err)
+			log.Debug("Watcher error", err)
 
 		// Request to quit
 		case doQuit := <-c.chWatcherStop:
