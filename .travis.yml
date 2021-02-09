@@ -3,7 +3,7 @@ language: go
 dist: focal
 
 go:
-    - 1.15.6
+    - 1.15.8
 
 go_import_path: github.com/yktoo/ymuse
 
