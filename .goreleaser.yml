@@ -68,8 +68,8 @@ nfpms:
     conflicts:
     bindir: /usr/bin
     contents:
-        - src: "resources/icons/**/*"
-          dst: "/usr/share/icons/"
+        - src: "resources/icons/hicolor/**/*"
+          dst: "/usr/share/icons/hicolor/"
         - src: "resources/*.desktop"
           dst: "/usr/share/applications/"
         - src: "resources/i18n/generated/**/*"
