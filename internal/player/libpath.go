@@ -240,7 +240,7 @@ func (p *LibraryPath) SetLength(length int) {
 
 // Unmarshal deserialises the path from a string
 func (p *LibraryPath) Unmarshal(s string) error {
-	// Iterate tab-separate serialised elements
+	// Iterate serialised elements
 	var elements []LibraryPathElement
 	for _, s := range strings.Split(s, pathElementSeparator) {
 		element, err := UnmarshalLibPathElement(s)
