@@ -159,3 +159,26 @@ func TestDefault(t *testing.T) {
 		})
 	}
 }
+
+func TestIsStreamURI(t *testing.T) {
+	tests := []struct {
+		name string
+		uri  string
+		want bool
+	}{
+		{"empty is no stream", "", false},
+		{"Name is no stream", "Name", false},
+		{"http: is no stream", "http:", false},
+		{"https: is no stream", "https:", false},
+		{"http:// not at begin is no stream", "[http://whatev.er]", false},
+		{"http-URL is a stream", "http://example.com", true},
+		{"https-URL is a stream", "https://www.musicpd.org/", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsStreamURI(tt.uri); got != tt.want {
+				t.Errorf("IsStreamURI() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -56,8 +56,10 @@ type PrefsDialog struct {
 	PlaylistsDefaultAppendRadioButton  *gtk.RadioButton
 	StreamsDefaultReplaceRadioButton   *gtk.RadioButton
 	StreamsDefaultAppendRadioButton    *gtk.RadioButton
-	PlayerShowAlbumArtCheckButton      *gtk.CheckButton
-	PlayerTitleTemplateTextBuffer      *gtk.TextBuffer
+	// Player page widgets
+	PlayerShowAlbumArtTracksCheckButton  *gtk.CheckButton
+	PlayerShowAlbumArtStreamsCheckButton *gtk.CheckButton
+	PlayerTitleTemplateTextBuffer        *gtk.TextBuffer
 	// Columns page widgets
 	ColumnsListBox *gtk.ListBox
 
@@ -137,7 +139,8 @@ func (d *PrefsDialog) onMap() {
 	d.PlaylistsDefaultAppendRadioButton.SetActive(!cfg.PlaylistDefaultReplace)
 	d.StreamsDefaultReplaceRadioButton.SetActive(cfg.StreamDefaultReplace)
 	d.StreamsDefaultAppendRadioButton.SetActive(!cfg.StreamDefaultReplace)
-	d.PlayerShowAlbumArtCheckButton.SetActive(cfg.PlayerAlbumArt)
+	d.PlayerShowAlbumArtTracksCheckButton.SetActive(cfg.PlayerAlbumArtTracks)
+	d.PlayerShowAlbumArtStreamsCheckButton.SetActive(cfg.PlayerAlbumArtStreams)
 	d.PlayerTitleTemplateTextBuffer.SetText(cfg.PlayerTitleTemplate)
 	// Columns page
 	d.populateColumns()
@@ -303,8 +306,12 @@ func (d *PrefsDialog) onSettingChange() {
 	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
 	cfg.StreamDefaultReplace = d.StreamsDefaultReplaceRadioButton.GetActive()
 
-	if b := d.PlayerShowAlbumArtCheckButton.GetActive(); b != cfg.PlayerAlbumArt {
-		cfg.PlayerAlbumArt = b
+	if b := d.PlayerShowAlbumArtTracksCheckButton.GetActive(); b != cfg.PlayerAlbumArtTracks {
+		cfg.PlayerAlbumArtTracks = b
+		d.schedulePlayerSettingChange()
+	}
+	if b := d.PlayerShowAlbumArtStreamsCheckButton.GetActive(); b != cfg.PlayerAlbumArtStreams {
+		cfg.PlayerAlbumArtStreams = b
 		d.schedulePlayerSettingChange()
 	}
 	if s, err := util.GetTextBufferText(d.PlayerTitleTemplateTextBuffer); !errCheck(err, "util.GetTextBufferText() failed") {

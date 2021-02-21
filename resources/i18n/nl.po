@@ -89,6 +89,9 @@ msgstr "<b>Speler</b>"
 msgid "<b>Playlists</b>"
 msgstr "<b>Afspeellijsten</b>"
 
+msgid "<b>Queue</b>"
+msgstr "<b>Wachtrij</b>"
+
 msgid "<b>Streams</b>"
 msgstr "<b>Streams</b>"
 
@@ -112,6 +115,9 @@ msgstr "Toevoegen"
 
 msgid "Album (for sorting)"
 msgstr "Album (voor het sorteren)"
+
+msgid "Album art:"
+msgstr "Albumhoes:"
 
 msgid "Album artist (for sorting)"
 msgstr "Album artiest (voor het sorteren)"
@@ -575,17 +581,23 @@ msgstr "Doorzoeken…"
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Selecteer kolommen om weer te geven in de wachtrij, en hun volgorde."
 
-msgid "Show album art"
-msgstr "Albumhoes tonen"
-
 msgid "Show album in Library"
 msgstr "Album in Mediatheek tonen"
 
 msgid "Show artist in Library"
 msgstr "Artiest in Mediatheek tonen"
 
+msgid "Show for streams"
+msgstr "Tonen voor streams"
+
+msgid "Show for tracks"
+msgstr "Tonen voor tracks"
+
 msgid "Show genre in Library"
 msgstr "Genre in Mediatheek tonen"
+
+msgid "Show toolbar"
+msgstr "Werkbalk tonen"
 
 msgid "Shuffle mode"
 msgstr "Willekeurigmodus"
@@ -657,7 +669,7 @@ msgid "Total playing time:"
 msgstr "Totale afspeelduur:"
 
 msgid "Track attribute(s) to search"
-msgstr "Trackseigenschappen om te zoeken"
+msgstr "Trackeigenschappen om te zoeken"
 
 msgid "Track length"
 msgstr "Tracklengte"

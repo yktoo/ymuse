@@ -89,7 +89,8 @@ type Config struct {
 	PlaylistDefaultReplace bool         // Whether the default action for double-clicking a playlist is replace rather than append
 	StreamDefaultReplace   bool         // Whether the default action for double-clicking a stream is replace rather than append
 	PlayerTitleTemplate    string       // Track's title formatting template for the player
-	PlayerAlbumArt         bool         // Whether to display the current track's album art in the player
+	PlayerAlbumArtTracks   bool         // Whether to display the current track's album art in the player
+	PlayerAlbumArtStreams  bool         // Whether to display the current stream's album art in the player
 	MaxSearchResults       int          // Maximum number of displayed search results
 	Streams                []StreamSpec // Registered stream specifications
 	LibraryPath            string       // Last selected library path
@@ -150,8 +151,9 @@ func newConfig() *Config {
 				"{{- else -}}\n" +
 				"<i>(no track)</i>\n" +
 				"{{- end -}}\n"),
-		PlayerAlbumArt:   true,
-		MaxSearchResults: 500,
+		PlayerAlbumArtTracks:  true,
+		PlayerAlbumArtStreams: false,
+		MaxSearchResults:      500,
 		Streams: []StreamSpec{
 			{Name: "BBC World News", URI: "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws"},
 		},

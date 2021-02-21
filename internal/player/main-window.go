@@ -2096,30 +2096,37 @@ func (w *MainWindow) updatePlayer() {
 func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 	// Check if the album art is to be shown
 	show := false
-	if uri != "" && config.GetConfig().PlayerAlbumArt {
-		// Avoid updating album art if there's no change in the URI
-		if w.playerCurrentAlbumArtUri == uri {
-			show = true
-		} else {
-			// Try to fetch the album art
-			var albumArt []byte
-			w.connector.IfConnected(func(client *mpd.Client) {
-				var err error
-				if albumArt, err = client.AlbumArt(uri); err != nil {
-					albumArt = nil
-				}
-			})
+	if uri != "" {
+		isStream := util.IsStreamURI(uri)
+		cfg := config.GetConfig()
+		if isStream && cfg.PlayerAlbumArtStreams || !isStream && cfg.PlayerAlbumArtTracks {
+			// Avoid updating album art if there's no change in the URI
+			if w.playerCurrentAlbumArtUri == uri {
+				show = true
+			} else {
+				// Try to fetch the album art
+				var albumArt []byte
+				log.Debugf("Fetching album art for %s", uri)
+				w.connector.IfConnected(func(client *mpd.Client) {
+					var err error
+					if albumArt, err = client.AlbumArt(uri); err != nil {
+						log.Debugf("Failed to obtain album art: %v", err)
+						albumArt = nil
+					}
+				})
 
-			// If succeeded
-			if len(albumArt) > 0 {
-				// Make a pixbuf from the data bytes
-				if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
-					// Downscale the image if needed
-					if px, err = px.ScaleSimple(playerArtworkSize, playerArtworkSize, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
-						w.AlbumArtworkImage.SetFromPixbuf(px)
-						show = true
-						// Save the last used URI
-						w.playerCurrentAlbumArtUri = uri
+				// If succeeded
+				if len(albumArt) > 0 {
+					log.Debugf("Fetched album art: %d bytes", len(albumArt))
+					// Make a pixbuf from the data bytes
+					if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
+						// Downscale the image if needed
+						if px, err = px.ScaleSimple(playerArtworkSize, playerArtworkSize, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
+							w.AlbumArtworkImage.SetFromPixbuf(px)
+							show = true
+							// Save the last used URI
+							w.playerCurrentAlbumArtUri = uri
+						}
 					}
 				}
 			}
@@ -2246,7 +2253,7 @@ func (w *MainWindow) updateQueue() {
 
 		// Add the "artificial" column values
 		iconName := "ymuse-audio-file"
-		if uri, ok := a["file"]; ok && (strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://")) {
+		if uri, ok := a["file"]; ok && util.IsStreamURI(uri) {
 			iconName = "ymuse-stream"
 		}
 		rowData[config.QueueColumnIcon] = iconName

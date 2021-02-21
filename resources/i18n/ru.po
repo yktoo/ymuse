@@ -93,6 +93,9 @@ msgstr "<b>Плеер</b>"
 msgid "<b>Playlists</b>"
 msgstr "<b>Плейлисты</b>"
 
+msgid "<b>Queue</b>"
+msgstr "<b>Очередь</b>"
+
 msgid "<b>Streams</b>"
 msgstr "<b>Потоки</b>"
 
@@ -116,6 +119,9 @@ msgstr "Добавить"
 
 msgid "Album (for sorting)"
 msgstr "Альбом (для сортировки)"
+
+msgid "Album art:"
+msgstr "Обложка альбома:"
 
 msgid "Album artist (for sorting)"
 msgstr "Исполнитель альбома (для сортировки)"
@@ -581,17 +587,23 @@ msgstr "Поиск…"
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Выберите столбцы для отображения и их порядок."
 
-msgid "Show album art"
-msgstr "Показывать обложку альбома"
-
 msgid "Show album in Library"
 msgstr "Показать альбом в библиотеке"
 
 msgid "Show artist in Library"
 msgstr "Показать исполнителя в библиотеке"
 
+msgid "Show for streams"
+msgstr "Показывать для потоков"
+
+msgid "Show for tracks"
+msgstr "Показывать для треков"
+
 msgid "Show genre in Library"
 msgstr "Показать жанр в библиотеке"
+
+msgid "Show toolbar"
+msgstr "Отображать панель инструментов"
 
 msgid "Shuffle mode"
 msgstr "Режим случайного порядка"

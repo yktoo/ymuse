@@ -20,6 +20,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"html/template"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -82,4 +83,9 @@ func Default(def string, value interface{}) string {
 		return fmt.Sprint(value)
 	}
 	return def
+}
+
+// IsStreamURI returns whether the given URI refers to an Internet stream
+func IsStreamURI(uri string) bool {
+	return strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://")
 }

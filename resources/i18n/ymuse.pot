@@ -75,6 +75,9 @@ msgstr ""
 msgid "<b>Playlists</b>"
 msgstr ""
 
+msgid "<b>Queue</b>"
+msgstr ""
+
 msgid "<b>Streams</b>"
 msgstr ""
 
@@ -97,6 +100,9 @@ msgid "Add"
 msgstr ""
 
 msgid "Album (for sorting)"
+msgstr ""
+
+msgid "Album art:"
 msgstr ""
 
 msgid "Album artist (for sorting)"
@@ -561,13 +567,16 @@ msgstr ""
 msgid "Select columns to display in the play queue, and their order."
 msgstr ""
 
-msgid "Show album art"
-msgstr ""
-
 msgid "Show album in Library"
 msgstr ""
 
 msgid "Show artist in Library"
+msgstr ""
+
+msgid "Show for streams"
+msgstr ""
+
+msgid "Show for tracks"
 msgstr ""
 
 msgid "Show genre in Library"
