@@ -78,47 +78,6 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">Queue</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Play selection</property>
-                <property name="accelerator">Return</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Toggle play/pause</property>
-                <property name="accelerator">space</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Delete selected</property>
-                <property name="accelerator">Delete</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Now playing</property>
-                <property name="accelerator">&lt;ctrl&gt;J</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Open Filter bar</property>
-                <property name="accelerator">&lt;ctrl&gt;F</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Shuffle the queue</property>
-                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;R</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes">Player</property>
             <child>
               <object class="GtkShortcutsShortcut">
@@ -160,6 +119,105 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Toggle consume mode</property>
                 <property name="accelerator">&lt;ctrl&gt;N</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Queue</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Play selection</property>
+                <property name="accelerator">Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Toggle play/pause</property>
+                <property name="accelerator">space</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Delete selected</property>
+                <property name="accelerator">Delete</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Now playing</property>
+                <property name="accelerator">&lt;ctrl&gt;J</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Open Filter bar</property>
+                <property name="accelerator">&lt;ctrl&gt;F</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Shuffle the queue</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;R</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Library</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Default action (set in Preferences)</property>
+                <property name="accelerator">Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Replace queue with selection</property>
+                <property name="accelerator">&lt;ctrl&gt;Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Append selection to queue</property>
+                <property name="accelerator">&lt;shift&gt;Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Go a level up</property>
+                <property name="accelerator">BackSpace</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Open Search bar</property>
+                <property name="accelerator">&lt;ctrl&gt;F</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Streams</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Default action (set in Preferences)</property>
+                <property name="accelerator">Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Replace queue with selection</property>
+                <property name="accelerator">&lt;ctrl&gt;Return</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Append selection to queue</property>
+                <property name="accelerator">&lt;shift&gt;Return</property>
               </object>
             </child>
           </object>

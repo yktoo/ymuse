@@ -143,6 +143,9 @@ msgstr "Albums"
 msgid "and"
 msgstr "en"
 
+msgid "Append selection to queue"
+msgstr "Geselecteerde items aan wachtrij toevoegen"
+
 msgid "Append to the queue"
 msgstr "Aan de wachtrij toevoegen"
 
@@ -223,6 +226,9 @@ msgstr "dagen"
 
 msgid "Decoder plugins"
 msgstr "Decoder-plug-ins"
+
+msgid "Default action (set in Preferences)"
+msgstr "Default actie (gezet in Instellingen)"
 
 msgid "Delete playlist"
 msgstr "Afspeellijst verwijderen"
@@ -368,6 +374,9 @@ msgstr "Genre"
 msgid "Genres"
 msgstr "Genres"
 
+msgid "Go a level up"
+msgstr "Naar niveau omhoog"
+
 msgid "Grouping"
 msgstr "Groepering"
 
@@ -476,6 +485,9 @@ msgstr "Eén track"
 msgid "Open Filter bar"
 msgstr "Filterbalk openen"
 
+msgid "Open Search bar"
+msgstr "Zoekbalk openen"
+
 msgid "Password:"
 msgstr "Wachtwoord:"
 
@@ -559,6 +571,9 @@ msgstr "Herhalen"
 
 msgid "Replace playlist"
 msgstr "Afspeellijst vervangen"
+
+msgid "Replace queue with selection"
+msgstr "Wachtrij door geselecteerde items vervangen"
 
 msgid "Replace the queue"
 msgstr "De wachtrij vervangen"

@@ -147,6 +147,9 @@ msgstr "Альбомы"
 msgid "and"
 msgstr "и"
 
+msgid "Append selection to queue"
+msgstr "Добавить выделенное к очереди"
+
 msgid "Append to the queue"
 msgstr "Добавить в конец очереди"
 
@@ -227,6 +230,9 @@ msgstr "дней"
 
 msgid "Decoder plugins"
 msgstr "Плагины для декодирования"
+
+msgid "Default action (set in Preferences)"
+msgstr "Действие по умолчанию (см. в Настройках)"
 
 msgid "Delete playlist"
 msgstr "Удалить плейлист"
@@ -372,6 +378,9 @@ msgstr "Жанр"
 msgid "Genres"
 msgstr "Жанры"
 
+msgid "Go a level up"
+msgstr "Перейти на уровень выше"
+
 msgid "Grouping"
 msgstr "Группировка"
 
@@ -482,6 +491,9 @@ msgstr "Один трек"
 msgid "Open Filter bar"
 msgstr "Открыть панель фильтра"
 
+msgid "Open Search bar"
+msgstr "Открыть панель поиска"
+
 msgid "Password:"
 msgstr "Пароль:"
 
@@ -565,6 +577,9 @@ msgstr "Повтор"
 
 msgid "Replace playlist"
 msgstr "Заменить плейлист"
+
+msgid "Replace queue with selection"
+msgstr "Заменить очередь на выделенное"
 
 msgid "Replace the queue"
 msgstr "Заменить очередь"
