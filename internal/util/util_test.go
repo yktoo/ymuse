@@ -16,7 +16,9 @@
 package util
 
 import (
+	"github.com/fhs/gompd/v2/mpd"
 	"math"
+	"reflect"
 	"testing"
 )
 
@@ -178,6 +180,40 @@ func TestIsStreamURI(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsStreamURI(tt.uri); got != tt.want {
 				t.Errorf("IsStreamURI() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMapAttrsToSlice(t *testing.T) {
+	type args struct {
+		attrs []mpd.Attrs
+		attr  string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{"empty list", args{[]mpd.Attrs{}, "file"}, []string{}},
+		{"single element", args{[]mpd.Attrs{{"file": "foo"}}, "file"}, []string{"foo"}},
+		{"missing attribute", args{[]mpd.Attrs{{"whoppa": "hippa"}}, "file"}, []string{""}},
+		{
+			"multiple elements",
+			args{
+				[]mpd.Attrs{
+					{"artist": "bar", "album": "baz", "file": "foo"},
+					{"artist": "X-None", "file": "whoopsie"},
+					{"artist": "Blase", "file": "snap"},
+					{"album": "There"},
+				},
+				"file"},
+			[]string{"foo", "whoopsie", "snap", ""}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MapAttrsToSlice(tt.args.attrs, tt.args.attr); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MapAttrsToSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}

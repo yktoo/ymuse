@@ -117,6 +117,15 @@ msgstr "Добавить новый поток"
 msgid "Add"
 msgstr "Добавить"
 
+msgid "Add the selected item to a playlist"
+msgstr "Добавить выделенный элемент к плейлисту"
+
+msgid "Add to ▾"
+msgstr "Добавить к ▾"
+
+msgid "Add to playlist…"
+msgstr "Добавить к плейлисту…"
+
 msgid "Album (for sorting)"
 msgstr "Альбом (для сортировки)"
 
@@ -260,6 +269,9 @@ msgstr "Редактировать"
 
 msgid "Everywhere"
 msgstr "Везде"
+
+msgid "Failed to add item to the playlist"
+msgstr "Не удалось добавить элемент к плейлисту"
 
 msgid "Failed to add item to the queue"
 msgstr "Не удалось добавить элемент к очереди"
@@ -528,7 +540,7 @@ msgid "Random"
 msgstr "Вразброс"
 
 msgid "Reconnect now"
-msgstr "Подключиться заново сейчас"
+msgstr "Переподключиться сейчас"
 
 msgid "Release date: %s"
 msgstr "Дата выпуска: %s"

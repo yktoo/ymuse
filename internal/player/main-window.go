@@ -84,22 +84,25 @@ type MainWindow struct {
 	QueueSavePlaylistNameEntry       *gtk.Entry
 	QueueSaveSelectedOnlyCheckButton *gtk.CheckButton
 	// Library widgets
-	LibraryUpdatePopoverMenu  *gtk.PopoverMenu
-	LibraryBox                *gtk.Box
-	LibraryPathBox            *gtk.Box
-	LibrarySearchBox          *gtk.Box
-	LibrarySearchToolButton   *gtk.ToggleToolButton
-	LibraryToolStack          *gtk.Stack
-	LibrarySearchEntry        *gtk.SearchEntry
-	LibrarySearchAttrComboBox *gtk.ComboBoxText
-	LibraryListBox            *gtk.ListBox
-	LibraryInfoLabel          *gtk.Label
-	LibraryMenu               *gtk.Menu
-	LibraryAppendMenuItem     *gtk.MenuItem
-	LibraryReplaceMenuItem    *gtk.MenuItem
-	LibraryRenameMenuItem     *gtk.MenuItem
-	LibraryDeleteMenuItem     *gtk.MenuItem
-	LibraryUpdateSelMenuItem  *gtk.MenuItem
+	LibraryUpdatePopoverMenu        *gtk.PopoverMenu
+	LibraryAddToPlaylistPopoverMenu *gtk.PopoverMenu
+	LibraryAddToPlaylistBox         *gtk.Box
+	LibraryBox                      *gtk.Box
+	LibraryPathBox                  *gtk.Box
+	LibrarySearchBox                *gtk.Box
+	LibrarySearchToolButton         *gtk.ToggleToolButton
+	LibraryToolStack                *gtk.Stack
+	LibrarySearchEntry              *gtk.SearchEntry
+	LibrarySearchAttrComboBox       *gtk.ComboBoxText
+	LibraryListBox                  *gtk.ListBox
+	LibraryInfoLabel                *gtk.Label
+	LibraryMenu                     *gtk.Menu
+	LibraryAppendMenuItem           *gtk.MenuItem
+	LibraryReplaceMenuItem          *gtk.MenuItem
+	LibraryRenameMenuItem           *gtk.MenuItem
+	LibraryDeleteMenuItem           *gtk.MenuItem
+	LibraryUpdateSelMenuItem        *gtk.MenuItem
+	LibraryAddToPlaylistMenuItem    *gtk.MenuItem
 	// Streams widgets
 	StreamsBox             *gtk.Box
 	StreamsAddToolButton   *gtk.ToolButton
@@ -117,36 +120,37 @@ type MainWindow struct {
 	StreamPropsUriEntry    *gtk.Entry
 
 	// Actions
-	aMPDDisconnect    *glib.SimpleAction
-	aMPDInfo          *glib.SimpleAction
-	aQueueNowPlaying  *glib.SimpleAction
-	aQueueClear       *glib.SimpleAction
-	aQueueSort        *glib.SimpleAction
-	aQueueSortAsc     *glib.SimpleAction
-	aQueueSortDesc    *glib.SimpleAction
-	aQueueSortShuffle *glib.SimpleAction
-	aQueueDelete      *glib.SimpleAction
-	aQueueSave        *glib.SimpleAction
-	aQueueSaveReplace *glib.SimpleAction
-	aQueueSaveAppend  *glib.SimpleAction
-	aLibraryUpdate    *glib.SimpleAction
-	aLibraryUpdateAll *glib.SimpleAction
-	aLibraryUpdateSel *glib.SimpleAction
-	aLibraryRescanAll *glib.SimpleAction
-	aLibraryRescanSel *glib.SimpleAction
-	aLibraryRename    *glib.SimpleAction
-	aLibraryDelete    *glib.SimpleAction
-	aStreamAdd        *glib.SimpleAction
-	aStreamEdit       *glib.SimpleAction
-	aStreamDelete     *glib.SimpleAction
-	aStreamPropsApply *glib.SimpleAction
-	aPlayerPrevious   *glib.SimpleAction
-	aPlayerStop       *glib.SimpleAction
-	aPlayerPlayPause  *glib.SimpleAction
-	aPlayerNext       *glib.SimpleAction
-	aPlayerRandom     *glib.SimpleAction
-	aPlayerRepeat     *glib.SimpleAction
-	aPlayerConsume    *glib.SimpleAction
+	aMPDDisconnect        *glib.SimpleAction
+	aMPDInfo              *glib.SimpleAction
+	aQueueNowPlaying      *glib.SimpleAction
+	aQueueClear           *glib.SimpleAction
+	aQueueSort            *glib.SimpleAction
+	aQueueSortAsc         *glib.SimpleAction
+	aQueueSortDesc        *glib.SimpleAction
+	aQueueSortShuffle     *glib.SimpleAction
+	aQueueDelete          *glib.SimpleAction
+	aQueueSave            *glib.SimpleAction
+	aQueueSaveReplace     *glib.SimpleAction
+	aQueueSaveAppend      *glib.SimpleAction
+	aLibraryUpdate        *glib.SimpleAction
+	aLibraryUpdateAll     *glib.SimpleAction
+	aLibraryUpdateSel     *glib.SimpleAction
+	aLibraryRescanAll     *glib.SimpleAction
+	aLibraryRescanSel     *glib.SimpleAction
+	aLibraryRename        *glib.SimpleAction
+	aLibraryDelete        *glib.SimpleAction
+	aLibraryAddToPlaylist *glib.SimpleAction
+	aStreamAdd            *glib.SimpleAction
+	aStreamEdit           *glib.SimpleAction
+	aStreamDelete         *glib.SimpleAction
+	aStreamPropsApply     *glib.SimpleAction
+	aPlayerPrevious       *glib.SimpleAction
+	aPlayerStop           *glib.SimpleAction
+	aPlayerPlayPause      *glib.SimpleAction
+	aPlayerNext           *glib.SimpleAction
+	aPlayerRandom         *glib.SimpleAction
+	aPlayerRepeat         *glib.SimpleAction
+	aPlayerConsume        *glib.SimpleAction
 
 	// Colours
 	colourBgNormal string // Normal background colour
@@ -239,6 +243,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_QueueShowGenreInLibraryMenuItem_activate":  w.libraryShowGenreFromQueue,
 		"on_QueueClearMenuItem_activate":               w.queueClear,
 		"on_QueueDeleteMenuItem_activate":              w.queueDelete,
+		"on_LibraryAddToPlaylistMenuItem_activate":     w.libraryAddToPlaylist,
 		"on_LibraryAppendMenuItem_activate":            func() { w.applyLibrarySelection(tbFalse) },
 		"on_LibraryReplaceMenuItem_activate":           func() { w.applyLibrarySelection(tbTrue) },
 		"on_LibraryRenameMenuItem_activate":            w.libraryRename,
@@ -348,6 +353,57 @@ func (w *MainWindow) onDelete() {
 
 	// Disconnect from MPD
 	w.disconnect()
+}
+
+func (w *MainWindow) onLibraryAddToPlaylist(_ *gtk.ModelButton, playlist string) {
+	log.Debugf("MainWindow.onLibraryAddToPlaylist(%s)", playlist)
+
+	// Fetch the selected element, which must be playable
+	element := w.getSelectedLibraryElement()
+	if element == nil || !element.IsPlayable() {
+		return
+	}
+
+	// If it's a URI-enabled element
+	if uh, ok := element.(URIHolder); ok {
+		w.libraryAppendPlaylist(playlist, uh.URI())
+		return
+	}
+
+	// Playlist-enabled element
+	if ph, ok := element.(PlaylistHolder); ok {
+		var attrs []mpd.Attrs
+		var err error
+		w.connector.IfConnected(func(client *mpd.Client) {
+			attrs, err = client.PlaylistContents(ph.PlaylistName())
+		})
+		if w.errCheckDialog(err, glib.Local("Failed to add item to the playlist")) {
+			return
+		}
+
+		// Extract the URIs and append them to the playlist
+		w.libraryAppendPlaylist(playlist, util.MapAttrsToSlice(attrs, "file")...)
+		return
+	}
+
+	// Attribute-enabled path: extend the current path filter with the element and query the tracks
+	if filter := w.libPath.AsFilter(element); len(filter) > 0 {
+		var attrs []mpd.Attrs
+		var err error
+		w.connector.IfConnected(func(client *mpd.Client) {
+			attrs, err = client.Find(filter...)
+		})
+		if w.errCheckDialog(err, glib.Local("Failed to add item to the playlist")) {
+			return
+		}
+
+		// Extract the URIs and append them to the playlist
+		w.libraryAppendPlaylist(playlist, util.MapAttrsToSlice(attrs, "file")...)
+		return
+	}
+
+	// Oops
+	log.Errorf("element %T cannot be added to a playlist", element)
 }
 
 func (w *MainWindow) onLibraryListBoxButtonPress(_ *gtk.ListBox, event *gdk.Event) {
@@ -1033,6 +1089,7 @@ func (w *MainWindow) initLibraryWidgets() {
 	w.aLibraryRescanSel = w.addAction("library.rescan.selected", "", func() { w.libraryUpdate(true, true) })
 	w.aLibraryRename = w.addAction("library.rename", "", w.libraryRename)
 	w.aLibraryDelete = w.addAction("library.delete", "", w.libraryDelete)
+	w.aLibraryAddToPlaylist = w.addAction("library.add-to-playlist", "", w.libraryAddToPlaylist)
 	w.addAction("library.search.toggle", "", w.onLibrarySearchToggle)
 
 	// Create a library path instance
@@ -1123,6 +1180,49 @@ func (w *MainWindow) initWidgets() {
 	w.initLibraryWidgets()
 	w.initStreamsWidgets()
 	w.initPlayerWidgets()
+}
+
+// libraryAddToPlaylist shows a popover menu that allows to add the selected library element to a playlist
+func (w *MainWindow) libraryAddToPlaylist() {
+	// Clean up and repopulate the menu with playlists
+	util.ClearChildren(w.LibraryAddToPlaylistBox.Container)
+	for _, name := range w.connector.GetPlaylists() {
+		// Make a new button
+		btn, err := gtk.ModelButtonNew()
+		if errCheck(err, "ModelButtonNew() failed") {
+			return
+		}
+
+		// Set the text using a generic setter (due to https://github.com/gotk3/gotk3/issues/742)
+		errCheck(btn.Set("text", name), "Set(text) failed")
+
+		// Cannot bind to "activate" here as it's not triggered for Actionable widgets
+		if _, err = btn.Connect("clicked", w.onLibraryAddToPlaylist, name); errCheck(err, "Failed to connect clicked signal") {
+			return
+		}
+
+		// Add the button to the popover
+		w.LibraryAddToPlaylistBox.PackStart(btn, false, true, 0)
+	}
+
+	// Show the popover
+	w.LibraryAddToPlaylistBox.ShowAll()
+	w.LibraryAddToPlaylistPopoverMenu.Popup()
+}
+
+// libraryAppendPlaylist appends the provided URIs to a playlist with the given name
+func (w *MainWindow) libraryAppendPlaylist(name string, uris ...string) {
+	err := errors.New(glib.Local("Not connected to MPD"))
+	w.connector.IfConnected(func(client *mpd.Client) {
+		commands := client.BeginCommandList()
+		for _, uri := range uris {
+			commands.PlaylistAdd(name, uri)
+		}
+		err = commands.End()
+	})
+
+	// Check for error
+	w.errCheckDialog(err, glib.Local("Failed to add item to the playlist"))
 }
 
 // libraryDelete allows to delete the selected library element
@@ -1459,14 +1559,8 @@ func (w *MainWindow) queueLibraryElement(replace triBool, element LibraryPathEle
 			return
 		}
 
-		// Convert attrs to list of URIs
-		uris := make([]string, len(attrs))
-		for i, a := range attrs {
-			uris[i] = a["file"]
-		}
-
-		// Queue the URIs
-		w.queueURIs(replace, uris...)
+		// Convert attrs to list of URIs and queue them
+		w.queueURIs(replace, util.MapAttrsToSlice(attrs, "file")...)
 		return
 	}
 
@@ -1953,12 +2047,14 @@ func (w *MainWindow) updateLibraryActions() {
 	w.aLibraryRescanSel.SetEnabled(updatable)
 	w.aLibraryRename.SetEnabled(editable)
 	w.aLibraryDelete.SetEnabled(editable)
+	w.aLibraryAddToPlaylist.SetEnabled(playable)
 	// Menu items
 	w.LibraryAppendMenuItem.SetSensitive(playable)
 	w.LibraryReplaceMenuItem.SetSensitive(playable)
 	w.LibraryRenameMenuItem.SetSensitive(editable)
 	w.LibraryDeleteMenuItem.SetSensitive(editable)
 	w.LibraryUpdateSelMenuItem.SetSensitive(updatable)
+	w.LibraryAddToPlaylistMenuItem.SetSensitive(playable)
 }
 
 // updateLibraryPath updates the current library path selector

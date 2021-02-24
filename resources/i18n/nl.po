@@ -113,6 +113,15 @@ msgstr "Nieuwe stream toevoegen"
 msgid "Add"
 msgstr "Toevoegen"
 
+msgid "Add the selected item to a playlist"
+msgstr "Geselecteerd item aan een afspeellijst toevoegen"
+
+msgid "Add to ▾"
+msgstr "Toevoegen aan ▾"
+
+msgid "Add to playlist…"
+msgstr "Toevoegen aan afspeellijst…"
+
 msgid "Album (for sorting)"
 msgstr "Album (voor het sorteren)"
 
@@ -256,6 +265,9 @@ msgstr "Bijwerken"
 
 msgid "Everywhere"
 msgstr "Overal"
+
+msgid "Failed to add item to the playlist"
+msgstr "Het is niet gelukt om het item aan de afspeellijst toe te voegen"
 
 msgid "Failed to add item to the queue"
 msgstr "Het is niet gelukt om het item aan de wachtrij toe te voegen"

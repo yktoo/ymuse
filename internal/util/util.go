@@ -17,6 +17,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/fhs/gompd/v2/mpd"
 	"github.com/gotk3/gotk3/glib"
 	"html/template"
 	"strconv"
@@ -88,4 +89,13 @@ func Default(def string, value interface{}) string {
 // IsStreamURI returns whether the given URI refers to an Internet stream
 func IsStreamURI(uri string) bool {
 	return strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://")
+}
+
+// MapAttrsToSlice converts a list of Attrs into a string slice by extracting only the provided attribute
+func MapAttrsToSlice(attrs []mpd.Attrs, attr string) []string {
+	r := make([]string, len(attrs))
+	for i, a := range attrs {
+		r[i] = a[attr]
+	}
+	return r
 }
