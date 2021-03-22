@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-//go:generate resources/scripts/generate-resources
 //go:generate resources/scripts/generate-mos
 
 package main
@@ -70,9 +69,7 @@ func main() {
 	}
 
 	// Setup the application
-	if _, err = application.Connect("activate", onActivate); err != nil {
-		log.Fatal("Failed to connect activation signal", err)
-	}
+	application.Connect("activate", onActivate)
 
 	// Run the application
 	os.Exit(application.Run(nil))

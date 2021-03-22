@@ -28,7 +28,8 @@ You can:
 
 ### Requirements
 
-* Go 1.15+
+* Go 1.16+
+* GTK 3.22+
 
 ### Getting started
 

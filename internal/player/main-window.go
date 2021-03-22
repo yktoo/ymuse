@@ -25,7 +25,6 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/pkg/errors"
 	"github.com/yktoo/ymuse/internal/config"
-	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
 	"html/template"
@@ -193,7 +192,7 @@ const (
 // NewMainWindow creates and returns a new MainWindow instance
 func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 	// Set up the window
-	builder, err := NewBuilder(generated.GetPlayerGlade())
+	builder, err := NewBuilder(playerGlade)
 	if err != nil {
 		log.Fatalf("NewBuilder() failed: %v", err)
 	}
@@ -279,14 +278,14 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 func (w *MainWindow) onConnectorStatusChange() {
 	// Ignore when not mapped
 	if w.mapped {
-		util.WhenIdle("onConnectorStatusChange()", w.updateAll)
+		glib.IdleAdd(w.updateAll)
 	}
 }
 
 func (w *MainWindow) onConnectorHeartbeat() {
 	// Ignore when not mapped
 	if w.mapped {
-		util.WhenIdle("onConnectorHeartbeat()", w.updatePlayerSeekBar)
+		glib.IdleAdd(w.updatePlayerSeekBar)
 	}
 }
 
@@ -299,21 +298,21 @@ func (w *MainWindow) onConnectorSubsystemChange(subsystem string) {
 
 	switch subsystem {
 	case "database", "update":
-		util.WhenIdle("updateLibrary()", w.updateLibrary)
+		glib.IdleAdd(w.updateLibrary)
 	case "mixer":
-		util.WhenIdle("updateVolume()", w.updateVolume)
+		glib.IdleAdd(w.updateVolume)
 	case "options":
-		util.WhenIdle("updateOptions()", w.updateOptions)
+		glib.IdleAdd(w.updateOptions)
 	case "player":
-		util.WhenIdle("updatePlayer()", w.updatePlayer)
+		glib.IdleAdd(w.updatePlayer)
 	case "playlist":
-		util.WhenIdle("updateQueue()", func() {
+		glib.IdleAdd(func() {
 			w.updateQueue()
 			w.updatePlayer()
 		})
 	case "stored_playlist":
 		if _, ok := w.libPath.Last().(*PlaylistsLibElement); ok {
-			util.WhenIdle("updateLibrary()", w.updateLibrary)
+			glib.IdleAdd(w.updateLibrary)
 		}
 	}
 }
@@ -355,7 +354,7 @@ func (w *MainWindow) onDelete() {
 	w.disconnect()
 }
 
-func (w *MainWindow) onLibraryAddToPlaylist(_ *gtk.ModelButton, playlist string) {
+func (w *MainWindow) onLibraryAddToPlaylist(playlist string) {
 	log.Debugf("MainWindow.onLibraryAddToPlaylist(%s)", playlist)
 
 	// Fetch the selected element, which must be playable
@@ -763,17 +762,14 @@ func (w *MainWindow) about() {
 	dlg.SetWebsite(config.AppMetadata.URL)
 	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
 	dlg.SetTransientFor(w.AppWindow)
-	_, err = dlg.Connect("response", dlg.Destroy)
-	errCheck(err, "dlg.Connect(response) failed")
+	dlg.Connect("response", dlg.Destroy)
 	dlg.Run()
 }
 
 // addAction add a new application action, with an optional keyboard shortcut
-func (w *MainWindow) addAction(name, shortcut string, onActivate interface{}) *glib.SimpleAction {
+func (w *MainWindow) addAction(name, shortcut string, onActivate func()) *glib.SimpleAction {
 	action := glib.SimpleActionNew(name, nil)
-	if _, err := action.Connect("activate", onActivate); err != nil {
-		log.Fatalf("Failed to connect activate signal of action '%v': %v", name, err)
-	}
+	action.Connect("activate", onActivate)
 	w.app.AddAction(action)
 	if shortcut != "" {
 		w.app.SetAccelsForAction("app."+name, []string{shortcut})
@@ -928,7 +924,7 @@ func (w *MainWindow) getQueueSelectedIndices() []int {
 
 	// Get selected nodes' indices
 	var indices []int
-	sel.SelectedForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) {
+	sel.SelectedForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter) {
 		// Convert the provided tree (filtered) path into unfiltered one
 		if queuePath := w.QueueTreeModelFilter.ConvertPathToChildPath(path); queuePath != nil {
 			if ix := queuePath.GetIndices(); len(ix) > 0 {
@@ -1043,7 +1039,7 @@ func (w *MainWindow) information() {
 		DecoderPluginsExpander  *gtk.Expander
 		DecoderPluginsGrid      *gtk.Grid
 	}
-	builder, err := NewBuilder(generated.GetMpdInfoGlade())
+	builder, err := NewBuilder(mpdInfoGlade)
 	if err == nil {
 		err = builder.BindWidgets(&dlg)
 	}
@@ -1197,9 +1193,7 @@ func (w *MainWindow) libraryAddToPlaylist() {
 		errCheck(btn.Set("text", name), "Set(text) failed")
 
 		// Cannot bind to "activate" here as it's not triggered for Actionable widgets
-		if _, err = btn.Connect("clicked", w.onLibraryAddToPlaylist, name); errCheck(err, "Failed to connect clicked signal") {
-			return
-		}
+		btn.Connect("clicked", func() { w.onLibraryAddToPlaylist(name) })
 
 		// Add the button to the popover
 		w.LibraryAddToPlaylistBox.PackStart(btn, false, true, 0)
@@ -1486,7 +1480,7 @@ func (w *MainWindow) queueFilter() {
 
 	// Iterate all rows in the list store
 	count := 0
-	w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) bool {
+	w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter) bool {
 		// Show all rows if no search pattern given
 		visible := substr == ""
 		if !visible {
@@ -1777,7 +1771,7 @@ func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 // shortcutInfo displays a shortcut info window
 func (w *MainWindow) shortcutInfo() {
 	// Construct a window from the Glade resource
-	builder, err := NewBuilder(generated.GetShortcutsGlade())
+	builder, err := NewBuilder(shortcutsGlade)
 
 	// Map the window's widgets
 	win := struct {
@@ -1795,8 +1789,7 @@ func (w *MainWindow) shortcutInfo() {
 	// Set up the window
 	sw := win.ShortcutsWindow
 	sw.SetTransientFor(w.AppWindow)
-	_, err = sw.Connect("unmap", sw.Destroy)
-	errCheck(err, "Failed to connect unmap signal")
+	sw.Connect("unmap", sw.Destroy)
 
 	// Show the window
 	sw.ShowAll()
@@ -2004,7 +1997,7 @@ func (w *MainWindow) updateLibrary() {
 
 	// Select the required row and scroll to it (later)
 	w.LibraryListBox.SelectRow(rowToSelect)
-	util.WhenIdle("ListBoxScrollToSelected()", util.ListBoxScrollToSelected, w.LibraryListBox)
+	glib.IdleAdd(func() { util.ListBoxScrollToSelected(w.LibraryListBox) })
 	w.libPathElementToSelect = ""
 
 	// Compose info
@@ -2458,14 +2451,14 @@ func (w *MainWindow) updateQueueColumns() {
 		col.AddAttribute(renderer, "cell-background", config.QueueColumnBgColor)
 
 		// Bind the clicked signal
-		_, err = col.Connect("clicked", func() { w.onQueueTreeViewColClicked(col, index, &attr) })
-		errCheck(err, "col.Connect(clicked) failed")
+		col.Connect("clicked", func(c *gtk.TreeViewColumn) {
+			w.onQueueTreeViewColClicked(c, index, &attr)
+		})
 
 		// Bind the width property change signal: update QueueColumns on each change
-		_, err = col.Connect("notify::fixed-width", func() {
-			config.GetConfig().QueueColumns[index].Width = col.GetFixedWidth()
+		col.Connect("notify::fixed-width", func(c *gtk.TreeViewColumn) {
+			config.GetConfig().QueueColumns[index].Width = c.GetFixedWidth()
 		})
-		errCheck(err, "col.Connect(notify::fixed-width) failed")
 
 		// Add the column to the tree view
 		w.QueueTreeView.AppendColumn(col)
@@ -2622,7 +2615,7 @@ func (w *MainWindow) updateStyle() {
 		w.colourBgActive = bgActive
 		w.currentQueueIndex = -1
 
-		w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter, userData ...interface{}) bool {
+		w.QueueListStore.ForEach(func(model *gtk.TreeModel, path *gtk.TreePath, iter *gtk.TreeIter) bool {
 			// Update item's background color
 			if err := w.QueueListStore.SetValue(iter, config.QueueColumnBgColor, w.colourBgNormal); errCheck(err, "updateStyle(): SetValue() failed") {
 				return true

@@ -18,7 +18,6 @@ package player
 import (
 	"fmt"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/yktoo/ymuse/internal/generated"
 	"testing"
 )
 
@@ -70,17 +69,17 @@ func TestBuilder_BindWidgets(t *testing.T) {
 		},
 		{
 			name:    "happy flow for MainWindow",
-			content: generated.GetPlayerGlade(),
+			content: playerGlade,
 			target:  &MainWindow{},
 		},
 		{
 			name:    "happy flow for Preferences",
-			content: generated.GetPrefsGlade(),
+			content: prefsGlade,
 			target:  &PrefsDialog{},
 		},
 		{
 			name:    "happy flow for Shortcuts",
-			content: generated.GetShortcutsGlade(),
+			content: shortcutsGlade,
 			target:  &struct{ ShortcutsWindow *gtk.ShortcutsWindow }{},
 		},
 	}

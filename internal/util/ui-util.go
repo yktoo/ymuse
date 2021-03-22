@@ -17,17 +17,10 @@ package util
 
 import (
 	"fmt"
-	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/gotk3/gotk3/pango"
 	"html"
 )
-
-// WhenIdle schedules a function call on GLib's main loop thread
-func WhenIdle(name string, f interface{}, args ...interface{}) {
-	_, err := glib.IdleAdd(f, args...)
-	errCheck(err, "glib.IdleAdd() failed for "+name)
-}
 
 // ClearChildren removes all container's children
 func ClearChildren(container gtk.Container) {
@@ -37,7 +30,7 @@ func ClearChildren(container gtk.Container) {
 }
 
 // NewButton creates and returns a new button
-func NewButton(label, tooltip, name, icon string, onClicked interface{}, onClickedData ...interface{}) *gtk.Button {
+func NewButton(label, tooltip, name, icon string, onClicked func()) *gtk.Button {
 	btn, err := gtk.ButtonNewWithLabel(label)
 	if errCheck(err, "ButtonNewWithLabel() failed") {
 		return nil
@@ -55,15 +48,12 @@ func NewButton(label, tooltip, name, icon string, onClicked interface{}, onClick
 	}
 
 	// Bind the clicked signal
-	_, err = btn.Connect("clicked", onClicked, onClickedData)
-	if errCheck(err, "Connect() failed") {
-		return nil
-	}
+	btn.Connect("clicked", onClicked)
 	return btn
 }
 
 // NewBoxToggleButton creates, adds to a box and returns a new toggle button
-func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onClicked interface{}, onClickedData ...interface{}) *gtk.ToggleButton {
+func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onClicked func()) *gtk.ToggleButton {
 	btn, err := gtk.ToggleButtonNewWithLabel(label)
 	if errCheck(err, "ToggleButtonNewWithLabel() failed") {
 		return nil
@@ -81,10 +71,7 @@ func NewBoxToggleButton(box *gtk.Box, label, name, icon string, active bool, onC
 	}
 
 	// Bind the clicked signal
-	_, err = btn.Connect("clicked", onClicked, onClickedData)
-	if errCheck(err, "Connect() failed") {
-		return nil
-	}
+	btn.Connect("clicked", onClicked)
 
 	// Add the button to the box
 	box.PackStart(btn, false, false, 0)
@@ -229,8 +216,8 @@ func EditDialog(parent gtk.IWindow, title, value, okButton string) (string, bool
 			w.ToWidget().SetSensitive(err == nil && text != "")
 		}
 	}
-	_, _ = entry.Connect("changed", validate)
-	_, _ = dlg.Connect("map", validate)
+	entry.Connect("changed", validate)
+	dlg.Connect("map", validate)
 	dlg.SetDefaultResponse(gtk.RESPONSE_OK)
 
 	// Run the dialog

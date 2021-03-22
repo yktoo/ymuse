@@ -20,7 +20,6 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/yktoo/ymuse/internal/config"
-	"github.com/yktoo/ymuse/internal/generated"
 	"github.com/yktoo/ymuse/internal/util"
 	"sync"
 	"time"
@@ -84,7 +83,7 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 	}
 
 	// Load the dialog layout and map the widgets
-	builder, err := NewBuilder(generated.GetPrefsGlade())
+	builder, err := NewBuilder(prefsGlade)
 	if err == nil {
 		err = builder.BindWidgets(d)
 	}
@@ -172,10 +171,9 @@ func (d *PrefsDialog) addQueueColumn(attrID, width int, selected bool) {
 		return
 	}
 	cb.SetActive(selected)
-	_, err = cb.Connect("toggled", func() { d.columnCheckboxToggled(attrID, cb.GetActive(), row) })
-	if errCheck(err, "cb.Connect(toggled) failed") {
-		return
-	}
+	cb.Connect("toggled", func(c *gtk.CheckButton) {
+		d.columnCheckboxToggled(attrID, c.GetActive(), row)
+	})
 	hbx.PackStart(cb, false, false, 0)
 
 	// Add a label
@@ -243,7 +241,7 @@ func (d *PrefsDialog) moveSelectedColumnRow(up bool) {
 	d.ColumnsListBox.SelectRow(d.ColumnsListBox.GetRowAtIndex(index))
 
 	// Scroll the listbox to center the row
-	util.WhenIdle("ListBoxScrollToSelected()", util.ListBoxScrollToSelected, d.ColumnsListBox)
+	glib.IdleAdd(func() { util.ListBoxScrollToSelected(d.ColumnsListBox) })
 
 	// Update the queue's columns
 	d.notifyColumnsChanged()
@@ -362,7 +360,7 @@ func (d *PrefsDialog) schedulePlayerSettingChange() {
 		d.playerSettingChangeMutex.Lock()
 		d.playerSettingChangeTimer = nil
 		d.playerSettingChangeMutex.Unlock()
-		util.WhenIdle("onPlayerSettingChanged()", d.onPlayerSettingChanged)
+		glib.IdleAdd(d.onPlayerSettingChanged)
 	})
 }
 
