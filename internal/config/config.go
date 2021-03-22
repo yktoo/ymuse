@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/yktoo/ymuse/internal/util"
-	"io/ioutil"
 	"os"
 	"path"
 	"sync"
@@ -165,7 +164,7 @@ func newConfig() *Config {
 func (c *Config) Load() {
 	// Try to read the file
 	file := c.getConfigFile()
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if errCheck(err, "Couldn't read file") {
 		return
 	}
@@ -200,7 +199,7 @@ func (c *Config) Save() {
 
 	// Save the config
 	file := c.getConfigFile()
-	if !errCheck(ioutil.WriteFile(file, data, 0600), "WriteFile() failed") {
+	if !errCheck(os.WriteFile(file, data, 0600), "WriteFile() failed") {
 		log.Debugf("Saved configuration to %s", file)
 	}
 }
