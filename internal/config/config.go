@@ -154,7 +154,7 @@ func newConfig() *Config {
 		PlayerAlbumArtStreams: false,
 		MaxSearchResults:      500,
 		Streams: []StreamSpec{
-			{Name: "BBC World News", URI: "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws"},
+			{Name: "BBC World News", URI: "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service"},
 		},
 		MainWindowDimensions: Dimensions{-1, -1, -1, -1},
 	}
