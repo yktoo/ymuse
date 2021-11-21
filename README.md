@@ -28,15 +28,19 @@ You can:
 
 ### Requirements
 
-* Go 1.16+
+* Go 1.17+
 * GTK 3.22+
 
 ### Getting started
 
 1. [Install Go](https://golang.org/doc/install)
-2. Make sure you have the following dependencies installed:
+2. Make sure you have the following build dependencies installed:
+   * `build-essential`
    * `libc6`
-   * `libgtk-3-0`
+   * `libgtk-3-dev`
+   * `libgdk-pixbuf2.0-dev`
+   * `libglib2.0-dev`
+   * `gettext`
 3. Clone the source and compile:
 ```bash
 git clone https://github.com/yktoo/ymuse.git
