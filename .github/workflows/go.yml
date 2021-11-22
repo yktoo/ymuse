@@ -1,0 +1,30 @@
+name: Go
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Prepare
+      run: go generate && go mod download      
+
+    - name: Verify format
+      run: test `gofmt -l . | wc -l` = 0
+
+    - name: Test
+      run: go test -v ./...
