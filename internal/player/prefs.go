@@ -55,6 +55,9 @@ type PrefsDialog struct {
 	PlaylistsDefaultAppendRadioButton  *gtk.RadioButton
 	StreamsDefaultReplaceRadioButton   *gtk.RadioButton
 	StreamsDefaultAppendRadioButton    *gtk.RadioButton
+	// Automation page widgets
+	AutomationQueueReplaceSwitchToCheckButton *gtk.CheckButton
+	AutomationQueueReplacePlayCheckButton     *gtk.CheckButton
 	// Player page widgets
 	PlayerShowAlbumArtTracksCheckButton  *gtk.CheckButton
 	PlayerShowAlbumArtStreamsCheckButton *gtk.CheckButton
@@ -141,6 +144,9 @@ func (d *PrefsDialog) onMap() {
 	d.PlayerShowAlbumArtTracksCheckButton.SetActive(cfg.PlayerAlbumArtTracks)
 	d.PlayerShowAlbumArtStreamsCheckButton.SetActive(cfg.PlayerAlbumArtStreams)
 	d.PlayerTitleTemplateTextBuffer.SetText(cfg.PlayerTitleTemplate)
+	// Automation page
+	d.AutomationQueueReplaceSwitchToCheckButton.SetActive(cfg.SwitchToOnQueueReplace)
+	d.AutomationQueueReplacePlayCheckButton.SetActive(cfg.PlayOnQueueReplace)
 	// Columns page
 	d.populateColumns()
 	d.initialised = true
@@ -295,6 +301,7 @@ func (d *PrefsDialog) onSettingChange() {
 	cfg.MpdAutoConnect = d.MpdAutoConnectCheckButton.GetActive()
 	cfg.MpdAutoReconnect = d.MpdAutoReconnectCheckButton.GetActive()
 	d.updateGeneralWidgets()
+
 	// Interface page
 	if b := d.QueueToolbarCheckButton.GetActive(); b != cfg.QueueToolbar {
 		cfg.QueueToolbar = b
@@ -304,6 +311,11 @@ func (d *PrefsDialog) onSettingChange() {
 	cfg.PlaylistDefaultReplace = d.PlaylistsDefaultReplaceRadioButton.GetActive()
 	cfg.StreamDefaultReplace = d.StreamsDefaultReplaceRadioButton.GetActive()
 
+	// Automation page
+	cfg.SwitchToOnQueueReplace = d.AutomationQueueReplaceSwitchToCheckButton.GetActive()
+	cfg.PlayOnQueueReplace = d.AutomationQueueReplacePlayCheckButton.GetActive()
+
+	// Player page
 	if b := d.PlayerShowAlbumArtTracksCheckButton.GetActive(); b != cfg.PlayerAlbumArtTracks {
 		cfg.PlayerAlbumArtTracks = b
 		d.schedulePlayerSettingChange()

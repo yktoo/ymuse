@@ -108,6 +108,9 @@ msgstr ""
 msgid "Add to playlist…"
 msgstr ""
 
+msgid "After the queue is replaced:"
+msgstr ""
+
 msgid "Album (for sorting)"
 msgstr ""
 
@@ -166,6 +169,9 @@ msgid "Automatically connect on startup"
 msgstr ""
 
 msgid "Automatically reconnect"
+msgstr ""
+
+msgid "Automation"
 msgstr ""
 
 msgid "Clear the play queue"
@@ -628,6 +634,9 @@ msgid "Sort the play queue"
 msgstr ""
 
 msgid "Sort ▾"
+msgstr ""
+
+msgid "Start playback"
 msgstr ""
 
 msgid "Stop playback"

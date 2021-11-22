@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Ymuse\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-25 12:11+0200\n"
-"PO-Revision-Date: 2020-08-11 13:30+0200\n"
+"PO-Revision-Date: 2021-11-22 19:50+0100\n"
 "Last-Translator: Dmitry Kann <yktooo@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Poedit-Basepath: ..\n"
@@ -126,6 +126,9 @@ msgstr "Добавить к ▾"
 msgid "Add to playlist…"
 msgstr "Добавить к плейлисту…"
 
+msgid "After the queue is replaced:"
+msgstr "После замены очереди:"
+
 msgid "Album (for sorting)"
 msgstr "Альбом (для сортировки)"
 
@@ -185,6 +188,9 @@ msgstr "Автоматически подключаться при запуск�
 
 msgid "Automatically reconnect"
 msgstr "Автоматически восстанавливать подключение"
+
+msgid "Automation"
+msgstr "Автоматизация"
 
 msgid "Clear the play queue"
 msgstr "Стереть очередь"
@@ -649,6 +655,9 @@ msgstr "Сортировка очереди"
 
 msgid "Sort ▾"
 msgstr "Сортировка ▾"
+
+msgid "Start playback"
+msgstr "Запустить воспроизведение"
 
 msgid "Stop playback"
 msgstr "Остановить воспроизведение"

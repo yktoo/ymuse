@@ -90,6 +90,8 @@ type Config struct {
 	PlayerTitleTemplate    string       // Track's title formatting template for the player
 	PlayerAlbumArtTracks   bool         // Whether to display the current track's album art in the player
 	PlayerAlbumArtStreams  bool         // Whether to display the current stream's album art in the player
+	SwitchToOnQueueReplace bool         // Whether to switch to the Queue tab after the queue has been replaced
+	PlayOnQueueReplace     bool         // Whether to start playback after the queue has been replaced
 	MaxSearchResults       int          // Maximum number of displayed search results
 	Streams                []StreamSpec // Registered stream specifications
 	LibraryPath            string       // Last selected library path
@@ -150,9 +152,11 @@ func newConfig() *Config {
 				"{{- else -}}\n" +
 				"<i>(no track)</i>\n" +
 				"{{- end -}}\n"),
-		PlayerAlbumArtTracks:  true,
-		PlayerAlbumArtStreams: false,
-		MaxSearchResults:      500,
+		PlayerAlbumArtTracks:   true,
+		PlayerAlbumArtStreams:  false,
+		SwitchToOnQueueReplace: true,
+		PlayOnQueueReplace:     false,
+		MaxSearchResults:       500,
 		Streams: []StreamSpec{
 			{Name: "BBC World News", URI: "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service"},
 		},

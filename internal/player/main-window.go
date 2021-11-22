@@ -1566,11 +1566,12 @@ func (w *MainWindow) queueLibraryElement(replace triBool, element LibraryPathEle
 func (w *MainWindow) queuePlaylist(replace triBool, uri string) {
 	log.Debugf("queuePlaylist(%v, %v)", replace, uri)
 	var err error
+	replaced := replace == tbTrue || replace == tbNone && config.GetConfig().PlaylistDefaultReplace
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 
 		// Clear the queue, if needed
-		if replace == tbTrue || replace == tbNone && config.GetConfig().PlaylistDefaultReplace {
+		if replaced {
 			commands.Clear()
 		}
 
@@ -1583,7 +1584,35 @@ func (w *MainWindow) queuePlaylist(replace triBool, uri string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, glib.Local("Failed to add playlist to the queue"))
+	if w.errCheckDialog(err, glib.Local("Failed to add playlist to the queue")) {
+		return
+	}
+
+	// Initiate post-replace actions, if necessary
+	if replaced {
+		w.queueReplaced()
+	}
+}
+
+// queueReplaced runs necessary post-queue-replace actions
+func (w *MainWindow) queueReplaced() {
+	// Switch to the queue tab
+	if config.GetConfig().SwitchToOnQueueReplace {
+		w.MainStack.SetVisibleChild(w.QueueBox)
+	}
+
+	// Initiate playback
+	if config.GetConfig().PlayOnQueueReplace {
+		var err error
+		w.connector.IfConnected(func(client *mpd.Client) {
+			err = client.Play(0)
+		})
+
+		// Check for error
+		if w.errCheckDialog(err, glib.Local("Failed to start playback")) {
+			return
+		}
+	}
 }
 
 // queueSave shows a dialog for saving the play queue into a playlist and performs the operation if confirmed
@@ -1725,11 +1754,12 @@ func (w *MainWindow) queueSortApply(descending bool) {
 func (w *MainWindow) queueStream(replace triBool, uri string) {
 	log.Debugf("queueStream(%v, %v)", replace, uri)
 	var err error
+	replaced := replace == tbTrue || replace == tbNone && config.GetConfig().StreamDefaultReplace
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 
 		// Clear the queue, if needed
-		if replace == tbTrue || replace == tbNone && config.GetConfig().StreamDefaultReplace {
+		if replaced {
 			commands.Clear()
 		}
 
@@ -1741,17 +1771,25 @@ func (w *MainWindow) queueStream(replace triBool, uri string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, glib.Local("Failed to add stream to the queue"))
+	if w.errCheckDialog(err, glib.Local("Failed to add stream to the queue")) {
+		return
+	}
+
+	// Initiate post-replace actions, if necessary
+	if replaced {
+		w.queueReplaced()
+	}
 }
 
 // queueURIs adds or replaces the content of the queue with the specified URIs
 func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 	var err error
+	replaced := replace == tbTrue || replace == tbNone && config.GetConfig().TrackDefaultReplace
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 
 		// Clear the queue, if needed
-		if replace == tbTrue || replace == tbNone && config.GetConfig().TrackDefaultReplace {
+		if replaced {
 			commands.Clear()
 		}
 
@@ -1765,7 +1803,14 @@ func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 	})
 
 	// Check for error
-	w.errCheckDialog(err, glib.Local("Failed to add track(s) to the queue"))
+	if w.errCheckDialog(err, glib.Local("Failed to add track(s) to the queue")) {
+		return
+	}
+
+	// Initiate post-replace actions, if necessary
+	if replaced {
+		w.queueReplaced()
+	}
 }
 
 // shortcutInfo displays a shortcut info window
