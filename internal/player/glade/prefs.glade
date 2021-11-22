@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.22"/>
   <object class="GtkAdjustment" id="MpdPortAdjustment">
     <property name="lower">1</property>
     <property name="upper">65535</property>
     <property name="value">6600</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
     <signal name="value-changed" handler="on_Setting_change" swapped="no"/>
   </object>
   <object class="GtkTextBuffer" id="PlayerTitleTemplateTextBuffer">
     <signal name="changed" handler="on_Setting_change" swapped="no"/>
   </object>
   <object class="GtkDialog" id="PreferencesDialog">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="title" translatable="yes">Preferences</property>
     <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
-    <property name="skip_taskbar_hint">True</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">dialog</property>
+    <property name="skip-taskbar-hint">True</property>
     <signal name="map" handler="on_PreferencesDialog_map" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
         <property name="orientation">vertical</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <placeholder/>
             </child>
@@ -47,257 +44,252 @@
         <child>
           <object class="GtkNotebook" id="MainNotebook">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="show_border">False</property>
+            <property name="can-focus">True</property>
+            <property name="show-border">False</property>
             <child>
               <object class="GtkBox" id="GeneralBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">12</property>
+                <property name="can-focus">False</property>
+                <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="MpdConnectionFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <!-- n-columns=3 n-rows=8 -->
+                      <object class="GtkGrid" id="MpdConnectionGrid">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="row-spacing">6</property>
+                        <property name="column-spacing">6</property>
                         <child>
-                          <object class="GtkGrid" id="MpdConnectionGrid">
+                          <object class="GtkLabel" id="MpdHostLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="row_spacing">6</property>
-                            <property name="column_spacing">6</property>
-                            <child>
-                              <object class="GtkLabel" id="MpdHostLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Host:</property>
-                                <property name="justify">right</property>
-                                <property name="xalign">1</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkEntry" id="MpdHostEntry">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="MpdHostLabelRemark">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">(leave empty for localhost)</property>
-                                <property name="xalign">0</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="MpdPortLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Port:</property>
-                                <property name="justify">right</property>
-                                <property name="xalign">1</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSpinButton" id="MpdPortSpinButton">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="adjustment">MpdPortAdjustment</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="MpdPasswordLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Password:</property>
-                                <property name="justify">right</property>
-                                <property name="xalign">1</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkEntry" id="MpdPasswordEntry">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="visibility">False</property>
-                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="MpdAutoConnectCheckButton">
-                                <property name="label" translatable="yes">Automatically connect on startup</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">5</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="MpdAutoReconnectCheckButton">
-                                <property name="label" translatable="yes">Automatically reconnect</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">6</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="MpdReconnectNowButton">
-                                <property name="label" translatable="yes">Reconnect now</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <signal name="clicked" handler="on_MpdReconnect" swapped="no"/>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">7</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkEntry" id="MpdPathEntry">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="MpdPathLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Path:</property>
-                                <property name="justify">right</property>
-                                <property name="xalign">1</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="MpdNetworkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Network:</property>
-                                <property name="justify">right</property>
-                                <property name="xalign">1</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkComboBoxText" id="MpdNetworkComboBox">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="active">1</property>
-                                <items>
-                                  <item id="unix" translatable="yes">Unix socket</item>
-                                  <item id="tcp" translatable="yes">TCP</item>
-                                </items>
-                                <signal name="changed" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Host:</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">1</property>
                           </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="MpdHostEntry">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="MpdHostLabelRemark">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">(leave empty for localhost)</property>
+                            <property name="xalign">0</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">2</property>
+                            <property name="top-attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="MpdPortLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Port:</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">1</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="MpdPortSpinButton">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="adjustment">MpdPortAdjustment</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="MpdPasswordLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Password:</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">1</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="MpdPasswordEntry">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="visibility">False</property>
+                            <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="MpdAutoConnectCheckButton">
+                            <property name="label" translatable="yes">Automatically connect on startup</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="MpdAutoReconnectCheckButton">
+                            <property name="label" translatable="yes">Automatically reconnect</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="MpdReconnectNowButton">
+                            <property name="label" translatable="yes">Reconnect now</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <signal name="clicked" handler="on_MpdReconnect" swapped="no"/>
+                            <style>
+                              <class name="suggested-action"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="MpdPathEntry">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="MpdPathLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Path:</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">1</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="MpdNetworkLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Network:</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">1</property>
+                          </object>
+                          <packing>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="MpdNetworkComboBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="active">1</property>
+                            <items>
+                              <item id="unix" translatable="yes">Unix socket</item>
+                              <item id="tcp" translatable="yes">TCP</item>
+                            </items>
+                            <signal name="changed" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">&lt;b&gt;MPD connection&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -312,51 +304,45 @@
             <child type="tab">
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">General</property>
               </object>
               <packing>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="InterfaceBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">12</property>
+                <property name="can-focus">False</property>
+                <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkFrame" id="QueueFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <object class="GtkCheckButton" id="QueueToolbarCheckButton">
+                        <property name="label" translatable="yes">Show toolbar</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <object class="GtkCheckButton" id="QueueToolbarCheckButton">
-                            <property name="label" translatable="yes">Show toolbar</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                          </object>
-                        </child>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="draw-indicator">True</property>
+                        <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">&lt;b&gt;Queue&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -369,79 +355,73 @@
                 <child>
                   <object class="GtkFrame" id="LibraryFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">On double click / Enter on a track:</property>
-                                <property name="xalign">0</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="LibraryDefaultReplaceRadioButton">
-                                <property name="label" translatable="yes">Replace the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="LibraryDefaultAppendRadioButton">
-                                <property name="label" translatable="yes">Append to the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">LibraryDefaultReplaceRadioButton</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">On double click / Enter on a track:</property>
+                            <property name="xalign">0</property>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">6</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="LibraryDefaultReplaceRadioButton">
+                            <property name="label" translatable="yes">Replace the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="active">True</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="LibraryDefaultAppendRadioButton">
+                            <property name="label" translatable="yes">Append to the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="draw-indicator">True</property>
+                            <property name="group">LibraryDefaultReplaceRadioButton</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
                         </child>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">&lt;b&gt;Library&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -454,79 +434,73 @@
                 <child>
                   <object class="GtkFrame" id="PlaylistsFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">On double click / Enter on a playlist:</property>
-                                <property name="xalign">0</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="PlaylistsDefaultReplaceRadioButton">
-                                <property name="label" translatable="yes">Replace the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="PlaylistsDefaultAppendRadioButton">
-                                <property name="label" translatable="yes">Append to the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">PlaylistsDefaultReplaceRadioButton</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">On double click / Enter on a playlist:</property>
+                            <property name="xalign">0</property>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">6</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="PlaylistsDefaultReplaceRadioButton">
+                            <property name="label" translatable="yes">Replace the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="active">True</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="PlaylistsDefaultAppendRadioButton">
+                            <property name="label" translatable="yes">Append to the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="draw-indicator">True</property>
+                            <property name="group">PlaylistsDefaultReplaceRadioButton</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
                         </child>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">&lt;b&gt;Playlists&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -539,79 +513,73 @@
                 <child>
                   <object class="GtkFrame" id="StreamsFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">On double click / Enter on a stream:</property>
-                                <property name="xalign">0</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="StreamsDefaultReplaceRadioButton">
-                                <property name="label" translatable="yes">Replace the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="active">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkRadioButton" id="StreamsDefaultAppendRadioButton">
-                                <property name="label" translatable="yes">Append to the queue</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="halign">start</property>
-                                <property name="draw_indicator">True</property>
-                                <property name="group">StreamsDefaultReplaceRadioButton</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">On double click / Enter on a stream:</property>
+                            <property name="xalign">0</property>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">6</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="StreamsDefaultReplaceRadioButton">
+                            <property name="label" translatable="yes">Replace the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="active">True</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="StreamsDefaultAppendRadioButton">
+                            <property name="label" translatable="yes">Append to the queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="halign">start</property>
+                            <property name="draw-indicator">True</property>
+                            <property name="group">StreamsDefaultReplaceRadioButton</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
                         </child>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">&lt;b&gt;Streams&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -629,81 +597,74 @@
             <child type="tab">
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Interface</property>
               </object>
               <packing>
                 <property name="position">1</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="PlayerBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">12</property>
+                <property name="can-focus">False</property>
+                <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkFrame" id="PlayerFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">none</property>
                     <child>
-                      <object class="GtkAlignment">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="yscale">0</property>
-                        <property name="top_padding">6</property>
-                        <property name="bottom_padding">6</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-top">6</property>
+                        <property name="margin-bottom">6</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkCheckButton" id="PlayerShowAlbumArtTracksCheckButton">
+                            <property name="label" translatable="yes">Show for tracks</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">6</property>
-                            <child>
-                              <object class="GtkCheckButton" id="PlayerShowAlbumArtTracksCheckButton">
-                                <property name="label" translatable="yes">Show for tracks</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="PlayerShowAlbumArtStreamsCheckButton">
-                                <property name="label" translatable="yes">Show for streams</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_Setting_change" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="PlayerShowAlbumArtStreamsCheckButton">
+                            <property name="label" translatable="yes">Show for streams</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="draw-indicator">True</property>
+                            <signal name="toggled" handler="on_Setting_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                     </child>
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Album art:</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                       </object>
                     </child>
                   </object>
@@ -716,7 +677,7 @@
                 <child>
                   <object class="GtkLabel" id="PlayerTitleTemplateLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Track title template:</property>
                     <property name="xalign">0</property>
                   </object>
@@ -728,16 +689,16 @@
                 </child>
                 <child>
                   <object class="GtkScrolledWindow" id="PlayerTitleTemplateScrolledWindow">
-                    <property name="width_request">500</property>
-                    <property name="height_request">200</property>
+                    <property name="width-request">500</property>
+                    <property name="height-request">200</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="vscrollbar_policy">always</property>
-                    <property name="shadow_type">in</property>
+                    <property name="can-focus">True</property>
+                    <property name="vscrollbar-policy">always</property>
+                    <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkTextView" id="PlayerTitleTemplateTextView">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can-focus">True</property>
                         <property name="buffer">PlayerTitleTemplateTextBuffer</property>
                         <property name="monospace">True</property>
                       </object>
@@ -757,25 +718,25 @@
             <child type="tab">
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Player</property>
               </object>
               <packing>
                 <property name="position">2</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="ColumnsBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="border_width">12</property>
+                <property name="can-focus">False</property>
+                <property name="border-width">12</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="ColumnsTopLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_bottom">6</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-bottom">6</property>
                     <property name="label" translatable="yes">Select columns to display in the play queue, and their order.</property>
                     <property name="xalign">0</property>
                   </object>
@@ -788,17 +749,17 @@
                 <child>
                   <object class="GtkScrolledWindow" id="ColumnsScrolledWindow">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="can-focus">True</property>
+                    <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkViewport" id="ColumnsViewport">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkListBox" id="ColumnsListBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="selection_mode">browse</property>
+                            <property name="can-focus">False</property>
+                            <property name="selection-mode">browse</property>
                           </object>
                         </child>
                       </object>
@@ -813,17 +774,17 @@
                 <child>
                   <object class="GtkToolbar" id="ColumnsToolbar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="toolbar_style">icons</property>
+                    <property name="can-focus">False</property>
+                    <property name="toolbar-style">icons</property>
                     <property name="icon_size">2</property>
                     <child>
                       <object class="GtkToolButton" id="ColumnMoveUpToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Move the selected column up</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Move the selected column up</property>
                         <property name="label" translatable="yes">Move up</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">go-up</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">go-up</property>
                         <signal name="clicked" handler="on_ColumnMoveUpToolButton_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -834,11 +795,11 @@
                     <child>
                       <object class="GtkToolButton" id="ColumnMoveDownToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Move the selected column down</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Move the selected column down</property>
                         <property name="label" translatable="yes">Move down</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">go-down</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">go-down</property>
                         <signal name="clicked" handler="on_ColumnMoveDownToolButton_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -864,12 +825,12 @@
             <child type="tab">
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Columns</property>
               </object>
               <packing>
                 <property name="position">3</property>
-                <property name="tab_fill">False</property>
+                <property name="tab-fill">False</property>
               </packing>
             </child>
           </object>

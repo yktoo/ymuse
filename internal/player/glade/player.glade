@@ -1,73 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.22"/>
   <object class="GtkMenu" id="LibraryMenu">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkMenuItem" id="LibraryAppendMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Append to the queue</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryAppendMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="LibraryReplaceMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Replace the queue</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryReplaceMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="LibraryRenameMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Rename</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryRenameMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="LibraryDeleteMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Delete</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="LibraryUpdateSelMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Update</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryUpdateSelMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="LibraryAddToPlaylistMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Add to playlist…</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_LibraryAddToPlaylistMenuItem_activate" swapped="no"/>
       </object>
     </child>
@@ -75,8 +75,8 @@
   <object class="GtkAdjustment" id="PlayPositionAdjustment">
     <property name="upper">100</property>
     <property name="value">25</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkListStore" id="QueueListStore">
     <columns>
@@ -137,144 +137,145 @@
     </columns>
   </object>
   <object class="GtkTreeModelFilter" id="QueueTreeModelFilter">
-    <property name="child_model">QueueListStore</property>
+    <property name="child-model">QueueListStore</property>
   </object>
   <object class="GtkMenu" id="QueueMenu">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkMenuItem" id="QueueNowPlayingMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Now playing</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueNowPlayingMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="QueueShowAlbumInLibraryMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Show album in Library</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueShowAlbumInLibraryMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="QueueShowArtistInLibraryMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Show artist in Library</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueShowArtistInLibraryMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="QueueShowGenreInLibraryMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Show genre in Library</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueShowGenreInLibraryMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="QueueClearMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Clear</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueClearMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="QueueDeleteMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Delete selected</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_QueueDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkPopoverMenu" id="StreamPropsPopoverMenu">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkBox" id="StreamPropsBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
+          <!-- n-columns=2 n-rows=2 -->
           <object class="GtkGrid" id="StreamPropsGrid">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="hexpand">True</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">6</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">6</property>
             <child>
               <object class="GtkLabel" id="StreamPropsNameLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">False</property>
                 <property name="label" translatable="yes">Stream name:</property>
                 <property name="xalign">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="StreamPropsUriEntry">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
-                <property name="width_chars">60</property>
+                <property name="width-chars">60</property>
                 <signal name="changed" handler="on_StreamPropsChanged" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="StreamPropsUriLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">False</property>
                 <property name="label" translatable="yes">Stream URI:</property>
                 <property name="xalign">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="StreamPropsNameEntry">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
-                <property name="width_chars">60</property>
+                <property name="width-chars">60</property>
                 <signal name="changed" handler="on_StreamPropsChanged" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
           </object>
@@ -287,9 +288,9 @@
         <child>
           <object class="GtkModelButton" id="StreamPropsApplyModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.stream.props.apply</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.stream.props.apply</property>
             <property name="text" translatable="yes">Apply</property>
             <property name="centered">True</property>
           </object>
@@ -308,70 +309,70 @@
   </object>
   <object class="GtkMenu" id="StreamsMenu">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkMenuItem" id="StreamsAppendMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Append to the queue</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_StreamsAppendMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="StreamsReplaceMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Replace the queue</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_StreamsReplaceMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="StreamsEditMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Edit</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_StreamsEditMenuItem_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="StreamsDeleteMenuItem">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="label" translatable="yes">Delete</property>
-        <property name="use_underline">True</property>
+        <property name="use-underline">True</property>
         <signal name="activate" handler="on_StreamsDeleteMenuItem_activate" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkAdjustment" id="VolumeAdjustment">
     <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkPopoverMenu" id="AppPopoverMenu">
-    <property name="can_focus">False</property>
-    <property name="relative_to">AppMenuButton</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">AppMenuButton</property>
     <child>
       <object class="GtkBox" id="AppMenuBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkModelButton" id="MpdConnectModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.mpd.connect</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.mpd.connect</property>
             <property name="text" translatable="yes">Connect to MPD</property>
           </object>
           <packing>
@@ -383,9 +384,9 @@
         <child>
           <object class="GtkModelButton" id="MpdDisconnectModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.mpd.disconnect</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.mpd.disconnect</property>
             <property name="text" translatable="yes">Disconnect from MPD</property>
           </object>
           <packing>
@@ -397,9 +398,9 @@
         <child>
           <object class="GtkModelButton" id="MpdInfoModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.mpd.info</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.mpd.info</property>
             <property name="text" translatable="yes">MPD _information…</property>
           </object>
           <packing>
@@ -411,7 +412,7 @@
         <child>
           <object class="GtkSeparator">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -422,9 +423,9 @@
         <child>
           <object class="GtkModelButton" id="AppPrefsModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.prefs</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.prefs</property>
             <property name="text" translatable="yes">_Preferences…</property>
           </object>
           <packing>
@@ -436,7 +437,7 @@
         <child>
           <object class="GtkSeparator">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -447,9 +448,9 @@
         <child>
           <object class="GtkModelButton" id="AppAboutModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.about</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.about</property>
             <property name="text" translatable="yes">_About…</property>
           </object>
           <packing>
@@ -461,9 +462,9 @@
         <child>
           <object class="GtkModelButton" id="AppShortcutsModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.shortcuts</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.shortcuts</property>
             <property name="text" translatable="yes">Keyboard shortcuts…</property>
           </object>
           <packing>
@@ -475,9 +476,9 @@
         <child>
           <object class="GtkModelButton" id="AppQuitModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.quit</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.quit</property>
             <property name="text" translatable="yes">_Quit</property>
           </object>
           <packing>
@@ -494,85 +495,51 @@
     </child>
   </object>
   <object class="GtkApplicationWindow" id="AppWindow">
-    <property name="width_request">600</property>
-    <property name="height_request">300</property>
-    <property name="can_focus">False</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
-    <property name="icon_name">ymuse</property>
+    <property name="width-request">600</property>
+    <property name="height-request">300</property>
+    <property name="can-focus">False</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="icon-name">ymuse</property>
     <signal name="delete-event" handler="on_MainWindow_delete" swapped="no"/>
     <signal name="map" handler="on_MainWindow_map" swapped="no"/>
     <signal name="style-updated" handler="on_MainWindow_styleUpdated" swapped="no"/>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="MainHeaderBar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="show_close_button">True</property>
-        <child type="title">
-          <object class="GtkStackSwitcher" id="MainStackSwitcher">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="halign">start</property>
-            <property name="stack">MainStack</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="AppMenuButton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="popover">AppPopoverMenu</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">open-menu-symbolic</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
     <child>
       <object class="GtkBox" id="MainBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="margin_left">6</property>
-        <property name="margin_right">6</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
+        <property name="can-focus">False</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkStack" id="MainStack">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <property name="transition_type">slide-left-right</property>
+            <property name="transition-type">slide-left-right</property>
             <signal name="notify::visible-child" handler="on_MainStack_switched" swapped="no"/>
             <child>
               <object class="GtkBox" id="QueueBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkToolbar" id="QueueToolbar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="icon_size">2</property>
                     <child>
                       <object class="GtkToolButton" id="QueueNowPlayingToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Jump to the currently played track</property>
-                        <property name="action_name">app.queue.now-playing</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Jump to the currently played track</property>
+                        <property name="action-name">app.queue.now-playing</property>
                         <property name="label" translatable="yes">Now playing</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-now-playing-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-now-playing-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -582,12 +549,12 @@
                     <child>
                       <object class="GtkToolButton" id="QueueClearToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Clear the play queue</property>
-                        <property name="action_name">app.queue.clear</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Clear the play queue</property>
+                        <property name="action-name">app.queue.clear</property>
                         <property name="label" translatable="yes">Clear</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-clear-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-clear-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -597,13 +564,13 @@
                     <child>
                       <object class="GtkToolButton" id="QueueSortToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Sort the play queue</property>
-                        <property name="is_important">True</property>
-                        <property name="action_name">app.queue.sort</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Sort the play queue</property>
+                        <property name="is-important">True</property>
+                        <property name="action-name">app.queue.sort</property>
                         <property name="label" translatable="yes">Sort ▾</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-sort-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-sort-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -613,12 +580,12 @@
                     <child>
                       <object class="GtkToolButton" id="QueueDeleteToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Remove selected track(s) from the queue</property>
-                        <property name="action_name">app.queue.delete</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Remove selected track(s) from the queue</property>
+                        <property name="action-name">app.queue.delete</property>
                         <property name="label" translatable="yes">Delete</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete-track-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-delete-track-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -628,13 +595,13 @@
                     <child>
                       <object class="GtkToolButton" id="QueueSaveToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Save the play queue as a playlist</property>
-                        <property name="is_important">True</property>
-                        <property name="action_name">app.queue.save</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Save the play queue as a playlist</property>
+                        <property name="is-important">True</property>
+                        <property name="action-name">app.queue.save</property>
                         <property name="label" translatable="yes">Save ▾</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-save-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-save-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -644,11 +611,11 @@
                     <child>
                       <object class="GtkToggleToolButton" id="QueueFilterToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Filter the play queue</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Filter the play queue</property>
                         <property name="label" translatable="yes">Search</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-filter-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-filter-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -665,18 +632,18 @@
                 <child>
                   <object class="GtkSearchBar" id="QueueSearchBar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="show_close_button">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="show-close-button">True</property>
                     <signal name="notify::search-mode-enabled" handler="on_QueueSearchBar_searchMode" swapped="no"/>
                     <child>
                       <object class="GtkSearchEntry" id="QueueSearchEntry">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="width_chars">50</property>
-                        <property name="primary_icon_name">ymuse-filter-symbolic</property>
-                        <property name="primary_icon_activatable">False</property>
-                        <property name="primary_icon_sensitive">False</property>
-                        <property name="placeholder_text" translatable="yes">Filter…</property>
+                        <property name="can-focus">True</property>
+                        <property name="width-chars">50</property>
+                        <property name="primary-icon-name">ymuse-filter-symbolic</property>
+                        <property name="primary-icon-activatable">False</property>
+                        <property name="primary-icon-sensitive">False</property>
+                        <property name="placeholder-text" translatable="yes">Filter…</property>
                         <signal name="search-changed" handler="on_QueueSearchEntry_searchChanged" swapped="no"/>
                       </object>
                     </child>
@@ -690,21 +657,21 @@
                 <child>
                   <object class="GtkScrolledWindow" id="QueueScrolledWindow">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="shadow_type">etched-out</property>
+                    <property name="shadow-type">etched-out</property>
                     <child>
                       <object class="GtkTreeView" id="QueueTreeView">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can-focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <property name="model">QueueTreeModelFilter</property>
-                        <property name="enable_search">False</property>
-                        <property name="fixed_height_mode">True</property>
-                        <property name="show_expanders">False</property>
-                        <property name="rubber_banding">True</property>
+                        <property name="enable-search">False</property>
+                        <property name="fixed-height-mode">True</property>
+                        <property name="show-expanders">False</property>
+                        <property name="rubber-banding">True</property>
                         <signal name="button-press-event" handler="on_QueueTreeView_buttonPress" swapped="no"/>
                         <signal name="key-press-event" handler="on_QueueTreeView_keyPress" swapped="no"/>
                         <child internal-child="selection">
@@ -725,16 +692,16 @@
                 <child>
                   <object class="GtkBox" id="QueueInfoBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkLabel" id="QueueInfoLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">3</property>
-                        <property name="margin_bottom">3</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
                         <property name="ellipsize">end</property>
-                        <property name="track_visited_links">False</property>
+                        <property name="track-visited-links">False</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -744,10 +711,10 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="QueueFilterLabel">
-                        <property name="can_focus">False</property>
-                        <property name="margin_right">6</property>
-                        <property name="margin_top">3</property>
-                        <property name="margin_bottom">3</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-end">6</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -774,27 +741,27 @@
             <child>
               <object class="GtkBox" id="LibraryBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox" id="LibraryTopBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkToolbar" id="LibraryToolbar">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="show_arrow">False</property>
+                        <property name="can-focus">False</property>
+                        <property name="show-arrow">False</property>
                         <property name="icon_size">2</property>
                         <child>
                           <object class="GtkToolButton" id="LibraryUpdateToolButton">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Update the music library</property>
-                            <property name="is_important">True</property>
-                            <property name="action_name">app.library.update</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Update the music library</property>
+                            <property name="is-important">True</property>
+                            <property name="action-name">app.library.update</property>
                             <property name="label" translatable="yes">Update ▾</property>
-                            <property name="icon_name">ymuse-update-db-symbolic</property>
+                            <property name="icon-name">ymuse-update-db-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -804,11 +771,11 @@
                         <child>
                           <object class="GtkToolButton" id="LibraryRenameToolButton">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Rename the selected item</property>
-                            <property name="action_name">app.library.rename</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Rename the selected item</property>
+                            <property name="action-name">app.library.rename</property>
                             <property name="label" translatable="yes">Rename</property>
-                            <property name="icon_name">ymuse-edit-symbolic</property>
+                            <property name="icon-name">ymuse-edit-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -818,11 +785,11 @@
                         <child>
                           <object class="GtkToolButton" id="LibraryDeleteToolButton">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Delete the selected item</property>
-                            <property name="action_name">app.library.delete</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Delete the selected item</property>
+                            <property name="action-name">app.library.delete</property>
                             <property name="label" translatable="yes">Delete</property>
-                            <property name="icon_name">ymuse-delete-symbolic</property>
+                            <property name="icon-name">ymuse-delete-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -832,12 +799,12 @@
                         <child>
                           <object class="GtkToolButton" id="LibraryAddToPlaylistToolButton">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Add the selected item to a playlist</property>
-                            <property name="is_important">True</property>
-                            <property name="action_name">app.library.add-to-playlist</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Add the selected item to a playlist</property>
+                            <property name="is-important">True</property>
+                            <property name="action-name">app.library.add-to-playlist</property>
                             <property name="label" translatable="yes">Add to ▾</property>
-                            <property name="icon_name">ymuse-add-symbolic</property>
+                            <property name="icon-name">ymuse-add-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -847,11 +814,11 @@
                         <child>
                           <object class="GtkToggleToolButton" id="LibrarySearchToolButton">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Search the library</property>
-                            <property name="action_name">app.library.search.toggle</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Search the library</property>
+                            <property name="action-name">app.library.search.toggle</property>
                             <property name="label" translatable="yes">Search</property>
-                            <property name="icon_name">ymuse-search-symbolic</property>
+                            <property name="icon-name">ymuse-search-symbolic</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -868,13 +835,13 @@
                     <child>
                       <object class="GtkStack" id="LibraryToolStack">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="transition_type">slide-up-down</property>
+                        <property name="can-focus">False</property>
+                        <property name="transition-type">slide-up-down</property>
                         <child>
                           <object class="GtkBox" id="LibraryPathBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="border_width">6</property>
+                            <property name="can-focus">False</property>
+                            <property name="border-width">6</property>
                             <child>
                               <placeholder/>
                             </child>
@@ -893,37 +860,37 @@
                         <child>
                           <object class="GtkBox" id="LibrarySearchBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="border_width">6</property>
+                            <property name="can-focus">False</property>
+                            <property name="border-width">6</property>
                             <property name="spacing">6</property>
+                            <child>
+                              <object class="GtkComboBoxText" id="LibrarySearchAttrComboBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Track attribute(s) to search</property>
+                                <signal name="changed" handler="on_LibrarySearchChanged" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack-type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                             <child>
                               <object class="GtkSearchEntry" id="LibrarySearchEntry">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="primary_icon_name">ymuse-search-symbolic</property>
-                                <property name="primary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">False</property>
-                                <property name="placeholder_text" translatable="yes">Search…</property>
+                                <property name="can-focus">True</property>
+                                <property name="primary-icon-name">ymuse-search-symbolic</property>
+                                <property name="primary-icon-activatable">False</property>
+                                <property name="primary-icon-sensitive">False</property>
+                                <property name="placeholder-text" translatable="yes">Search…</property>
                                 <signal name="search-changed" handler="on_LibrarySearchChanged" swapped="no"/>
                                 <signal name="stop-search" handler="on_LibrarySearchStop" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkComboBoxText" id="LibrarySearchAttrComboBox">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Track attribute(s) to search</property>
-                                <signal name="changed" handler="on_LibrarySearchChanged" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="pack_type">end</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -954,19 +921,19 @@
                 <child>
                   <object class="GtkScrolledWindow" id="LibraryScrolledWindow">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkViewport" id="LibraryViewport">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkListBox" id="LibraryListBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="selection_mode">browse</property>
+                            <property name="can-focus">False</property>
+                            <property name="selection-mode">browse</property>
                             <signal name="button-press-event" handler="on_LibraryListBox_buttonPress" swapped="no"/>
                             <signal name="key-press-event" handler="on_LibraryListBox_keyPress" swapped="no"/>
                             <signal name="selected-rows-changed" handler="on_LibraryListBox_selectionChange" swapped="no"/>
@@ -984,16 +951,16 @@
                 <child>
                   <object class="GtkBox" id="LibraryInfoBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="LibraryInfoLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">3</property>
-                        <property name="margin_bottom">3</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
                         <property name="ellipsize">end</property>
-                        <property name="track_visited_links">False</property>
+                        <property name="track-visited-links">False</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1021,22 +988,22 @@
             <child>
               <object class="GtkBox" id="StreamsBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkToolbar" id="StreamsToolbar">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="icon_size">2</property>
                     <child>
                       <object class="GtkToolButton" id="StreamsAddToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Add a new stream</property>
-                        <property name="action_name">app.stream.add</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Add a new stream</property>
+                        <property name="action-name">app.stream.add</property>
                         <property name="label" translatable="yes">Add</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-add-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-add-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1046,12 +1013,12 @@
                     <child>
                       <object class="GtkToolButton" id="StreamsEditToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Edit the selected stream</property>
-                        <property name="action_name">app.stream.edit</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Edit the selected stream</property>
+                        <property name="action-name">app.stream.edit</property>
                         <property name="label" translatable="yes">Edit</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-edit-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-edit-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1061,12 +1028,12 @@
                     <child>
                       <object class="GtkToolButton" id="StreamsDeleteToolButton">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Delete the selected stream</property>
-                        <property name="action_name">app.stream.delete</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Delete the selected stream</property>
+                        <property name="action-name">app.stream.delete</property>
                         <property name="label" translatable="yes">Delete</property>
-                        <property name="use_underline">True</property>
-                        <property name="icon_name">ymuse-delete-symbolic</property>
+                        <property name="use-underline">True</property>
+                        <property name="icon-name">ymuse-delete-symbolic</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1083,19 +1050,19 @@
                 <child>
                   <object class="GtkScrolledWindow" id="StreamsScrolledWindow">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="shadow-type">in</property>
                     <child>
                       <object class="GtkViewport" id="StreamsViewport">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkListBox" id="StreamsListBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="selection_mode">browse</property>
+                            <property name="can-focus">False</property>
+                            <property name="selection-mode">browse</property>
                             <signal name="button-press-event" handler="on_StreamsListBox_buttonPress" swapped="no"/>
                             <signal name="key-press-event" handler="on_StreamsListBox_keyPress" swapped="no"/>
                             <signal name="selected-rows-changed" handler="on_StreamsListBox_selectionChange" swapped="no"/>
@@ -1113,16 +1080,16 @@
                 <child>
                   <object class="GtkBox" id="StreamsInfoBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="StreamsInfoLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">3</property>
-                        <property name="margin_bottom">3</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
                         <property name="ellipsize">end</property>
-                        <property name="track_visited_links">False</property>
+                        <property name="track-visited-links">False</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -1157,15 +1124,15 @@
         <child>
           <object class="GtkBox" id="StatusBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="halign">center</property>
             <property name="spacing">12</property>
             <child>
               <object class="GtkImage" id="AlbumArtworkImage">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">end</property>
-                <property name="stock">gtk-missing-image</property>
+                <property name="icon-name">dialog-question</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1176,9 +1143,9 @@
             <child>
               <object class="GtkLabel" id="StatusLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="ellipsize">end</property>
-                <property name="track_visited_links">False</property>
+                <property name="track-visited-links">False</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
@@ -1198,25 +1165,25 @@
         <child>
           <object class="GtkBox" id="BottomBarBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_bottom">6</property>
+            <property name="can-focus">False</property>
+            <property name="margin-bottom">6</property>
             <property name="hexpand">True</property>
             <property name="vexpand">False</property>
             <property name="spacing">12</property>
             <child>
               <object class="GtkToolbar" id="BottomToolbar">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="icon_size">4</property>
                 <child>
                   <object class="GtkToolButton" id="PreviousToolButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Previous track</property>
-                    <property name="action_name">app.player.previous</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Previous track</property>
+                    <property name="action-name">app.player.previous</property>
                     <property name="label" translatable="yes">Previous</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-previous-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-previous-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1226,12 +1193,12 @@
                 <child>
                   <object class="GtkToolButton" id="StopToolButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Stop playback</property>
-                    <property name="action_name">app.player.stop</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Stop playback</property>
+                    <property name="action-name">app.player.stop</property>
                     <property name="label" translatable="yes">Stop</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-stop-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-stop-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1241,12 +1208,12 @@
                 <child>
                   <object class="GtkToolButton" id="PlayPauseButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Pause or resume playback</property>
-                    <property name="action_name">app.player.play-pause</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Pause or resume playback</property>
+                    <property name="action-name">app.player.play-pause</property>
                     <property name="label" translatable="yes">Play/Pause</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-play-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-play-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1256,12 +1223,12 @@
                 <child>
                   <object class="GtkToolButton" id="NextToolButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Next track</property>
-                    <property name="action_name">app.player.next</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Next track</property>
+                    <property name="action-name">app.player.next</property>
                     <property name="label" translatable="yes">Next</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-next-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-next-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1271,7 +1238,7 @@
                 <child>
                   <object class="GtkSeparatorToolItem" id="BtnNextSeparatorItem">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1281,12 +1248,12 @@
                 <child>
                   <object class="GtkToggleToolButton" id="RandomButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Shuffle mode</property>
-                    <property name="action_name">app.player.toggle.random</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Shuffle mode</property>
+                    <property name="action-name">app.player.toggle.random</property>
                     <property name="label" translatable="yes">Random</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-random-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-random-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1296,12 +1263,12 @@
                 <child>
                   <object class="GtkToggleToolButton" id="RepeatButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Repeat mode</property>
-                    <property name="action_name">app.player.toggle.repeat</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Repeat mode</property>
+                    <property name="action-name">app.player.toggle.repeat</property>
                     <property name="label" translatable="yes">Repeat</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-repeat-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-repeat-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1311,12 +1278,12 @@
                 <child>
                   <object class="GtkToggleToolButton" id="ConsumeButton">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Consume mode</property>
-                    <property name="action_name">app.player.toggle.consume</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Consume mode</property>
+                    <property name="action-name">app.player.toggle.consume</property>
                     <property name="label" translatable="yes">Consume</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">ymuse-consume-symbolic</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-consume-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1333,9 +1300,9 @@
             <child>
               <object class="GtkVolumeButton" id="VolumeButton">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="focus-on-click">False</property>
+                <property name="receives-default">True</property>
                 <property name="relief">none</property>
                 <property name="orientation">vertical</property>
                 <property name="adjustment">VolumeAdjustment</property>
@@ -1346,8 +1313,8 @@ audio-volume-medium-symbolic</property>
                 <signal name="value-changed" handler="on_VolumeButton_valueChanged" swapped="no"/>
                 <child internal-child="plus_button">
                   <object class="GtkButton">
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="relief">none</property>
@@ -1355,8 +1322,8 @@ audio-volume-medium-symbolic</property>
                 </child>
                 <child internal-child="minus_button">
                   <object class="GtkButton">
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="relief">none</property>
@@ -1371,17 +1338,17 @@ audio-volume-medium-symbolic</property>
             </child>
             <child>
               <object class="GtkScale" id="PlayPositionScale">
-                <property name="width_request">100</property>
+                <property name="width-request">100</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">True</property>
                 <property name="adjustment">PlayPositionAdjustment</property>
-                <property name="restrict_to_fill_level">False</property>
-                <property name="fill_level">0</property>
-                <property name="round_digits">0</property>
+                <property name="restrict-to-fill-level">False</property>
+                <property name="fill-level">0</property>
+                <property name="round-digits">0</property>
                 <property name="digits">0</property>
-                <property name="draw_value">False</property>
-                <property name="value_pos">right</property>
+                <property name="draw-value">False</property>
+                <property name="value-pos">right</property>
                 <signal name="button-press-event" handler="on_PlayPositionScale_buttonEvent" swapped="no"/>
                 <signal name="button-release-event" handler="on_PlayPositionScale_buttonEvent" swapped="no"/>
                 <signal name="value-changed" handler="on_PlayPositionScale_valueChanged" swapped="no"/>
@@ -1394,13 +1361,13 @@ audio-volume-medium-symbolic</property>
             </child>
             <child>
               <object class="GtkLabel" id="PositionLabel">
-                <property name="width_request">100</property>
+                <property name="width-request">100</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Current track time</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Current track time</property>
                 <property name="label">&lt;big&gt;0:00&lt;/big&gt; / 0:00</property>
-                <property name="use_markup">True</property>
-                <property name="track_visited_links">False</property>
+                <property name="use-markup">True</property>
+                <property name="track-visited-links">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1418,15 +1385,49 @@ audio-volume-medium-symbolic</property>
         </child>
       </object>
     </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="MainHeaderBar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="show-close-button">True</property>
+        <child type="title">
+          <object class="GtkStackSwitcher" id="MainStackSwitcher">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="halign">start</property>
+            <property name="stack">MainStack</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="AppMenuButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="popover">AppPopoverMenu</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="icon-name">open-menu-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkPopoverMenu" id="LibraryAddToPlaylistPopoverMenu">
-    <property name="can_focus">False</property>
-    <property name="relative_to">LibraryAddToPlaylistToolButton</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">LibraryAddToPlaylistToolButton</property>
     <child>
       <object class="GtkBox" id="LibraryAddToPlaylistBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <child>
           <placeholder/>
@@ -1439,21 +1440,21 @@ audio-volume-medium-symbolic</property>
     </child>
   </object>
   <object class="GtkPopoverMenu" id="LibraryUpdatePopoverMenu">
-    <property name="can_focus">False</property>
-    <property name="relative_to">LibraryUpdateToolButton</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">LibraryUpdateToolButton</property>
     <child>
       <object class="GtkBox" id="LibraryUpdateBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkModelButton" id="LibraryUpdateAllModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the entire music database</property>
-            <property name="action_name">app.library.update.all</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Update the entire music database</property>
+            <property name="action-name">app.library.update.all</property>
             <property name="text" translatable="yes">Update entire library</property>
           </object>
           <packing>
@@ -1465,10 +1466,10 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkModelButton" id="LibraryUpdateSelectedModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the selected item in music database</property>
-            <property name="action_name">app.library.update.selected</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Update the selected item in music database</property>
+            <property name="action-name">app.library.update.selected</property>
             <property name="text" translatable="yes">Update selected item</property>
           </object>
           <packing>
@@ -1480,10 +1481,10 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkModelButton" id="LibraryRescanAllModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the entire music database, including unmodified files</property>
-            <property name="action_name">app.library.rescan.all</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Update the entire music database, including unmodified files</property>
+            <property name="action-name">app.library.rescan.all</property>
             <property name="text" translatable="yes">Rescan all files</property>
           </object>
           <packing>
@@ -1495,10 +1496,10 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkModelButton" id="LibraryRescanSelectedModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Update the selected item, including unmodified files</property>
-            <property name="action_name">app.library.rescan.selected</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Update the selected item, including unmodified files</property>
+            <property name="action-name">app.library.rescan.selected</property>
             <property name="text" translatable="yes">Rescan selected item</property>
           </object>
           <packing>
@@ -1515,85 +1516,95 @@ audio-volume-medium-symbolic</property>
     </child>
   </object>
   <object class="GtkPopoverMenu" id="QueueSavePopoverMenu">
-    <property name="can_focus">False</property>
-    <property name="relative_to">QueueSaveToolButton</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">QueueSaveToolButton</property>
     <child>
       <object class="GtkBox" id="QueueSaveBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
+          <!-- n-columns=3 n-rows=3 -->
           <object class="GtkGrid" id="QueueSaveGrid">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="hexpand">True</property>
-            <property name="row_spacing">6</property>
-            <property name="column_spacing">6</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">6</property>
             <child>
               <object class="GtkLabel" id="QueueSavePlaylistLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">False</property>
                 <property name="label" translatable="yes">Save into playlist</property>
                 <property name="xalign">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxText" id="QueueSavePlaylistComboBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">True</property>
                 <signal name="changed" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="QueueSavePlaylistNameEntry">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can-focus">True</property>
                 <property name="hexpand">True</property>
                 <signal name="changed" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="QueueSaveSelectedOnlyCheckButton">
                 <property name="label" translatable="yes">Save selected tracks only</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="on_QueueSavePopoverMenu_validate" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="QueueSavePlaylistNameLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">False</property>
                 <property name="label" translatable="yes">New playlist name</property>
                 <property name="xalign">1</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>
@@ -1608,13 +1619,13 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkBox" id="QueueSaveBottomBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkModelButton" id="QueueSaveReplaceModelButton">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="action_name">app.queue.save.replace</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.queue.save.replace</property>
                 <property name="text" translatable="yes">Replace playlist</property>
                 <property name="centered">True</property>
               </object>
@@ -1627,9 +1638,9 @@ audio-volume-medium-symbolic</property>
             <child>
               <object class="GtkModelButton" id="QueueSaveAppendModelButton">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="action_name">app.queue.save.append</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.queue.save.append</property>
                 <property name="text" translatable="yes">Append tracks</property>
                 <property name="centered">True</property>
               </object>
@@ -1654,24 +1665,24 @@ audio-volume-medium-symbolic</property>
     </child>
   </object>
   <object class="GtkPopoverMenu" id="QueueSortPopoverMenu">
-    <property name="can_focus">False</property>
-    <property name="relative_to">QueueSortToolButton</property>
+    <property name="can-focus">False</property>
+    <property name="relative-to">QueueSortToolButton</property>
     <child>
       <object class="GtkBox" id="QueueSortBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">12</property>
+        <property name="can-focus">False</property>
+        <property name="border-width">12</property>
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
         <child>
           <object class="GtkBox" id="QueueSortByBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkLabel" id="QueueSortByLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Sort queue by</property>
                 <property name="xalign">0</property>
               </object>
@@ -1684,7 +1695,7 @@ audio-volume-medium-symbolic</property>
             <child>
               <object class="GtkComboBoxText" id="QueueSortByComboBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="hexpand">True</property>
               </object>
               <packing>
@@ -1696,9 +1707,9 @@ audio-volume-medium-symbolic</property>
             <child>
               <object class="GtkModelButton" id="QueueSortAscModelButton">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="action_name">app.queue.sort.asc</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.queue.sort.asc</property>
                 <property name="text" translatable="yes">Ascending</property>
                 <property name="centered">True</property>
               </object>
@@ -1711,9 +1722,9 @@ audio-volume-medium-symbolic</property>
             <child>
               <object class="GtkModelButton" id="QueueSortDescModelButton">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="action_name">app.queue.sort.desc</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.queue.sort.desc</property>
                 <property name="text" translatable="yes">Descending</property>
                 <property name="centered">True</property>
               </object>
@@ -1733,7 +1744,7 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkSeparator">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1744,9 +1755,9 @@ audio-volume-medium-symbolic</property>
         <child>
           <object class="GtkModelButton" id="QueueSortShuffleModelButton">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.queue.sort.shuffle</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="action-name">app.queue.sort.shuffle</property>
             <property name="text" translatable="yes">Shuffle</property>
           </object>
           <packing>
