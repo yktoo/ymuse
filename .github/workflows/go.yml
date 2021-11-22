@@ -31,5 +31,10 @@ jobs:
     - name: Verify format
       run: test `gofmt -l . | wc -l` = 0
 
+    - name: Start Xvfb
+      run: |
+        export DISPLAY=:99.0
+        sudo /usr/bin/Xvfb $DISPLAY &>/dev/null &
+
     - name: Test
       run: go test -v ./...
