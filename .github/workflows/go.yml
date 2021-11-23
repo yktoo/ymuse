@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - master
   pull_request:
     branches:
       - dev
@@ -73,9 +74,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build snap
+        # This must run AFTER goreleaser has built the app
+        id: snap
+        uses: snapcore/action-build@v1
+
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
           name: dist
           path: |
             dist
+            ${{ steps.snap.outputs.snap }}
+
+      - name: Publish dev snap to edge channel
+        if: github.ref_type == 'branch' && github.ref == 'refs/heads/dev'
+        uses: snapcore/action-publish@v1
+        with:
+          store_login: ${{ secrets.snapcraft_token }}
+          snap: ${{ steps.snap.outputs.snap }}
+          release: edge
