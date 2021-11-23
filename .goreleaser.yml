@@ -19,7 +19,7 @@ archives:
     - id: ymuse-binary
       builds:
           - ymuse
-      wrap_in_directory: true
+      wrap_in_directory: 'true'
       files:
           - COPYING
           - README.md
@@ -64,8 +64,8 @@ nfpms:
         - libgtk-3-0
     recommends:
         - mpd
-    suggests:
-    conflicts:
+    suggests: []
+    conflicts: []
     bindir: /usr/bin
     contents:
         - src: "resources/icons/hicolor/**/*"

@@ -13,12 +13,16 @@ icon: resources/icons/hicolor/scalable/apps/icon.svg
 license: Apache-2.0
 confinement: strict
 
+architectures:
+  - build-on: amd64
+    run-on: amd64
+
 apps:
   ymuse:
     desktop: ymuse.desktop
     command: ymuse
     extensions:
-      - gnome-3-28
+      - gnome-3-34
     plugs:
       - network
     slots:
