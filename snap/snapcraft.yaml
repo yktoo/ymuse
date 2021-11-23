@@ -1,5 +1,5 @@
 name: ymuse
-base: core20
+base: core18
 adopt-info: ymuse
 summary: Easy, functional, and snappy client for Music Player Daemon
 title: Ymuse
