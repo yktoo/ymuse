@@ -1,5 +1,5 @@
 name: ymuse
-base: core18
+base: core20
 adopt-info: ymuse
 summary: Easy, functional, and snappy client for Music Player Daemon
 title: Ymuse
@@ -12,6 +12,10 @@ description: |
 icon: resources/icons/hicolor/scalable/apps/icon.svg
 license: Apache-2.0
 confinement: strict
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
 
 apps:
   ymuse:
