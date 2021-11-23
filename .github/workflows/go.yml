@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,9 @@ jobs:
         sudo apt-get install -y libgtk-3-dev xvfb gettext
 
     - name: Prepare
-      run: go generate && go mod download
+      run: |
+        go generate
+        go mod download
 
     - name: Verify format
       run: test `gofmt -l . | wc -l` = 0
@@ -36,3 +38,39 @@ jobs:
         export DISPLAY=:99.0
         sudo /usr/bin/Xvfb $DISPLAY &>/dev/null &
         go test -v ./...
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Verify GoReleaser config
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: latest
+          args: check
+
+      - name: Build and deploy (dry run)
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: |
+            dist
