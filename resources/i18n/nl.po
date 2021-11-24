@@ -764,38 +764,11 @@ msgstr "gedetailleerde logging"
 msgid "Work"
 msgstr "Kunstwerk"
 
+msgid "Written by Dmitry Kann"
+msgstr "Geschreven door Dmitry Kann"
+
 msgid "Year"
 msgstr "Jaar"
 
 msgid "Ymuse version %s; %s; released %s"
 msgstr "Ymuse versie %s; %s; gereleased %s"
-
-#~ msgid "<i>(not connected)</i>"
-#~ msgstr "<i>(geen verbinding)</i>"
-
-#~ msgid "%d files"
-#~ msgstr "%d bestanden"
-
-#~ msgid "%d folders"
-#~ msgstr "%d mappen"
-
-#~ msgid "%d playlists"
-#~ msgstr "%d afspeellijsten"
-
-#~ msgid "Delete selected playlist"
-#~ msgstr "Geselecteerde afspeellijst verwijderen"
-
-#~ msgid "No playlists"
-#~ msgstr "Geen afspeellijst"
-
-#~ msgid "Rename selected playlist"
-#~ msgstr "Geselecteerde afspeellijst hernoemen"
-
-#~ msgid "Switch to Playlists tab"
-#~ msgstr "Naar het Afspeellijsten tabblad"
-
-#~ msgid "Go to Now playing"
-#~ msgstr "Naar het huidige item gaan"
-
-#~ msgid "Jump to now playing"
-#~ msgstr "Naar het huidige item gaan"

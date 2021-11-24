@@ -750,6 +750,9 @@ msgstr ""
 msgid "Work"
 msgstr ""
 
+msgid "Written by Dmitry Kann"
+msgstr ""
+
 msgid "Year"
 msgstr ""
 

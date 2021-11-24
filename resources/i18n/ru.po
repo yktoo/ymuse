@@ -772,35 +772,11 @@ msgstr "подробное журналирование"
 msgid "Work"
 msgstr "Произведение искусства"
 
+msgid "Written by Dmitry Kann"
+msgstr "Автор: Дмитрий Канн"
+
 msgid "Year"
 msgstr "Год"
 
 msgid "Ymuse version %s; %s; released %s"
 msgstr "Ymuse версии %s; %s; выпущен %s"
-
-#~ msgid "<i>(not connected)</i>"
-#~ msgstr "<i>(нет подключения)</i>"
-
-#~ msgid "Delete selected playlist"
-#~ msgstr "Удалить выделенный плейлист"
-
-#~ msgid "Switch to Playlists tab"
-#~ msgstr "Переключиться во вкладку «Плейлисты»"
-
-#~ msgid "No playlists"
-#~ msgstr "Нет плейлистов"
-
-#~ msgid "%d playlists"
-#~ msgstr "%d плейлистов"
-
-#~ msgid "%d files"
-#~ msgstr "%d файлов"
-
-#~ msgid "%d folders"
-#~ msgstr "%d папок"
-
-#~ msgid "Go to Now playing"
-#~ msgstr "Перейти к текущему треку"
-
-#~ msgid "Jump to now playing"
-#~ msgstr "Перейти к текущему треку"

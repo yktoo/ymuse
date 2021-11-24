@@ -756,7 +756,7 @@ func (w *MainWindow) about() {
 	dlg.SetLogoIconName(config.AppMetadata.Icon)
 	dlg.SetProgramName(config.AppMetadata.Name)
 	dlg.SetComments(fmt.Sprintf(glib.Local("Release date: %s"), config.AppMetadata.BuildDate))
-	dlg.SetCopyright(config.AppMetadata.Copyright)
+	dlg.SetCopyright(glib.Local(config.AppMetadata.Copyright))
 	dlg.SetLicense(config.AppMetadata.License)
 	dlg.SetVersion(config.AppMetadata.Version)
 	dlg.SetWebsite(config.AppMetadata.URL)
