@@ -15,7 +15,9 @@ It supports library browsing and search, playlists, streams etc.
 [![Ymuse Library screenshot](https://res.cloudinary.com/yktoo/image/upload/t_s320/blog/wqud8spomcmuduvgar9d.png)](https://res.cloudinary.com/yktoo/image/upload/blog/wqud8spomcmuduvgar9d.png)
 [![Ymuse Streams screenshot](https://res.cloudinary.com/yktoo/image/upload/t_s320/blog/pnwj9nlucfuobw0vcv0l.png)](https://res.cloudinary.com/yktoo/image/upload/blog/pnwj9nlucfuobw0vcv0l.png)
 
-Have a look at the [Feature Tour video](https://youtu.be/FuO7QWOaS1A) for more details.
+Watch Ymuse feature tour video:
+
+[![Feature tour video](https://img.youtube.com/vi/h0g2gk5DM8s/0.jpg)](https://www.youtube.com/watch?v=h0g2gk5DM8s)
 
 ## Installing
 
