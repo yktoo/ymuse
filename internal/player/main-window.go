@@ -2569,7 +2569,9 @@ func (w *MainWindow) updateStreams() {
 
 	// Make sure the streams are sorted by name
 	cfg := config.GetConfig()
-	sort.Slice(cfg.Streams, func(i, j int) bool { return cfg.Streams[i].Name < cfg.Streams[j].Name })
+	sort.Slice(cfg.Streams, func(i, j int) bool {
+		return strings.ToUpper(cfg.Streams[i].Name) < strings.ToUpper(cfg.Streams[j].Name)
+	})
 
 	// Repopulate the streams list
 	var rowToSelect *gtk.ListBoxRow
