@@ -77,3 +77,9 @@ nfpms:
     scripts:
         postinstall: "resources/scripts/postinst"
         postremove:  "resources/scripts/postrm"
+
+    overrides:
+      rpm:
+        dependencies:
+          - glibc
+          - gtk3
