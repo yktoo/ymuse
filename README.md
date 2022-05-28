@@ -30,7 +30,7 @@ You can:
 
 ### Requirements
 
-* Go 1.17+
+* Go 1.18+
 * GTK 3.22+
 
 ### Getting started
