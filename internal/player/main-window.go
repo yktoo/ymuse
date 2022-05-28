@@ -1183,6 +1183,8 @@ func (w *MainWindow) libraryAddToPlaylist() {
 	// Clean up and repopulate the menu with playlists
 	util.ClearChildren(w.LibraryAddToPlaylistBox.Container)
 	for _, name := range w.connector.GetPlaylists() {
+		name := name // Make an in-loop copy
+
 		// Make a new button
 		btn, err := gtk.ModelButtonNew()
 		if errCheck(err, "ModelButtonNew() failed") {
