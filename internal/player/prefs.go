@@ -77,8 +77,8 @@ type PrefsDialog struct {
 	onPlayerSettingChanged func()
 }
 
-// PreferencesDialog creates, shows and disposes of a Preferences dialog instance
-func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerSettingChanged func()) {
+// ShowPreferencesDialog creates, shows and disposes of a Preferences dialog instance
+func ShowPreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged, onPlayerSettingChanged func()) {
 	// Create the dialog
 	d := &PrefsDialog{
 		onQueueColumnsChanged:  onQueueColumnsChanged,
@@ -92,7 +92,7 @@ func PreferencesDialog(parent gtk.IWindow, onMpdReconnect, onQueueColumnsChanged
 	}
 
 	// Check for errors
-	if errCheck(err, "PreferencesDialog(): failed to initialise dialog") {
+	if errCheck(err, "ShowPreferencesDialog(): failed to initialise dialog") {
 		util.ErrorDialog(parent, fmt.Sprint(glib.Local("Failed to load UI widgets"), err))
 		return
 	}

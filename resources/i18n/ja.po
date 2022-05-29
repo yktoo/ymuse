@@ -93,6 +93,15 @@ msgstr "<b>ラジオ配信</b>"
 msgid "_About…"
 msgstr "ymuseについて"
 
+msgid "_Connect to MPD"
+msgstr "MPDサーバと接続する"
+
+msgid "_Disconnect from MPD"
+msgstr "MPDサーバから切断する"
+
+msgid "_Keyboard shortcuts…"
+msgstr "キーボードショートカット"
+
 msgid "_Preferences…"
 msgstr "設定"
 
@@ -350,9 +359,6 @@ msgid "Jump to the currently played track"
 msgstr "再生中のトラックに移動する"
 
 msgid "Keyboard Shortcuts"
-msgstr "キーボードショートカット"
-
-msgid "Keyboard shortcuts…"
 msgstr "キーボードショートカット"
 
 #, fuzzy

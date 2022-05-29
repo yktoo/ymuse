@@ -84,6 +84,15 @@ msgstr ""
 msgid "_About…"
 msgstr ""
 
+msgid "_Connect to MPD"
+msgstr ""
+
+msgid "_Disconnect from MPD"
+msgstr ""
+
+msgid "_Keyboard shortcuts…"
+msgstr ""
+
 msgid "_Preferences…"
 msgstr ""
 
@@ -172,6 +181,9 @@ msgid "Automatically reconnect"
 msgstr ""
 
 msgid "Automation"
+msgstr ""
+
+msgid "Choose outputs MPD should use for playback."
 msgstr ""
 
 msgid "Clear the play queue"
@@ -384,9 +396,6 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-msgid "Keyboard shortcuts…"
-msgstr ""
-
 msgid "Label"
 msgstr ""
 
@@ -420,7 +429,13 @@ msgstr ""
 msgid "MPD _information…"
 msgstr ""
 
+msgid "MPD _outputs…"
+msgstr ""
+
 msgid "MPD Information"
+msgstr ""
+
+msgid "MPD Outputs"
 msgstr ""
 
 msgid "Name"

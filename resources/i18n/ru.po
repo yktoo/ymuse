@@ -102,6 +102,15 @@ msgstr "<b>Потоки</b>"
 msgid "_About…"
 msgstr "_О программе…"
 
+msgid "_Connect to MPD"
+msgstr "_Подключиться к MPD"
+
+msgid "_Disconnect from MPD"
+msgstr "Откл_ючиться от MPD"
+
+msgid "_Keyboard shortcuts…"
+msgstr "Горячие _клавиши…"
+
 msgid "_Preferences…"
 msgstr "_Настройки…"
 
@@ -191,6 +200,9 @@ msgstr "Автоматически восстанавливать подключ
 
 msgid "Automation"
 msgstr "Автоматизация"
+
+msgid "Choose outputs MPD should use for playback."
+msgstr "Выберите выходы, через которые MPD должен воспроизводить звук."
 
 msgid "Clear the play queue"
 msgstr "Стереть очередь"
@@ -402,9 +414,6 @@ msgstr "Перейти к текущему воспроизводимому тр
 msgid "Keyboard Shortcuts"
 msgstr "Сочетания клавиш"
 
-msgid "Keyboard shortcuts…"
-msgstr "Горячие клавиши…"
-
 msgid "Label"
 msgstr "Лейбл"
 
@@ -438,8 +447,14 @@ msgstr "Передвинуть вверх"
 msgid "MPD _information…"
 msgstr "Информация об _MPD…"
 
+msgid "MPD _outputs…"
+msgstr "Выходы _звука MPD…"
+
 msgid "MPD Information"
 msgstr "Информация об MPD"
+
+msgid "MPD Outputs"
+msgstr "Звуковые выходы MPD"
 
 msgid "Name"
 msgstr "Наименование"

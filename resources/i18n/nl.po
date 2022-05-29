@@ -98,6 +98,15 @@ msgstr "<b>Streams</b>"
 msgid "_About…"
 msgstr "_Over…"
 
+msgid "_Connect to MPD"
+msgstr "_Verbinden met MPD"
+
+msgid "_Disconnect from MPD"
+msgstr "Verbinding met MPD ver_breken"
+
+msgid "_Keyboard shortcuts…"
+msgstr "_Toetsenbord sneltoetsen…"
+
 msgid "_Preferences…"
 msgstr "I_nstellingen…"
 
@@ -187,6 +196,9 @@ msgstr "Automatisch verbinding herstellen"
 
 msgid "Automation"
 msgstr "Automatisering"
+
+msgid "Choose outputs MPD should use for playback."
+msgstr "Kies de geluidsuitgangen die MPD moet gebruiken voor het afspelen."
 
 msgid "Clear the play queue"
 msgstr "De wachtrij legen"
@@ -398,9 +410,6 @@ msgstr "Naar het momenteel afgespeelde item gaan"
 msgid "Keyboard Shortcuts"
 msgstr "Toetsenbord sneltoetsen"
 
-msgid "Keyboard shortcuts…"
-msgstr "Toetsenbord sneltoetsen…"
-
 msgid "Label"
 msgstr "Label"
 
@@ -434,8 +443,14 @@ msgstr "Omhoog"
 msgid "MPD _information…"
 msgstr "MPD _informatie…"
 
+msgid "MPD _outputs…"
+msgstr "MPD _uitgangen…"
+
 msgid "MPD Information"
 msgstr "MPD Informatie"
+
+msgid "MPD Outputs"
+msgstr "MPD Geluidsuitgangen"
 
 msgid "Name"
 msgstr "Naam"

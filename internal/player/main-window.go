@@ -121,6 +121,7 @@ type MainWindow struct {
 	// Actions
 	aMPDDisconnect        *glib.SimpleAction
 	aMPDInfo              *glib.SimpleAction
+	aMPDOutputs           *glib.SimpleAction
 	aQueueNowPlaying      *glib.SimpleAction
 	aQueueClear           *glib.SimpleAction
 	aQueueSort            *glib.SimpleAction
@@ -747,25 +748,6 @@ func (w *MainWindow) onVolumeValueChanged() {
 	}
 }
 
-// about shows the application's about dialog
-func (w *MainWindow) about() {
-	dlg, err := gtk.AboutDialogNew()
-	if errCheck(err, "AboutDialogNew() failed") {
-		return
-	}
-	dlg.SetLogoIconName(config.AppMetadata.Icon)
-	dlg.SetProgramName(config.AppMetadata.Name)
-	dlg.SetComments(fmt.Sprintf(glib.Local("Release date: %s"), config.AppMetadata.BuildDate))
-	dlg.SetCopyright(glib.Local(config.AppMetadata.Copyright))
-	dlg.SetLicense(config.AppMetadata.License)
-	dlg.SetVersion(config.AppMetadata.Version)
-	dlg.SetWebsite(config.AppMetadata.URL)
-	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
-	dlg.SetTransientFor(w.AppWindow)
-	dlg.Connect("response", dlg.Destroy)
-	dlg.Run()
-}
-
 // addAction add a new application action, with an optional keyboard shortcut
 func (w *MainWindow) addAction(name, shortcut string, onActivate func()) *glib.SimpleAction {
 	action := glib.SimpleActionNew(name, nil)
@@ -993,88 +975,6 @@ func (w *MainWindow) getSelectedStreamIndex() int {
 	return row.GetIndex()
 }
 
-// information displays a dialog with MPD information
-func (w *MainWindow) information() {
-	// Fetch information
-	var version string
-	var stats mpd.Attrs
-	var decoders []mpd.Attrs
-	var err error
-	w.connector.IfConnected(func(client *mpd.Client) {
-		// Fetch client version
-		version = client.Version()
-		// Fetch stats
-		stats, err = client.Stats()
-		if errCheck(err, "Stats() failed") {
-			return
-		}
-		// Fetch decoder configuration
-		decoders, err = client.Command("decoders").AttrsList("plugin")
-		if errCheck(err, "Command(decoders) failed") {
-			return
-		}
-	})
-	if w.errCheckDialog(err, glib.Local("Failed to retrieve information from MPD")) || stats == nil {
-		return
-	}
-
-	// Parse DB update time
-	updateTime := glib.Local("(unknown)")
-	if i, err := strconv.ParseInt(stats["db_update"], 10, 64); err == nil {
-		updateTime = time.Unix(i, 0).Format("2006-01-02 15:04:05")
-	}
-
-	// Load widgets from Glade file
-	var dlg struct {
-		MPDInfoDialog           *gtk.MessageDialog
-		PropertyGrid            *gtk.Grid
-		DaemonVersionLabel      *gtk.Label
-		NumberOfArtistsLabel    *gtk.Label
-		NumberOfAlbumsLabel     *gtk.Label
-		NumberOfTracksLabel     *gtk.Label
-		TotalPlayingTimeLabel   *gtk.Label
-		LastDatabaseUpdateLabel *gtk.Label
-		DaemonUptimeLabel       *gtk.Label
-		ListeningTimeLabel      *gtk.Label
-		DecoderPluginsExpander  *gtk.Expander
-		DecoderPluginsGrid      *gtk.Grid
-	}
-	builder, err := NewBuilder(mpdInfoGlade)
-	if err == nil {
-		err = builder.BindWidgets(&dlg)
-	}
-	if w.errCheckDialog(err, glib.Local("Failed to load UI widgets")) {
-		return
-	}
-	defer dlg.MPDInfoDialog.Destroy()
-
-	// Set info properties
-	dlg.DaemonVersionLabel.SetLabel(version)
-	dlg.NumberOfArtistsLabel.SetLabel(stats["artists"])
-	dlg.NumberOfAlbumsLabel.SetLabel(stats["albums"])
-	dlg.NumberOfTracksLabel.SetLabel(stats["songs"])
-	dlg.TotalPlayingTimeLabel.SetLabel(util.FormatSecondsStr(stats["db_playtime"]))
-	dlg.LastDatabaseUpdateLabel.SetLabel(updateTime)
-	dlg.DaemonUptimeLabel.SetLabel(util.FormatSecondsStr(stats["uptime"]))
-	dlg.ListeningTimeLabel.SetLabel(util.FormatSecondsStr(stats["playtime"]))
-
-	// Add decoder plugins
-	for i, decoder := range decoders {
-		dlg.DecoderPluginsGrid.Attach(util.NewLabel(decoder["plugin"]), 0, i, 1, 1)
-		if s, ok := decoder["suffix"]; ok {
-			dlg.DecoderPluginsGrid.Attach(util.NewLabel("."+s), 1, i, 1, 1)
-		}
-		if s, ok := decoder["mime_type"]; ok {
-			dlg.DecoderPluginsGrid.Attach(util.NewLabel(s), 2, i, 1, 1)
-		}
-	}
-
-	// Set up and show the dialog
-	dlg.MPDInfoDialog.SetTransientFor(w.AppWindow)
-	dlg.MPDInfoDialog.ShowAll()
-	dlg.MPDInfoDialog.Run()
-}
-
 // initLibraryWidgets initialises library widgets and actions
 func (w *MainWindow) initLibraryWidgets() {
 	// Create actions
@@ -1162,10 +1062,11 @@ func (w *MainWindow) initWidgets() {
 	// Create global actions
 	w.addAction("mpd.connect", "<Ctrl><Shift>C", w.connect)
 	w.aMPDDisconnect = w.addAction("mpd.disconnect", "<Ctrl><Shift>D", w.disconnect)
-	w.aMPDInfo = w.addAction("mpd.info", "<Ctrl><Shift>I", w.information)
-	w.addAction("prefs", "<Ctrl>comma", w.preferences)
-	w.addAction("about", "F1", w.about)
-	w.addAction("shortcuts", "<Ctrl><Shift>question", w.shortcutInfo)
+	w.aMPDInfo = w.addAction("mpd.info", "<Ctrl><Shift>I", w.showMPDInfo)
+	w.addAction("prefs", "<Ctrl>comma", w.showPreferences)
+	w.aMPDOutputs = w.addAction("outputs", "<Ctrl>O", w.showOutputs)
+	w.addAction("about", "F1", w.showAbout)
+	w.addAction("shortcuts", "<Ctrl><Shift>question", w.showShortcuts)
 	w.addAction("quit", "<Ctrl>Q", w.AppWindow.Close)
 	w.addAction("page.queue", "<Ctrl>1", func() { w.MainStack.SetVisibleChild(w.QueueBox) })
 	w.addAction("page.library", "<Ctrl>2", func() { w.MainStack.SetVisibleChild(w.LibraryBox) })
@@ -1428,11 +1329,6 @@ func (w *MainWindow) playerToggleRepeat() {
 
 	// Check for error
 	w.errCheckDialog(err, glib.Local("Failed to toggle repeat mode"))
-}
-
-// preferences shows the preferences dialog
-func (w *MainWindow) preferences() {
-	PreferencesDialog(w.AppWindow, w.connect, w.updateQueueColumns, w.applyPlayerSettings)
 }
 
 // queueClear empties MPD's play queue
@@ -1815,8 +1711,124 @@ func (w *MainWindow) queueURIs(replace triBool, uris ...string) {
 	}
 }
 
-// shortcutInfo displays a shortcut info window
-func (w *MainWindow) shortcutInfo() {
+// Show displays the window and all its child widgets
+func (w *MainWindow) Show() {
+	w.AppWindow.Show()
+}
+
+// showAbout shows the application's about dialog
+func (w *MainWindow) showAbout() {
+	dlg, err := gtk.AboutDialogNew()
+	if errCheck(err, "AboutDialogNew() failed") {
+		return
+	}
+	dlg.SetLogoIconName(config.AppMetadata.Icon)
+	dlg.SetProgramName(config.AppMetadata.Name)
+	dlg.SetComments(fmt.Sprintf(glib.Local("Release date: %s"), config.AppMetadata.BuildDate))
+	dlg.SetCopyright(glib.Local(config.AppMetadata.Copyright))
+	dlg.SetLicense(config.AppMetadata.License)
+	dlg.SetVersion(config.AppMetadata.Version)
+	dlg.SetWebsite(config.AppMetadata.URL)
+	dlg.SetWebsiteLabel(config.AppMetadata.URLLabel)
+	dlg.SetTransientFor(w.AppWindow)
+	dlg.Connect("response", dlg.Destroy)
+	dlg.Run()
+}
+
+// showMPDInfo displays a dialog with MPD information
+func (w *MainWindow) showMPDInfo() {
+	// Fetch information
+	var version string
+	var stats mpd.Attrs
+	var decoders []mpd.Attrs
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		// Fetch client version
+		version = client.Version()
+		// Fetch stats
+		stats, err = client.Stats()
+		if errCheck(err, "Stats() failed") {
+			return
+		}
+		// Fetch decoder configuration
+		decoders, err = client.Command("decoders").AttrsList("plugin")
+		if errCheck(err, "Command(decoders) failed") {
+			return
+		}
+	})
+	if w.errCheckDialog(err, glib.Local("Failed to retrieve information from MPD")) || stats == nil {
+		return
+	}
+
+	// Parse DB update time
+	updateTime := glib.Local("(unknown)")
+	if i, err := strconv.ParseInt(stats["db_update"], 10, 64); err == nil {
+		updateTime = time.Unix(i, 0).Format("2006-01-02 15:04:05")
+	}
+
+	// Load widgets from Glade file
+	var dlg struct {
+		MPDInfoDialog           *gtk.MessageDialog
+		PropertyGrid            *gtk.Grid
+		DaemonVersionLabel      *gtk.Label
+		NumberOfArtistsLabel    *gtk.Label
+		NumberOfAlbumsLabel     *gtk.Label
+		NumberOfTracksLabel     *gtk.Label
+		TotalPlayingTimeLabel   *gtk.Label
+		LastDatabaseUpdateLabel *gtk.Label
+		DaemonUptimeLabel       *gtk.Label
+		ListeningTimeLabel      *gtk.Label
+		DecoderPluginsExpander  *gtk.Expander
+		DecoderPluginsGrid      *gtk.Grid
+	}
+	builder, err := NewBuilder(mpdInfoGlade)
+	if err == nil {
+		err = builder.BindWidgets(&dlg)
+	}
+	if w.errCheckDialog(err, glib.Local("Failed to load UI widgets")) {
+		return
+	}
+	defer dlg.MPDInfoDialog.Destroy()
+
+	// Set info properties
+	dlg.DaemonVersionLabel.SetLabel(version)
+	dlg.NumberOfArtistsLabel.SetLabel(stats["artists"])
+	dlg.NumberOfAlbumsLabel.SetLabel(stats["albums"])
+	dlg.NumberOfTracksLabel.SetLabel(stats["songs"])
+	dlg.TotalPlayingTimeLabel.SetLabel(util.FormatSecondsStr(stats["db_playtime"]))
+	dlg.LastDatabaseUpdateLabel.SetLabel(updateTime)
+	dlg.DaemonUptimeLabel.SetLabel(util.FormatSecondsStr(stats["uptime"]))
+	dlg.ListeningTimeLabel.SetLabel(util.FormatSecondsStr(stats["playtime"]))
+
+	// Add decoder plugins
+	for i, decoder := range decoders {
+		dlg.DecoderPluginsGrid.Attach(util.NewLabel(decoder["plugin"]), 0, i, 1, 1)
+		if s, ok := decoder["suffix"]; ok {
+			dlg.DecoderPluginsGrid.Attach(util.NewLabel("."+s), 1, i, 1, 1)
+		}
+		if s, ok := decoder["mime_type"]; ok {
+			dlg.DecoderPluginsGrid.Attach(util.NewLabel(s), 2, i, 1, 1)
+		}
+	}
+
+	// Set up and show the dialog
+	dlg.MPDInfoDialog.SetTransientFor(w.AppWindow)
+	dlg.MPDInfoDialog.ShowAll()
+	dlg.MPDInfoDialog.Run()
+}
+
+// showOutputs shows the Outputs dialog
+func (w *MainWindow) showOutputs() {
+	ShowOutputsDialog(w.AppWindow, w.connector)
+}
+
+// showPreferences shows the Preferences dialog
+func (w *MainWindow) showPreferences() {
+	ShowPreferencesDialog(w.AppWindow, w.connect, w.updateQueueColumns, w.applyPlayerSettings)
+}
+
+// showShortcuts displays a shortcut info window
+func (w *MainWindow) showShortcuts() {
 	// Construct a window from the Glade resource
 	builder, err := NewBuilder(shortcutsGlade)
 
@@ -1845,11 +1857,6 @@ func (w *MainWindow) shortcutInfo() {
 	errCheck(sw.SetProperty("section-name", "shortcuts"), "Failed to set shortcut window's section name")
 }
 
-// Show displays the window and all its child widgets
-func (w *MainWindow) Show() {
-	w.AppWindow.Show()
-}
-
 // setQueueHighlight selects or deselects an item in the Queue tree view at the given index
 func (w *MainWindow) setQueueHighlight(index int, selected bool) {
 	if index >= 0 {
@@ -1876,6 +1883,7 @@ func (w *MainWindow) updateAll() {
 	connected, connecting := w.connector.ConnectStatus()
 	w.aMPDDisconnect.SetEnabled(connected || connecting)
 	w.aMPDInfo.SetEnabled(connected)
+	w.aMPDOutputs.SetEnabled(connected)
 
 	// Update other widgets
 	w.updateQueue()
