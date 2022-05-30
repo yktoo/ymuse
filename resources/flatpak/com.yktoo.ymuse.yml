@@ -1,0 +1,28 @@
+app-id: com.yktoo.ymuse
+default-branch: master
+runtime: org.gnome.Platform
+runtime-version: '42'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.golang
+command: ymuse
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+modules:
+  - name: ymuse
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/golang/bin
+      build-args:
+        - --share=network
+    build-commands:
+      - go mod download
+      - go generate
+      - go build
+      - install -Dm755 -t /app/bin/ ./ymuse
+    sources:
+      - type: git
+        url: https://github.com/yktoo/ymuse

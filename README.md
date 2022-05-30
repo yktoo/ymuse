@@ -59,6 +59,24 @@ sudo update-icon-caches /usr/share/icons/hicolor/*
 
 This will create the application executable `ymuse` in the project root directory, which you can run straight away.
 
+## Packaging
+
+### DEB and RPM
+
+Requires `goreleaser` installed.
+
+```bash
+goreleaser release --rm-dist --skip-publish [--snapshot]
+```
+
+### Flatpak
+
+Requires `flatpack-builder` installed.
+
+```bash
+flatpak-builder dist resources/flatpak/com.yktoo.ymuse.yml --force-clean
+```
+
 ## License
 
 See [COPYING](COPYING).
