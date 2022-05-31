@@ -71,11 +71,10 @@ goreleaser release --rm-dist --skip-publish [--snapshot]
 
 ### Flatpak
 
-Requires `flatpack-builder` installed.
-
-```bash
-flatpak-builder dist resources/flatpak/com.yktoo.ymuse.yml --force-clean
-```
+1. Install `flatpak` and `flatpack-builder`
+2. `flatpak remote-add flathub https://flathub.org/repo/flathub.flatpakrepo`
+3. `flatpak install flathub org.gnome.Sdk//42 org.gnome.Platform//42 org.freedesktop.Sdk.Extension.golang//21.08`
+4. `flatpak-builder dist resources/flatpak/com.yktoo.ymuse.yml --force-clean`
 
 ## License
 

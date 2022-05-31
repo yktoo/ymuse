@@ -11,6 +11,8 @@ finish-args:
   - --share=network
   - --socket=x11
   - --socket=wayland
+rename-icon: ymuse
+rename-desktop-file: ymuse.desktop
 modules:
   - name: ymuse
     buildsystem: simple
@@ -21,8 +23,14 @@ modules:
     build-commands:
       - go mod download
       - go generate
-      - go build
+      - go build -ldflags "-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)"
       - install -Dm755 -t /app/bin/ ./ymuse
+      - mkdir -p /app/share/applications /app/share/icons /app/share/locale
+      - cp -r resources/ymuse.desktop    /app/share/applications/
+      - cp -r resources/i18n/generated/* /app/share/locale/
+      - cp -r resources/icons/hicolor    /app/share/icons/
+      - rm /app/share/icons/hicolor/scalable/apps/icon.svg
     sources:
       - type: git
         url: https://github.com/yktoo/ymuse
+        branch: master
