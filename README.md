@@ -73,8 +73,9 @@ goreleaser release --rm-dist --skip-publish [--snapshot]
 
 1. Install `flatpak` and `flatpack-builder`
 2. `flatpak remote-add flathub https://flathub.org/repo/flathub.flatpakrepo`
-3. `flatpak install flathub org.gnome.Sdk//42 org.gnome.Platform//42 org.freedesktop.Sdk.Extension.golang//21.08`
-4. `flatpak-builder dist resources/flatpak/com.yktoo.ymuse.yml --force-clean`
+3. `flatpak-builder dist /path/to/com.yktoo.ymuse.yml --force-clean --install-deps-from=flathub --repo=/path/to/repository`
+4. Optional: make a `.flatpak` bundle:
+   `flatpak build-bundle /path/to/repository ymuse.flatpak com.yktoo.ymuse`
 
 ## License
 
