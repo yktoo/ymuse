@@ -8,4 +8,3 @@
 /resources/i18n/generated/
 /dist/
 *.snap
-.flatpak-builder/
