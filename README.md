@@ -24,6 +24,7 @@ Watch Ymuse feature tour video:
 You can:
 
 * If your distribution supports [snap packages](https://snapcraft.io/ymuse): `sudo snap install ymuse`
+* A flatpak is available in the [flathub repository](https://flathub.org/apps/details/com.yktoo.ymuse)
 * Otherwise, you can use a binary package from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
 ## Building from source
