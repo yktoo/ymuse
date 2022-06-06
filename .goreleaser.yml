@@ -24,7 +24,7 @@ archives:
           - COPYING
           - README.md
           - resources/icons/**/*.png
-          - resources/ymuse.desktop
+          - resources/com.yktoo.ymuse.desktop
 
 checksum:
     name_template: 'checksums.txt'
@@ -41,6 +41,7 @@ changelog:
             - '^docs:'
             - '^snap:'
             - '^test:'
+            - '^wip:'
 
 release:
     github:
@@ -72,6 +73,8 @@ nfpms:
           dst: "/usr/share/icons/hicolor/"
         - src: "resources/*.desktop"
           dst: "/usr/share/applications/"
+        - src: "resources/metainfo/*.metainfo.xml"
+          dst: "/usr/share/metainfo/"
         - src: "resources/i18n/generated/**/*"
           dst: "/usr/share/locale/"
     scripts:

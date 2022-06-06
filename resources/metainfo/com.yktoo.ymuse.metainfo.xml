@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.yktoo.ymuse</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>Apache-2.0</project_license>
+    <name>Ymuse</name>
+    <summary>Easy, functional, and snappy GTK client for Music Player Daemon</summary>
+    <developer_name>Dmitry Kann</developer_name>
+    <content_rating type="oars-1.1"/>
+    <icon type="local">/usr/share/icons/hicolor/scalable/apps/com.yktoo.ymuse.svg</icon>
+
+    <description>
+        <p>Ymuse is an easy, functional, and snappy GTK front-end (client) application for Music Player Daemon.</p>
+        <p>Application features:</p>
+        <ul>
+            <li>Connection to a local or remote MPD server via TCP or Unix domain socket, auto(re)connect function.</li>
+            <li>Displaying, sorting, and shuffling the play queue. Track removal.</li>
+            <li>Filtering the play queue on a substring.</li>
+            <li>Saving the play queue as a playlist (new or existing).</li>
+            <li>MPD library browse and search functions.</li>
+            <li>Browsing, adding, and renaming playlists.</li>
+            <li>Own stream (a.k.a. Internet radio) list, which can be edited.</li>
+            <li>Visible queue columns selection.</li>
+            <li>Player title setting using Go template syntax.</li>
+            <li>Toggling various MPD modes (random, repeat, consume).</li>
+            <li>Seeking the current track to an arbitrary location.</li>
+            <li>Light and dark desktop theme support.</li>
+            <li>Internationalisation support.</li>
+        </ul>
+    </description>
+
+    <screenshots>
+        <screenshot type="default">
+            <caption>Main app window in the light and the dark themes.</caption>
+            <image>https://res.cloudinary.com/yktoo/image/upload/blog/e6ecokfftenpwlwswon1.png</image>
+        </screenshot>
+    </screenshots>
+
+    <url type="homepage">https://yktoo.com/en/software/ymuse/</url>
+    <url type="faq">https://yktoo.com/en/software/ymuse/faq/</url>
+    <url type="bugtracker">https://github.com/yktoo/ymuse/issues</url>
+
+    <categories>
+        <category>Audio</category>
+    </categories>
+
+    <keywords>
+        <keyword>MPD</keyword>
+        <keyword>Music Player Daemon</keyword>
+        <keyword>audio</keyword>
+        <keyword>sound</keyword>
+        <keyword>GTK</keyword>
+    </keywords>
+
+    <releases>
+        <release date="2022-05-29" version="0.20">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add MPD Outputs dialog (#44)</li>
+                    <li>Fix Add to playlist appending to wrong playlist (#51)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2022-02-24" version="0.19 Ukraine 🇺🇦">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Sort streams ignoring case (resolves #45)</li>
+                    <li>Update feature tour link in README</li>
+                    <li>fix: rpm dependencies (#46)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2021-11-24" version="0.18">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add queue post-replace actions: switch to Queue tab, start playback</li>
+                    <li>Make copyright localisable</li>
+                    <li>Replace the discontinued BBC WS stream URL</li>
+                    <li>Require GTK 3.22+; replace deprecated GTK properties</li>
+                    <li>Upgrade to Go 1.16.2 and latest gotk3/master</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2021-02-24" version="0.17">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add missing items to Keyboard shortcuts info window</li>
+                    <li>Add to playlist command in the Library (resolves #17)</li>
+                    <li>Separate album art display settings for tracks and streams (resolves #30)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2021-02-09" version="0.16">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add volume button/slider (resolves #20)</li>
+                    <li>Fix cleanup when connection lost (resolves #26, #28)</li>
+                    <li>Fix queue selection being reset on right click (resolves #21)</li>
+                    <li>Option for showing/hiding library toolbar (resolves #23)</li>
+                    <li>Update to latest gompd (2.2.0), gotk3 (0.5.2) (hopefully resolves #27); go 1.15+</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2021-02-09" version="0.15">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Upgrade to latest gompd master (resolves #11)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-08-13" version="0.14">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add album art display to the player</li>
+                    <li>Fix possible race in schedulePlayerSettingChange</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-07-31" version="0.13">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add "Show album/artist/genre in Library" function to Queue</li>
+                    <li>Scroll to the selected row in library and prefs/columns</li>
+                    <li>Select top item in Streams by default</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-07-21" version="0.12">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add Unix domain socket connectivity (resolves #10)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-07-04" version="0.11">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Expose Bitrate and Format attributes to current track (resolves #6)</li>
+                    <li>Fix: too frequent reconnection attempts (resolves #9)</li>
+                    <li>Redesign MPD Info dialog; add Decoder Plugins info</li>
+                    <li>Save and restore selected library path</li>
+                    <li>Translation updates: RU, NL</li>
+                    <li>Use MPD_HOST and MPD_PORT environment vars for connection defaults (resolves #8)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-06-19" version="0.10">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add tests for Builder; improve error handling</li>
+                    <li>Add the ".." (level up) element to Library</li>
+                    <li>Select element being left when going back in Library</li>
+                    <li>Support Japanese for .desktop file</li>
+                    <li>add .po file for Japanese</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-06-14" version="0.9">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add snapcraft config</li>
+                    <li>Add util/log tests</li>
+                    <li>Implement forced file rescanning On my gompd's fork for now</li>
+                    <li>Improve connection management; Localise player template</li>
+                    <li>Library: don't collapse toolbar to avoid hiding search button</li>
+                    <li>Speed up display update on MPD connect</li>
+                    <li>Use Go reflection to bind widgets in Builder (also resolves #3)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-06-06" version="0.8">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add Dutch translation; translation update</li>
+                    <li>Add browsing by genre, artist, album function</li>
+                    <li>Add context menu/items, numerous UI fixes</li>
+                    <li>Add localisation support; Add Russian translation</li>
+                    <li>Add missing translation</li>
+                    <li>Improve handling when not connected</li>
+                    <li>Localise durations, too</li>
+                    <li>Optimise queue loading with large lists</li>
+                    <li>Properly colour symbolic icons</li>
+                    <li>Recover SVGO-broken icons</li>
+                    <li>Refactor library path and browsing</li>
+                    <li>Refactor library path; Add Update popup menu item</li>
+                    <li>Remove Playlists tab in favour of section in Library</li>
+                    <li>Translation update: RU, NL</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-20" version="0.7">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add MPD information and stats dialog</li>
+                    <li>Add shortcut Ctrl+Shift+R for Queue shuffle</li>
+                    <li>Add support for dark theme</li>
+                    <li>Also show playlists in the library (#2)</li>
+                    <li>Cleaner library update icon</li>
+                    <li>Icon update</li>
+                    <li>Queue: add icon, fix colors, add fallback for track title</li>
+                    <li>Revert to system folder icon</li>
+                    <li>doc: add reference icon SVG</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-18" version="0.6">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add own SVG icons</li>
+                    <li>Add support for internet streams (#1)</li>
+                    <li>Make all used icons symbolic</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-17" version="0.5">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add horizontal alignment per MPD attribute</li>
+                    <li>Add library search function</li>
+                    <li>Improve focus management on page switching</li>
+                    <li>Minor UI changes; labels in Preferences | columns</li>
+                    <li>Suspend watcher on lost connection; remove possible race</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-14" version="0.4">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>add queue filter function, UI tweaks</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-13" version="0.3">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Add queue column reordering, store widths</li>
+                    <li>Interface style tweaks</li>
+                    <li>packaging: optimise icon cache update</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-11" version="0.2">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Fixes wrong playlist being loaded (using buttons in Playlists)</li>
+                </ul>
+            </description>
+        </release>
+        <release date="2020-05-11" version="0.1">
+            <description>
+                <ul>
+                    <li>First public release</li>
+                </ul>
+            </description>
+        </release>
+    </releases>
+</component>

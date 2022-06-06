@@ -2,11 +2,11 @@
 Categories=AudioVideo;
 Comment=Music Player Daemon client application for GTK.
 Comment[nl]=Music Player Daemon cliënt applicatie voor GTK.
-Comment[ru]=Приложение-клиент для Music Player Daemon и библиотеки GTK.
+Comment[ru]=Приложение-клиент для Music Player Daemon, использующее GTK.
 Comment[ja]=GTK製Music Player Daemonクライアント
 Exec=ymuse
 Hidden=false
-Icon=ymuse
+Icon=com.yktoo.ymuse
 Name=Ymuse
 GenericName=MPD client
 GenericName[nl]=MPD-cliënt

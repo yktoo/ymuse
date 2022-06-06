@@ -4,7 +4,7 @@
 [![Go](https://github.com/yktoo/ymuse/actions/workflows/go.yml/badge.svg)](https://github.com/yktoo/ymuse/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yktoo/ymuse)](https://goreportcard.com/report/github.com/yktoo/ymuse)
 
-# ![Ymuse icon](resources/icons/hicolor/32x32/apps/ymuse.png) Ymuse
+# ![Ymuse icon](resources/icons/hicolor/32x32/apps/com.yktoo.ymuse.png) Ymuse
 
 **Ymuse** is an easy, functional, and snappy GTK front-end (client) for [Music Player Daemon](https://www.musicpd.org/) written in Go. It supports both light and dark desktop theme.
 

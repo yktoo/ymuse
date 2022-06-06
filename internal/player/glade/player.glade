@@ -514,7 +514,7 @@
     <property name="can-focus">False</property>
     <property name="default-width">800</property>
     <property name="default-height">600</property>
-    <property name="icon-name">ymuse</property>
+    <property name="icon-name">com.yktoo.ymuse</property>
     <signal name="delete-event" handler="on_MainWindow_delete" swapped="no"/>
     <signal name="map" handler="on_MainWindow_map" swapped="no"/>
     <signal name="style-updated" handler="on_MainWindow_styleUpdated" swapped="no"/>

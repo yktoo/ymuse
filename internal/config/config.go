@@ -38,7 +38,7 @@ var AppMetadata = &struct {
 	License   string
 }{
 	Name:      "Ymuse",
-	Icon:      "ymuse",
+	Icon:      "com.yktoo.ymuse",
 	Copyright: "Written by Dmitry Kann",
 	URL:       "https://yktoo.com",
 	URLLabel:  "yktoo.com",
