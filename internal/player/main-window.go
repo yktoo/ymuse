@@ -178,8 +178,6 @@ const (
 
 	queueSaveNewPlaylistID = "\u0001new"
 	librarySearchAllAttrID = "\u0001any"
-
-	playerArtworkSize = 80 // Album artwork size in pixels
 )
 
 type triBool int
@@ -2243,9 +2241,10 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 	if uri != "" {
 		isStream := util.IsStreamURI(uri)
 		cfg := config.GetConfig()
-		if isStream && cfg.PlayerAlbumArtStreams || !isStream && cfg.PlayerAlbumArtTracks {
-			// Avoid updating album art if there's no change in the URI
-			if w.playerCurrentAlbumArtUri == uri {
+		size := cfg.PlayerAlbumArtSize
+		if (isStream && cfg.PlayerAlbumArtStreams || !isStream && cfg.PlayerAlbumArtTracks) && size > 0 {
+			// Avoid updating album art if there's no change in the URI or size
+			if curPx := w.AlbumArtworkImage.GetPixbuf(); curPx != nil && curPx.GetWidth() == size && w.playerCurrentAlbumArtUri == uri {
 				show = true
 			} else {
 				// Try to fetch the album art
@@ -2265,7 +2264,7 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 					// Make a pixbuf from the data bytes
 					if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
 						// Downscale the image if needed
-						if px, err = px.ScaleSimple(playerArtworkSize, playerArtworkSize, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
+						if px, err = px.ScaleSimple(size, size, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
 							w.AlbumArtworkImage.SetFromPixbuf(px)
 							show = true
 							// Save the last used URI

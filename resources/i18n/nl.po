@@ -401,6 +401,9 @@ msgstr "Groepering"
 msgid "Host:"
 msgstr "Host:"
 
+msgid "Image size:"
+msgstr "Beeldgrootte:"
+
 msgid "Interface"
 msgstr "Interface"
 

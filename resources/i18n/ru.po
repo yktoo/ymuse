@@ -405,6 +405,9 @@ msgstr "Группировка"
 msgid "Host:"
 msgstr "Хост:"
 
+msgid "Image size:"
+msgstr "Размер изображения:"
+
 msgid "Interface"
 msgstr "Интерфейс"
 

@@ -90,6 +90,7 @@ type Config struct {
 	PlayerTitleTemplate    string       // Track's title formatting template for the player
 	PlayerAlbumArtTracks   bool         // Whether to display the current track's album art in the player
 	PlayerAlbumArtStreams  bool         // Whether to display the current stream's album art in the player
+	PlayerAlbumArtSize     int          // Size of the album art image in the player, in pixels
 	SwitchToOnQueueReplace bool         // Whether to switch to the Queue tab after the queue has been replaced
 	PlayOnQueueReplace     bool         // Whether to start playback after the queue has been replaced
 	MaxSearchResults       int          // Maximum number of displayed search results
@@ -154,6 +155,7 @@ func newConfig() *Config {
 				"{{- end -}}\n"),
 		PlayerAlbumArtTracks:   true,
 		PlayerAlbumArtStreams:  false,
+		PlayerAlbumArtSize:     80,
 		SwitchToOnQueueReplace: true,
 		PlayOnQueueReplace:     false,
 		MaxSearchResults:       500,

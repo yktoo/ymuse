@@ -387,6 +387,9 @@ msgstr ""
 msgid "Host:"
 msgstr ""
 
+msgid "Image size:"
+msgstr ""
+
 msgid "Interface"
 msgstr ""
 
