@@ -99,3 +99,25 @@ func MapAttrsToSlice(attrs []mpd.Attrs, attr string) []string {
 	}
 	return r
 }
+
+// ReadPicture retrieves the embedded album artwork image for a song with the given URI using MPD's readpicture command.
+// Must be removed and replaced by c.ReadPicture() when the feature is released on gompd
+func ReadPicture(c *mpd.Client, uri string) ([]byte, error) {
+	offset := 0
+	var data []byte
+	for {
+		// Read the data in chunks
+		chunk, size, err := c.Command("readpicture %s %d", uri, offset).Binary()
+		if err != nil {
+			return nil, err
+		}
+
+		// Accumulate the data
+		data = append(data, chunk...)
+		offset = len(data)
+		if offset >= size {
+			break
+		}
+	}
+	return data, nil
+}
