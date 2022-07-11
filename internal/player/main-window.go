@@ -179,7 +179,8 @@ const (
 	queueSaveNewPlaylistID = "\u0001new"
 	librarySearchAllAttrID = "\u0001any"
 
-	playerArtworkSize = 80 // Album artwork size in pixels
+	artMinHeight = 80 // Album artwork size in pixels
+	artMaxHeight = 160
 )
 
 type triBool int
@@ -2272,9 +2273,13 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 				// Make a pixbuf from the data bytes
 				px, err := gdk.PixbufNewFromBytesOnly(albumArt)
 				if !errCheck(err, "PixbufNewFromBytesOnly() failed") {
-					// Downscale the image if needed
-					destWidth := playerArtworkSize * px.GetWidth() / px.GetHeight()
-					px, err := px.ScaleSimple(destWidth, playerArtworkSize, gdk.INTERP_BILINEAR)
+					// Down/up-scale the image as needed
+					_, windowHeight := w.AppWindow.GetSize()
+					destHeight := util.Remap(windowHeight, 460, 660, artMinHeight, artMaxHeight)
+					destHeight = util.Clamp(destHeight, artMinHeight, artMaxHeight)
+					destWidth := destHeight * px.GetWidth() / px.GetHeight()
+
+					px, err := px.ScaleSimple(destWidth, destHeight, gdk.INTERP_BILINEAR)
 					if !errCheck(err, "ScaleSimple() failed") {
 						w.AlbumArtworkImage.SetFromPixbuf(px)
 						show = true
