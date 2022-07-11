@@ -2273,7 +2273,8 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 				px, err := gdk.PixbufNewFromBytesOnly(albumArt)
 				if !errCheck(err, "PixbufNewFromBytesOnly() failed") {
 					// Downscale the image if needed
-					px, err := px.ScaleSimple(playerArtworkSize, playerArtworkSize, gdk.INTERP_BILINEAR)
+					destWidth := playerArtworkSize * px.GetWidth() / px.GetHeight()
+					px, err := px.ScaleSimple(destWidth, playerArtworkSize, gdk.INTERP_BILINEAR)
 					if !errCheck(err, "ScaleSimple() failed") {
 						w.AlbumArtworkImage.SetFromPixbuf(px)
 						show = true
