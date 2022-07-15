@@ -1,5 +1,7 @@
 github.com/fhs/gompd/v2 v2.2.0 h1:zdSYAAOzQ5cCCgYa5CoXkL0Vr0Cqb/b5JmTobirLc90=
 github.com/fhs/gompd/v2 v2.2.0/go.mod h1:nNdZtcpD5VpmzZbRl5rV6RhxeMmAWTxEsSIMBkmMIy4=
+github.com/fhs/gompd/v2 v2.2.1-0.20220620205817-bbf835995263 h1:4lMCzoduUccm3WQu1Ho1BHbjrg8t7tnFQEhHkhlZNN0=
+github.com/fhs/gompd/v2 v2.2.1-0.20220620205817-bbf835995263/go.mod h1:nNdZtcpD5VpmzZbRl5rV6RhxeMmAWTxEsSIMBkmMIy4=
 github.com/gotk3/gotk3 v0.6.1 h1:GJ400a0ecEEWrzjBvzBzH+pB/esEMIGdB9zPSmBdoeo=
 github.com/gotk3/gotk3 v0.6.1/go.mod h1:/hqFpkNa9T3JgNAE2fLvCdov7c5bw//FHNZrZ3Uv9/Q=
 github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 h1:lDH9UUVJtmYCjyT0CI4q8xvlXPxeZ0gYCVvWbmPlp88=
