@@ -99,3 +99,18 @@ func MapAttrsToSlice(attrs []mpd.Attrs, attr string) []string {
 	}
 	return r
 }
+
+// The given value will be truncated to stay inside a given range
+func Clamp(value, min, max int) int {
+	if value < min {
+		return min
+	} else if value > max {
+		return max
+	}
+	return value
+}
+
+// Uses linear interpolation to remap a value from range A to value in range B
+func Remap(ax, a1, a2, b1, b2 int) int {
+	return b1 + (b2-b1)*(ax-a1)/(a2-a1)
+}

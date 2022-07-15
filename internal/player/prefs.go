@@ -61,6 +61,7 @@ type PrefsDialog struct {
 	// Player page widgets
 	PlayerShowAlbumArtTracksCheckButton  *gtk.CheckButton
 	PlayerShowAlbumArtStreamsCheckButton *gtk.CheckButton
+	PlayerAlbumArtDynamicCheckButton     *gtk.CheckButton
 	PlayerAlbumArtSizeAdjustment         *gtk.Adjustment
 	PlayerTitleTemplateTextBuffer        *gtk.TextBuffer
 	// Columns page widgets
@@ -144,6 +145,7 @@ func (d *PrefsDialog) onMap() {
 	d.StreamsDefaultAppendRadioButton.SetActive(!cfg.StreamDefaultReplace)
 	d.PlayerShowAlbumArtTracksCheckButton.SetActive(cfg.PlayerAlbumArtTracks)
 	d.PlayerShowAlbumArtStreamsCheckButton.SetActive(cfg.PlayerAlbumArtStreams)
+	d.PlayerAlbumArtDynamicCheckButton.SetActive(cfg.PlayerAlbumArtDynamic)
 	d.PlayerAlbumArtSizeAdjustment.SetValue(float64(cfg.PlayerAlbumArtSize))
 	d.PlayerTitleTemplateTextBuffer.SetText(cfg.PlayerTitleTemplate)
 	// Automation page
@@ -324,6 +326,10 @@ func (d *PrefsDialog) onSettingChange() {
 	}
 	if b := d.PlayerShowAlbumArtStreamsCheckButton.GetActive(); b != cfg.PlayerAlbumArtStreams {
 		cfg.PlayerAlbumArtStreams = b
+		d.schedulePlayerSettingChange()
+	}
+	if b := d.PlayerAlbumArtDynamicCheckButton.GetActive(); b != cfg.PlayerAlbumArtDynamic {
+		cfg.PlayerAlbumArtDynamic = b
 		d.schedulePlayerSettingChange()
 	}
 	if i := int(d.PlayerAlbumArtSizeAdjustment.GetValue()); i != cfg.PlayerAlbumArtSize {

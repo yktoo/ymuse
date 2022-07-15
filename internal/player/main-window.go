@@ -2276,9 +2276,21 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 				// Make a pixbuf from the data bytes
 				px, err := gdk.PixbufNewFromBytesOnly(albumArt)
 				if !errCheck(err, "PixbufNewFromBytesOnly() failed") {
-					// Downscale the image if needed
-					destWidth := size * px.GetWidth() / px.GetHeight()
-					px, err := px.ScaleSimple(destWidth, size, gdk.INTERP_BILINEAR)
+					// Down/up-scale the image as needed
+					var destHeight int
+
+					if cfg.PlayerAlbumArtDynamic {
+						minHeight := size
+						maxHeight := minHeight + 80
+						_, windowHeight := w.AppWindow.GetSize()
+						destHeight = util.Remap(windowHeight, 460, 660, minHeight, maxHeight)
+						destHeight = util.Clamp(destHeight, minHeight, maxHeight)
+					} else {
+						destHeight = size
+					}
+
+					destWidth := destHeight * px.GetWidth() / px.GetHeight()
+					px, err := px.ScaleSimple(destWidth, destHeight, gdk.INTERP_BILINEAR)
 					if !errCheck(err, "ScaleSimple() failed") {
 						w.AlbumArtworkImage.SetFromPixbuf(px)
 						show = true
