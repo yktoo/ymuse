@@ -2242,34 +2242,45 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 		isStream := util.IsStreamURI(uri)
 		cfg := config.GetConfig()
 		size := cfg.PlayerAlbumArtSize
-		if (isStream && cfg.PlayerAlbumArtStreams || !isStream && cfg.PlayerAlbumArtTracks) && size > 0 {
-			// Avoid updating album art if there's no change in the URI or size
-			if curPx := w.AlbumArtworkImage.GetPixbuf(); curPx != nil && curPx.GetWidth() == size && w.playerCurrentAlbumArtUri == uri {
-				show = true
-			} else {
-				// Try to fetch the album art
-				var albumArt []byte
-				log.Debugf("Fetching album art for %s", uri)
-				w.connector.IfConnected(func(client *mpd.Client) {
-					var err error
-					if albumArt, err = client.AlbumArt(uri); err != nil {
-						log.Debugf("Failed to obtain album art: %v", err)
-						albumArt = nil
-					}
-				})
+		var isSameSize bool
+		{
+			curPix := w.AlbumArtworkImage.GetPixbuf()
+			isSameSize = curPix != nil && curPix.GetHeight() == size
+		}
 
-				// If succeeded
-				if len(albumArt) > 0 {
-					log.Debugf("Fetched album art: %d bytes", len(albumArt))
-					// Make a pixbuf from the data bytes
-					if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
-						// Downscale the image if needed
-						if px, err = px.ScaleSimple(size, size, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
-							w.AlbumArtworkImage.SetFromPixbuf(px)
-							show = true
-							// Save the last used URI
-							w.playerCurrentAlbumArtUri = uri
-						}
+		if !((isStream && cfg.PlayerAlbumArtStreams) || (!isStream && cfg.PlayerAlbumArtTracks)) {
+			// Art is not allowed by config
+		} else if w.playerCurrentAlbumArtUri == uri && isSameSize {
+			// Avoid updating album art if there's no change in the URI or size
+			show = true
+		} else {
+			// Try to fetch the album art
+			var albumArt []byte
+			var err error
+			log.Debugf("Fetching album art for %s", uri)
+
+			w.connector.IfConnected(func(client *mpd.Client) {
+				albumArt, err = client.ReadPicture(uri)
+				if err != nil || len(albumArt) == 0 {
+					albumArt, err = client.AlbumArt(uri)
+				}
+				if err == nil && len(albumArt) == 0 {
+					err = errors.New("image bytes has 0 length")
+				}
+			})
+
+			if err != nil {
+				log.Debugf("Failed to obtain album art: %v", err)
+			} else {
+				log.Debugf("Fetched album art: %d bytes", len(albumArt))
+				// Make a pixbuf from the data bytes
+				px, err := gdk.PixbufNewFromBytesOnly(albumArt)
+				if !errCheck(err, "PixbufNewFromBytesOnly() failed") {
+					// Downscale the image if needed
+					px, err := px.ScaleSimple(size, size, gdk.INTERP_BILINEAR)
+					if !errCheck(err, "ScaleSimple() failed") {
+						w.AlbumArtworkImage.SetFromPixbuf(px)
+						show = true
 					}
 				}
 			}
@@ -2279,8 +2290,9 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 	// Show or hide the album art
 	if !show {
 		w.AlbumArtworkImage.Clear()
-		w.playerCurrentAlbumArtUri = ""
+		uri = ""
 	}
+	w.playerCurrentAlbumArtUri = uri
 	w.AlbumArtworkImage.SetVisible(show)
 
 	// If the image isn't visible, center-justify the title. Otherwise use left justification
