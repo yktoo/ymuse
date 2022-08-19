@@ -87,6 +87,7 @@ type Config struct {
 	TrackDefaultReplace    bool         // Whether the default action for double-clicking a track is replace rather than append
 	PlaylistDefaultReplace bool         // Whether the default action for double-clicking a playlist is replace rather than append
 	StreamDefaultReplace   bool         // Whether the default action for double-clicking a stream is replace rather than append
+	PlayerSeekDuration     int          // Number of seconds to seek back/forward at a time, while playing
 	PlayerTitleTemplate    string       // Track's title formatting template for the player
 	PlayerAlbumArtTracks   bool         // Whether to display the current track's album art in the player
 	PlayerAlbumArtStreams  bool         // Whether to display the current stream's album art in the player
@@ -100,7 +101,7 @@ type Config struct {
 	MainWindowDimensions Dimensions // Main window dimensions
 }
 
-// Config singleton with all the defaults
+// Config singleton with all settings
 var config *Config
 var once sync.Once
 
@@ -141,6 +142,7 @@ func newConfig() *Config {
 		TrackDefaultReplace:    false,
 		PlaylistDefaultReplace: true,
 		StreamDefaultReplace:   true,
+		PlayerSeekDuration:     5,
 		PlayerTitleTemplate: glib.Local(
 			"{{- if or .Title .Album | or .Artist -}}\n" +
 				"<big><b>{{ .Title | default \"(unknown title)\" }}</b></big>\n" +

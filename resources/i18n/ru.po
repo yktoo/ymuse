@@ -635,6 +635,12 @@ msgstr "Поиск"
 msgid "Search…"
 msgstr "Поиск…"
 
+msgid "Seek backward"
+msgstr "Перемотать назад"
+
+msgid "Seek forward"
+msgstr "Перемотать вперёд"
+
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Выберите столбцы для отображения и их порядок."
 

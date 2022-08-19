@@ -127,6 +127,18 @@
                 <property name="accelerator">&lt;ctrl&gt;N</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Seek backward</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;Left</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Seek forward</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;Right</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

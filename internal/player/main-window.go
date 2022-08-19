@@ -148,6 +148,8 @@ type MainWindow struct {
 	aPlayerStop           *glib.SimpleAction
 	aPlayerPlayPause      *glib.SimpleAction
 	aPlayerNext           *glib.SimpleAction
+	aPlayerSeekBackward   *glib.SimpleAction
+	aPlayerSeekForward    *glib.SimpleAction
 	aPlayerRandom         *glib.SimpleAction
 	aPlayerRepeat         *glib.SimpleAction
 	aPlayerConsume        *glib.SimpleAction
@@ -1006,6 +1008,8 @@ func (w *MainWindow) initPlayerWidgets() {
 	w.aPlayerStop = w.addAction("player.stop", "<Ctrl>S", w.playerStop)
 	w.aPlayerPlayPause = w.addAction("player.play-pause", "<Ctrl>P", w.playerPlayPause)
 	w.aPlayerNext = w.addAction("player.next", "<Ctrl>Right", w.playerNext)
+	w.aPlayerSeekBackward = w.addAction("player.seek.backward", "<Ctrl><Shift>Left", func() { w.playerSeekCurrent(-1) })
+	w.aPlayerSeekForward = w.addAction("player.seek.forward", "<Ctrl><Shift>Right", func() { w.playerSeekCurrent(1) })
 	// NB convert to stateful actions once Gotk3 supporting GVariant is released
 	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
 	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
@@ -1279,6 +1283,18 @@ func (w *MainWindow) playerNext() {
 
 	// Check for error
 	w.errCheckDialog(err, glib.Local("Failed to skip to next track"))
+}
+
+// playerSeekCurrent rewinds (dir == -1) or fast-forwards (dir == 1) the currently played track the configured number of
+// seconds
+func (w *MainWindow) playerSeekCurrent(dir int) {
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		err = client.SeekCur(time.Duration(dir*config.GetConfig().PlayerSeekDuration)*time.Second, true)
+	})
+
+	// Check for error
+	w.errCheckDialog(err, glib.Local("Failed to seek in the current track"))
 }
 
 // playerToggleConsume toggles player's consume mode
@@ -2156,6 +2172,8 @@ func (w *MainWindow) updateOptions() {
 func (w *MainWindow) updatePlayer() {
 	connected, connecting := w.connector.ConnectStatus()
 	status := w.connector.Status()
+	playing := false
+	stopped := false
 	var statusHTML string
 	var err error
 	curURI := ""
@@ -2198,6 +2216,10 @@ func (w *MainWindow) updatePlayer() {
 		switch status["state"] {
 		case "play":
 			w.PlayPauseButton.SetIconName("ymuse-pause-symbolic")
+			playing = true
+		case "stop":
+			stopped = true
+			fallthrough
 		default:
 			w.PlayPauseButton.SetIconName("ymuse-play-symbolic")
 		}
@@ -2222,10 +2244,12 @@ func (w *MainWindow) updatePlayer() {
 	w.updateQueueNowPlaying()
 
 	// Enable or disable player actions based on the connection status
-	w.aPlayerPrevious.SetEnabled(connected)
+	w.aPlayerPrevious.SetEnabled(connected && !stopped)
 	w.aPlayerStop.SetEnabled(connected)
 	w.aPlayerPlayPause.SetEnabled(connected)
-	w.aPlayerNext.SetEnabled(connected)
+	w.aPlayerNext.SetEnabled(connected && !stopped)
+	w.aPlayerSeekBackward.SetEnabled(playing)
+	w.aPlayerSeekForward.SetEnabled(playing)
 	w.aPlayerRandom.SetEnabled(connected)
 	w.aPlayerRepeat.SetEnabled(connected)
 	w.aPlayerConsume.SetEnabled(connected)

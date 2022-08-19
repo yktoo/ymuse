@@ -615,6 +615,12 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
+msgid "Seek backward"
+msgstr ""
+
+msgid "Seek forward"
+msgstr ""
+
 msgid "Select columns to display in the play queue, and their order."
 msgstr ""
 

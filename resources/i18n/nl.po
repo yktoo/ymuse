@@ -629,6 +629,12 @@ msgstr "Zoeken"
 msgid "Search…"
 msgstr "Doorzoeken…"
 
+msgid "Seek backward"
+msgstr "Terugspoelen"
+
+msgid "Seek forward"
+msgstr "Vooruitspoelen"
+
 msgid "Select columns to display in the play queue, and their order."
 msgstr "Selecteer kolommen om weer te geven in de wachtrij, en hun volgorde."
 
