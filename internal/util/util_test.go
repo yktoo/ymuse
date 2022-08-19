@@ -16,6 +16,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/fhs/gompd/v2/mpd"
 	"math"
 	"reflect"
@@ -214,6 +215,37 @@ func TestMapAttrsToSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := MapAttrsToSlice(tt.args.attrs, tt.args.attr); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("MapAttrsToSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMaxInt(t *testing.T) {
+	const maxInt = int(^uint(0) >> 1)
+	const minInt = -maxInt - 1
+	tests := []struct {
+		a    int
+		b    int
+		want int
+	}{
+		{0, 0, 0},
+		{0, -1, 0},
+		{-1, 0, 0},
+		{1, 2, 2},
+		{-1, -2, -1},
+		{maxInt, 0, maxInt},
+		{0, maxInt, maxInt},
+		{maxInt - 1, maxInt, maxInt},
+		{minInt, maxInt, maxInt},
+		{maxInt, minInt, maxInt},
+		{minInt, 0, 0},
+		{0, minInt, 0},
+		{minInt + 1, minInt, minInt + 1},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("Compare %d with %d", tt.a, tt.b), func(t *testing.T) {
+			if got := MaxInt(tt.a, tt.b); got != tt.want {
+				t.Errorf("MaxInt() = %v, want %v", got, tt.want)
 			}
 		})
 	}

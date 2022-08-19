@@ -770,7 +770,7 @@
                             <property name="round-digits">0</property>
                             <property name="digits">0</property>
                             <property name="draw-value">False</property>
-                            <signal name="change-value" handler="on_Setting_change" swapped="no"/>
+                            <signal name="value-changed" handler="on_Setting_change" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

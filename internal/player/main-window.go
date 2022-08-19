@@ -2244,7 +2244,9 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 		size := cfg.PlayerAlbumArtSize
 		if (isStream && cfg.PlayerAlbumArtStreams || !isStream && cfg.PlayerAlbumArtTracks) && size > 0 {
 			// Avoid updating album art if there's no change in the URI or size
-			if curPx := w.AlbumArtworkImage.GetPixbuf(); curPx != nil && curPx.GetWidth() == size && w.playerCurrentAlbumArtUri == uri {
+			if curPx := w.AlbumArtworkImage.GetPixbuf(); curPx != nil &&
+				util.MaxInt(curPx.GetWidth(), curPx.GetHeight()) == size &&
+				w.playerCurrentAlbumArtUri == uri {
 				show = true
 			} else {
 				// Try to fetch the album art
@@ -2273,8 +2275,16 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 				if len(albumArt) > 0 {
 					// Make a pixbuf from the data bytes
 					if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
-						// Downscale the image if needed
-						if px, err = px.ScaleSimple(size, size, gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
+						// Determine the required dimensions, keeping the aspect ratio
+						aspect, iw, ih := float64(px.GetWidth())/float64(px.GetHeight()), float64(size), float64(size)
+						if aspect > 1 {
+							ih /= aspect
+						} else {
+							iw *= aspect
+						}
+
+						// Rescale the image
+						if px, err = px.ScaleSimple(int(iw), int(ih), gdk.INTERP_BILINEAR); !errCheck(err, "ScaleSimple() failed") {
 							w.AlbumArtworkImage.SetFromPixbuf(px)
 							show = true
 							// Save the last used URI

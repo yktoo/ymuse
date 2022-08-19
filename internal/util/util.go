@@ -99,3 +99,10 @@ func MapAttrsToSlice(attrs []mpd.Attrs, attr string) []string {
 	}
 	return r
 }
+
+func MaxInt(a, b int) int {
+	if a < b {
+		return b
+	}
+	return a
+}
