@@ -2252,15 +2252,25 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 				log.Debugf("Fetching album art for %s", uri)
 				w.connector.IfConnected(func(client *mpd.Client) {
 					var err error
-					if albumArt, err = client.AlbumArt(uri); err != nil {
-						log.Debugf("Failed to obtain album art: %v", err)
-						albumArt = nil
+
+					// Try the embedded image first
+					if albumArt, err = client.ReadPicture(uri); err == nil && len(albumArt) > 0 {
+						log.Debugf("Fetched embedded album art: %d bytes", len(albumArt))
+						return
 					}
+					log.Debugf("Failed to obtain embedded album art: %v", err)
+
+					// Then image from a cover file
+					if albumArt, err = client.AlbumArt(uri); err == nil && len(albumArt) > 0 {
+						log.Debugf("Fetched album art from cover file: %d bytes", len(albumArt))
+						return
+					}
+					log.Debugf("Failed to obtain album art from cover.* file: %v", err)
+					albumArt = nil
 				})
 
 				// If succeeded
 				if len(albumArt) > 0 {
-					log.Debugf("Fetched album art: %d bytes", len(albumArt))
 					// Make a pixbuf from the data bytes
 					if px, err := gdk.PixbufNewFromBytesOnly(albumArt); !errCheck(err, "PixbufNewFromBytesOnly() failed") {
 						// Downscale the image if needed
