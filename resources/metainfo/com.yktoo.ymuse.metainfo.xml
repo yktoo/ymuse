@@ -7,7 +7,7 @@
     <summary>Easy, functional, and snappy GTK client for Music Player Daemon</summary>
     <developer_name>Dmitry Kann</developer_name>
     <content_rating type="oars-1.1"/>
-    <icon type="local">/usr/share/icons/hicolor/scalable/apps/com.yktoo.ymuse.svg</icon>
+    <icon type="remote">https://raw.githubusercontent.com/yktoo/ymuse/master/resources/icons/hicolor/scalable/apps/com.yktoo.ymuse.svg</icon>
 
     <description>
         <p>Ymuse is an easy, functional, and snappy GTK front-end (client) application for Music Player Daemon.</p>
