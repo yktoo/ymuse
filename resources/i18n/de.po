@@ -1,0 +1,798 @@
+# Ymuse MPD client
+# Copyright (C) 2020-2021 Dmitry Kann
+# This file is distributed under the same license as the Ymuse package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-25 12:11+0200\n"
+"PO-Revision-Date: 2022-12-08 18:11+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+msgid ""
+"{{- if or .Title .Album | or .Artist -}}\n"
+"<big><b>{{ .Title | default \"(unknown title)\" }}</b></big>\n"
+"by <b>{{ .Artist | default \"(unknown artist)\" }}</b> from <b>{{ .Album | default \"(unknown album)\" }}</b>\n"
+"{{- else if .Name -}}\n"
+"<big><b>{{ .Name }}</b></big>\n"
+"{{- else if .file -}}\n"
+"File <big><b>{{ .file | basename }}</b></big>\n"
+"from <b>{{ .file | dirname }}</b>\n"
+"{{- else -}}\n"
+"<i>(no track)</i>\n"
+"{{- end -}}\n"
+msgstr ""
+"{{- if or .Title .Album | or .Artist -}}\n"
+"<big><b>{{ .Title | default \"(unbekanntes Stück)\" }}</b></big>\n"
+"by <b>{{ .Artist | default \"(unbekanntem Künstler)\" }}</b> von <b>{{ .Album | default \"(unbekanntem Album)\" }}</b>\n"
+"{{- else if .Name -}}\n"
+"<big><b>{{ .Name }}</b></big>\n"
+"{{- else if .file -}}\n"
+"File <big><b>{{ .file | basename }}</b></big>\n"
+"from <b>{{ .file | dirname }}</b>\n"
+"{{- else -}}\n"
+"<i>(kein Stück)</i>\n"
+"{{- end -}}\n"
+
+msgid "#"
+msgstr "#"
+
+msgid "%d items"
+msgstr "%d Stücke"
+
+msgid "%d streams"
+msgstr "%d Streams"
+
+msgid "%d track(s) displayed"
+msgstr "%d Lied(er) angezeit"
+
+msgid "%d tracks"
+msgstr "%d Lieder"
+
+msgid "(leave empty for localhost)"
+msgstr "(für localhost leer lassen)"
+
+msgid "(limited selection of %d items)"
+msgstr "(begrenzte Auswahl von %d Stücken)"
+
+msgid "(new playlist)"
+msgstr "(Neue Wiedergabeliste)"
+
+msgid "(Re)connect to MPD"
+msgstr "Zu MPD (wieder)verbinden"
+
+msgid "(unknown)"
+msgstr "(unbekannt)"
+
+msgid "<b>Library</b>"
+msgstr "<b>Bibliothek</b>"
+
+msgid "<b>MPD connection</b>"
+msgstr "<b>MPD Verbindung</b>"
+
+msgid "<b><big>MPD Information</big></b>"
+msgstr "<b><big>MPD Information</big></b>"
+
+msgid "<b>Player</b>"
+msgstr "<b>Spieler</b>"
+
+msgid "<b>Playlists</b>"
+msgstr "<b>Wiedergabelisten</b>"
+
+msgid "<b>Queue</b>"
+msgstr "<b>Warteschlange</b>"
+
+msgid "<b>Streams</b>"
+msgstr "<b>Streams</b>"
+
+msgid "_About…"
+msgstr "_Über…"
+
+msgid "_Connect to MPD"
+msgstr "_Mit MPD verbinden"
+
+msgid "_Disconnect from MPD"
+msgstr "_Von MPD trennen"
+
+msgid "_Keyboard shortcuts…"
+msgstr "_Tastaturkürzel…"
+
+msgid "_Preferences…"
+msgstr "_Einstellungen…"
+
+msgid "_Quit"
+msgstr "_Beenden"
+
+msgid "About"
+msgstr "Über"
+
+msgid "Add a new stream"
+msgstr "Neuen Stream hinzufügen"
+
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgid "Add the selected item to a playlist"
+msgstr "Das markierte Stück zu einer Wiedergabeliste hinzufügen"
+
+msgid "Add to ▾"
+msgstr "Hinzufügen zu ▾"
+
+msgid "Add to playlist…"
+msgstr "Zu Warteschlange hinzufügen…"
+
+msgid "After the queue is replaced:"
+msgstr "Nachdem die Warteschlange ersetzt wurde:"
+
+msgid "Album (for sorting)"
+msgstr "Album (für Sortierung)"
+
+msgid "Album art:"
+msgstr "Album Cover:"
+
+msgid "Album artist (for sorting)"
+msgstr "Albumkünstler (für Sortierung)"
+
+msgid "Album artist"
+msgstr "Albumkünstler"
+
+msgid "Album"
+msgstr "Album"
+
+msgid "Albums"
+msgstr "Alben"
+
+msgid "and"
+msgstr "und"
+
+msgid "Append selection to queue"
+msgstr "Markierung an Warteschlange anhängen"
+
+msgid "Append to the queue"
+msgstr "An Warteschlange anhängen"
+
+msgid "Append tracks"
+msgstr "Stücke anhängen"
+
+msgid "Application shortcuts"
+msgstr "Anwendungskürzel"
+
+msgid "Apply"
+msgstr "Anwenden"
+
+msgid "Are you sure you want to delete playlist \"%s\"?"
+msgstr "Bist du dir sicher, dass du die Widergabeliste \"%s\" löschen möchtest?"
+
+msgid "Are you sure you want to delete stream \"%s\"?"
+msgstr "Bist du dir sicher, dass du den Stream \"%s\" löschen möchtest?"
+
+msgid "Artist (for sorting)"
+msgstr "Künstler (für Sortierung)"
+
+msgid "Artist"
+msgstr "Künstler"
+
+msgid "Artists"
+msgstr "Künstler"
+
+msgid "Ascending"
+msgstr "Aufsteigend"
+
+msgid "Automatically connect on startup"
+msgstr "Beim Starten automatisch verbinden"
+
+msgid "Automatically reconnect"
+msgstr "Automatisch wiederverbinden"
+
+msgid "Automation"
+msgstr "Automatisierung"
+
+msgid "Choose outputs MPD should use for playback."
+msgstr "Wähle das die Ausgabe, die MPD zum Abspielen nutzen soll."
+
+msgid "Clear the play queue"
+msgstr "Wiedergabeliste leeren"
+
+msgid "Clear"
+msgstr "Leeren"
+
+msgid "Columns"
+msgstr "Spalten"
+
+msgid "Comment"
+msgstr "Kommentar"
+
+msgid "Composer"
+msgstr "Komponist"
+
+msgid "Conductor"
+msgstr "Leiter"
+
+msgid "Connecting to MPD…"
+msgstr "Zu MPD verbinden…"
+
+msgid "Connect to MPD"
+msgstr "Zu MPD verbinden"
+
+msgid "Consume mode"
+msgstr "Verbrauchenmodus"
+
+msgid "Consume"
+msgstr "Verbrauchen"
+
+msgid "Current track time"
+msgstr "Aktuelle Spielzeit"
+
+msgid "Daemon uptime:"
+msgstr "Laufzeit daemon:"
+
+msgid "Daemon version:"
+msgstr "Version daemon:"
+
+msgid "days"
+msgstr "Tage"
+
+msgid "Decoder plugins"
+msgstr "Dekodiererweiterungen"
+
+msgid "Default action (set in Preferences)"
+msgstr "Standardaktion (in Einstellungen gesetzt)"
+
+msgid "Delete playlist"
+msgstr "Wiedergabeliste löschen"
+
+msgid "Delete selected"
+msgstr "Markiertes löschen"
+
+msgid "Delete stream"
+msgstr "Stream löschen"
+
+msgid "Delete the selected item"
+msgstr "Das ausgewählte Stück löschen"
+
+msgid "Delete the selected stream"
+msgstr "Den ausgewählten Stream löschen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Descending"
+msgstr "Absteigend"
+
+msgid "Directory and file name"
+msgstr "Ordner- und Dateiname"
+
+msgid "Directory"
+msgstr "Ordner"
+
+msgid "Disc"
+msgstr "CD"
+
+msgid "Disconnect from MPD"
+msgstr "Verbindung zu MPD trennen"
+
+msgid "Edit the selected stream"
+msgstr "Den ausgewählten Stream editieren"
+
+msgid "Edit"
+msgstr "Editieren"
+
+msgid "Everywhere"
+msgstr "Überall"
+
+msgid "Failed to add item to the playlist"
+msgstr "Stück zur Wiedergabeliste hinzufügen fehlgeschlagen"
+
+msgid "Failed to add item to the queue"
+msgstr "Stück zur Warteschlange hinzufügen fehlgeschlagen"
+
+msgid "Failed to add playlist to the queue"
+msgstr "Wiedergabeliste zur Warteschlange hinzufügen fehlgeschlagen"
+
+msgid "Failed to add stream to the queue"
+msgstr "Stream zur Warteschlange hinzufügen fehlgeschlagen"
+
+msgid "Failed to clear the queue"
+msgstr "Warteliste leeren fehlgeschlagen"
+
+msgid "Failed to create a playlist"
+msgstr "Wiedergabeliste erstellen fehlgeschlagen"
+
+msgid "Failed to delete the playlist"
+msgstr "Wiedergabeliste löschen fehlgeschlagen"
+
+msgid "Failed to delete tracks from the queue"
+msgstr "Stücke von Warteschlange löschen fehlgeschlagen"
+
+msgid "Failed to get album information"
+msgstr "Albuminformationen abrufen fehlgeschlagen"
+
+msgid "Failed to get artist information"
+msgstr "Künsterinformationen abrufen fehlgeschlagen"
+
+msgid "Failed to get genre information"
+msgstr "Genreinformationen abrufen fehlgeschlagen"
+
+msgid "Failed to load UI widgets"
+msgstr "UI widgets laden fehlgeschlagen"
+
+msgid "Failed to play the selected track"
+msgstr "Abspielen von gewähltem Stück fehlgeschlagen"
+
+msgid "Failed to rename the playlist"
+msgstr "Umbenennen der Wiedergabeliste fehlgeschlagen"
+
+msgid "Failed to retrieve information from MPD"
+msgstr "Informationen von MPD abrufen fehlgeschlagen"
+
+msgid "Failed to shuffle the queue"
+msgstr "Mischen der Wiedergabeliste fehlgeschlagen"
+
+msgid "Failed to skip to next track"
+msgstr "Springen zum nächsten Stück fehlgeschlagen"
+
+msgid "Failed to skip to previous track"
+msgstr "Überspringen von vorigem Stück fehlgeschlagen"
+
+msgid "Failed to sort the queue"
+msgstr "Sortierung der Warteschlange fehlgeschlagen"
+
+msgid "Failed to stop playback"
+msgstr "Wiedergabe anhalten fehlgeschlagen"
+
+msgid "Failed to toggle consume mode"
+msgstr "Umschaltung von Verbrauchenmodus fehlgeschlagen"
+
+msgid "Failed to toggle playback"
+msgstr "Umschalten der Wiedergabe fehlgeschlagen"
+
+msgid "Failed to toggle random mode"
+msgstr "Umschaltung des Zufallsmodus fehlgeschlagen"
+
+msgid "Failed to toggle repeat mode"
+msgstr "Umschalten des Wiederholungsmodus fehlgeschlagen"
+
+msgid "Failed to update the library"
+msgstr "Aktualisierung der Bibliothek fehlgeschlagen"
+
+msgid "File name"
+msgstr "Dateiname"
+
+msgid "File path"
+msgstr "Dateipfad"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "Files"
+msgstr "Dateien"
+
+msgid "Filter the play queue"
+msgstr "Wiedergabeliste filtern"
+
+msgid "Filter…"
+msgstr "Filter…"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Genre"
+msgstr "Genre"
+
+msgid "Genres"
+msgstr "Genres"
+
+msgid "Go a level up"
+msgstr "Ein Level aufsteigen"
+
+msgid "Grouping"
+msgstr "Gruppierung"
+
+msgid "Host:"
+msgstr "Host:"
+
+msgid "Image size:"
+msgstr "Bildgröße:"
+
+msgid "Interface"
+msgstr "Benutzerschnittstelle"
+
+msgid "Jump to the currently played track"
+msgstr "Zum aktuell gespielten Stück springen"
+
+msgid "Keyboard Shortcuts"
+msgstr "Tastaturkürzel"
+
+msgid "Label"
+msgstr "Label"
+
+msgid "Last database update:"
+msgstr "Letzte Datenbankaktualisierung:"
+
+msgid "Length"
+msgstr "Länge"
+
+msgid "Library"
+msgstr "Bibliothek"
+
+msgid "Listening time:"
+msgstr "Spieldauer:"
+
+msgid "more verbose logging"
+msgstr "detaillierteres loggen"
+
+msgid "Move down"
+msgstr "Nach unten bewegen"
+
+msgid "Move the selected column down"
+msgstr "Die ausgewählte Spalte nach unten verschieben"
+
+msgid "Move the selected column up"
+msgstr "Die ausgewählte Spalte nach oben verschieben"
+
+msgid "Move up"
+msgstr "Nach oben bewegen"
+
+msgid "MPD _information…"
+msgstr "MPD_Information…"
+
+msgid "MPD _outputs…"
+msgstr "MPD_Ausgaben…"
+
+msgid "MPD Information"
+msgstr "MPD Information"
+
+msgid "MPD Outputs"
+msgstr "MPD Ausgaben"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Network:"
+msgstr "Netzwerk:"
+
+msgid "New playlist name"
+msgstr "Neuer Wiedergabelistenname"
+
+msgid "Next track"
+msgstr "Nächstes Stück"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "No items"
+msgstr "Keine Stücke"
+
+msgid "No streams"
+msgstr "Keine Streams"
+
+msgid "Not connected to MPD"
+msgstr "Nicht zu MPD verbunden"
+
+msgid "Now playing"
+msgstr "Aktuell spielt"
+
+msgid "Number of albums:"
+msgstr "Anzahl an Alben:"
+
+msgid "Number of artists:"
+msgstr "Anzahl an Künstlern:"
+
+msgid "Number of tracks:"
+msgstr "Anzahl an Stücken:"
+
+msgid "On double click / Enter on a playlist:"
+msgstr ""
+"Bei Doppelklick / Bei Enter auf Wiedergabeliste\n"
+":"
+
+msgid "On double click / Enter on a stream:"
+msgstr "Bei Doppelklick / Bei Enter auf Stream:"
+
+msgid "On double click / Enter on a track:"
+msgstr "Bei Doppelklick / Bei Enter auf Stück:"
+
+msgid "one day"
+msgstr "ein Tag"
+
+msgid "One track"
+msgstr "Ein Stück"
+
+msgid "Open Filter bar"
+msgstr "Filterleiste öffnen"
+
+msgid "Open Search bar"
+msgstr "Suchleiste öffnen"
+
+msgid "Password:"
+msgstr "Passwort:"
+
+msgid "Path"
+msgstr "Pfad"
+
+msgid "Path:"
+msgstr "Pfad:"
+
+msgid "Pause or resume playback"
+msgstr "Pausieren oder weiterspielen"
+
+msgid "Performer"
+msgstr "Ausgeführt von"
+
+msgid "Play selection"
+msgstr "Auswahl wiedergeben"
+
+msgid "Play/Pause"
+msgstr "Wiedergabe/Pause"
+
+msgid "Player title template error, check log"
+msgstr "Spieler Tietelvorlagefehler, überprüfe log"
+
+msgid "Player"
+msgstr "Spieler"
+
+msgid "playing time %s"
+msgstr "Spieldauer %s"
+
+msgid "Playlists"
+msgstr "Wiedergabelisten"
+
+msgid "Port:"
+msgstr "Port:"
+
+msgid "Preferences"
+msgstr "Einstellungen"
+
+msgid "Previous track"
+msgstr "Voriges Stück"
+
+msgid "Previous"
+msgstr "Voriges"
+
+msgid "Queue is empty"
+msgstr "Warteschlange ist leer"
+
+msgid "Queue"
+msgstr "Warteschlange"
+
+msgid "Quit"
+msgstr "Beenden"
+
+msgid "Random"
+msgstr "Zufällig"
+
+msgid "Reconnect now"
+msgstr "Jetzt wiederverbinden"
+
+msgid "Release date: %s"
+msgstr "Veröffentlichung: %s"
+
+msgid "Remove selected track(s) from the queue"
+msgstr "Augewählte(s) Stück(e) von Warteschlange entfernen"
+
+msgid "Rename playlist"
+msgstr "Wiedergabeliste umbenennen"
+
+msgid "Rename the selected item"
+msgstr "Ausgewähltes Stück umbenennen"
+
+msgid "Rename"
+msgstr "Umbenennen"
+
+msgid "Repeat mode"
+msgstr "Wiederholungsmodus"
+
+msgid "Repeat"
+msgstr "Wiederholen"
+
+msgid "Replace playlist"
+msgstr "Wiedergabeliste ersetzen"
+
+msgid "Replace queue with selection"
+msgstr "Warteschlange mit Auswahl ersetzen"
+
+msgid "Replace the queue"
+msgstr "Warteschlange ersetzen"
+
+msgid "Rescan all files"
+msgstr "Alle Dateien erneut scannen"
+
+msgid "Rescan selected item"
+msgstr "Ausgewählte Objekte erneut scannen"
+
+msgid "Save into playlist"
+msgstr "In Wiedergabeliste speichern"
+
+msgid "Save selected tracks only"
+msgstr "Nur ausgewählte Stücke speichern"
+
+msgid "Save the play queue as a playlist"
+msgstr "Warteschlange als Wiedergabeliste speichern"
+
+msgid "Save ▾"
+msgstr "Speichern ▾"
+
+msgid "Search the library"
+msgstr "Bibliothek durchsuchen"
+
+msgid "Search"
+msgstr "Suche"
+
+msgid "Search…"
+msgstr "Suche…"
+
+msgid "Seek backward"
+msgstr "Rückwärts springen"
+
+msgid "Seek forward"
+msgstr "Vorwärts springen"
+
+msgid "Select columns to display in the play queue, and their order."
+msgstr "Spalten zur Anzeige in der Wiedergabeliste und zum bestimmen der Reihenfolge auswählen."
+
+msgid "Show album in Library"
+msgstr "Album in Bibliothek anzeigen"
+
+msgid "Show artist in Library"
+msgstr "Künstler in Bibliothek anzeigen"
+
+msgid "Show for streams"
+msgstr "Für Streams anzeigen"
+
+msgid "Show for tracks"
+msgstr "Für Stücke anzeigen"
+
+msgid "Show genre in Library"
+msgstr "Genre in Bibliothek anzeigen"
+
+msgid "Show toolbar"
+msgstr "Werkzeugleiste anzeigen"
+
+msgid "Shuffle mode"
+msgstr "Zufallsmodus"
+
+msgid "Shuffle the queue"
+msgstr "Warteschlange zufällig anordnen"
+
+msgid "Shuffle"
+msgstr "Zufällig abspielen"
+
+msgid "Sort queue by"
+msgstr "Sortiere Warteschlange nach"
+
+msgid "Sort the play queue"
+msgstr "Wiedergabeliste sortieren"
+
+msgid "Sort ▾"
+msgstr "Sortieren ▾"
+
+msgid "Start playback"
+msgstr "Wiedergabe starten"
+
+msgid "Stop playback"
+msgstr "Wiedergabe stoppen"
+
+msgid "Stop"
+msgstr "Stop"
+
+msgid "Stream name"
+msgstr "Stream Name"
+
+msgid "Stream name:"
+msgstr "Stream Name:"
+
+msgid "Stream URI:"
+msgstr "Stream URI:"
+
+msgid "Streams"
+msgstr "Streams"
+
+msgid "Switch to Library tab"
+msgstr "Zum Bibliotheksreiter wechseln"
+
+msgid "Switch to Queue tab"
+msgstr "Zum Warteschlangenreiter wechseln"
+
+msgid "Switch to Streams tab"
+msgstr "Zum Streamreiter wechseln"
+
+msgid "TCP"
+msgstr "TCP"
+
+msgid "Template error"
+msgstr "Vorlagenfehler"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Toggle consume mode"
+msgstr "Verbrauchenmodus umschalten"
+
+msgid "Toggle play/pause"
+msgstr "Wiedergabe/Pause umschalten"
+
+msgid "Toggle random mode"
+msgstr "Zufallsmodus umschalten"
+
+msgid "Toggle repeat mode"
+msgstr "Wiederholungsmodus umschalten"
+
+msgid "Total playing time:"
+msgstr "Gesamte Spieldauer:"
+
+msgid "Track attribute(s) to search"
+msgstr "Nach Stückeigenschaft(en) suchen"
+
+msgid "Track length"
+msgstr "Stückdauer"
+
+msgid "Track number"
+msgstr "Stücknummer"
+
+msgid "Track title template:"
+msgstr "Stücktitelvorlage:"
+
+msgid "Track title"
+msgstr "Stücktitel"
+
+msgid "Track"
+msgstr "Stück"
+
+msgid "Unix socket"
+msgstr "Unix socket"
+
+msgid "Unnamed"
+msgstr "Unbenannt"
+
+msgid "Update"
+msgstr "Aktualisierung"
+
+msgid "Update entire library"
+msgstr "Gesamte Bibliothek aktualisieren"
+
+msgid "Update selected item"
+msgstr "Ausgewähltes Objekt aktualisieren"
+
+msgid "Update the entire music database"
+msgstr "Die gesamte Musikdatenbank aktualisieren"
+
+msgid "Update the entire music database, including unmodified files"
+msgstr "Die gesamte Musikdatenbank, inklusive unveränderter Dateien"
+
+msgid "Update the music library"
+msgstr "Musikbibliothek aktualisieren"
+
+msgid "Update the selected item in music database"
+msgstr "Das ausgewählte Objekt in Musikdatenbank aktualisieren"
+
+msgid "Update the selected item, including unmodified files"
+msgstr "Das ausgewählte Objekt, inklusive unveränderter Dateien"
+
+msgid "Update ▾"
+msgstr "Aktualisieren ▾"
+
+msgid "updating database…"
+msgstr "Datenbank wird aktualisiert…"
+
+msgid "verbose logging"
+msgstr "Detailliertes logging"
+
+msgid "Work"
+msgstr "Werk"
+
+msgid "Written by Dmitry Kann"
+msgstr "Geschrieben von Dmitry Kann"
+
+msgid "Year"
+msgstr "Jahr"
+
+msgid "Ymuse version %s; %s; released %s"
+msgstr "Ymuse Version %s; %s; veröffentlicht %s"
