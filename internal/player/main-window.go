@@ -2018,18 +2018,19 @@ func (w *MainWindow) updateLibrary() {
 		element := element // Make an in-loop copy for closures
 		label := element.Label()
 		markup := false
-
-		// Add replace/append buttons if needed
 		var buttons []gtk.IWidget
-		if element.IsPlayable() {
+
+		// Make root elements bold
+		if lastElement == nil {
+			label = "<b>" + label + "</b>"
+			markup = true
+
+			// For non-root elements, add replace/append buttons if needed
+		} else if element.IsPlayable() {
 			buttons = []gtk.IWidget{
 				util.NewButton("", glib.Local("Append to the queue"), "", "ymuse-add-symbolic", func() { w.queueLibraryElement(tbFalse, element) }),
 				util.NewButton("", glib.Local("Replace the queue"), "", "ymuse-replace-queue-symbolic", func() { w.queueLibraryElement(tbTrue, element) }),
 			}
-		} else {
-			// Make non-playable (root) elements bold
-			label = "<b>" + label + "</b>"
-			markup = true
 		}
 
 		// Add a new list box row

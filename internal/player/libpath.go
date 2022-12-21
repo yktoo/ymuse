@@ -337,7 +337,7 @@ func (e *FilesystemLibElement) IsFolder() bool {
 }
 
 func (e *FilesystemLibElement) IsPlayable() bool {
-	return false
+	return true
 }
 
 func (e *FilesystemLibElement) Prefix() string {
