@@ -243,11 +243,14 @@ func (p *LibraryPath) Unmarshal(s string) error {
 	// Iterate serialised elements
 	var elements []LibraryPathElement
 	for _, s := range strings.Split(s, pathElementSeparator) {
-		element, err := UnmarshalLibPathElement(s)
-		if err != nil {
-			return err
+		// Skip over empty elements
+		if s != "" {
+			element, err := UnmarshalLibPathElement(s)
+			if err != nil {
+				return err
+			}
+			elements = append(elements, element)
 		}
-		elements = append(elements, element)
 	}
 
 	// Succeeded

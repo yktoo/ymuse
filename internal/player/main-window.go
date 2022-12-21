@@ -15,8 +15,8 @@
 
 package player
 
-import "C"
 import (
+	"C"
 	"bytes"
 	"fmt"
 	"github.com/fhs/gompd/v2/mpd"

@@ -17,6 +17,7 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/yktoo/ymuse/internal/util"
@@ -173,6 +174,13 @@ func (c *Config) Load() {
 	// Try to read the file
 	file := c.getConfigFile()
 	data, err := os.ReadFile(file)
+
+	// Ignore if the file isn't there
+	if errors.Is(err, os.ErrNotExist) {
+		return
+	}
+
+	// Warn on any other error
 	if errCheck(err, "Couldn't read file") {
 		return
 	}
