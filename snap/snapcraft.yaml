@@ -71,7 +71,7 @@ parts:
       go generate
       go build \
         -tags "glib_2_64" \
-        -ldflags "-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)"
+        -ldflags "-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)" \
         -o "${SNAPCRAFT_PART_INSTALL}"
 
   resources:
