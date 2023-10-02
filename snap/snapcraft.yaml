@@ -6,14 +6,13 @@ confinement: strict
 
 architectures:
   - build-on: amd64
-    run-on: amd64
 
 apps:
   ymuse:
     desktop: com.yktoo.ymuse.desktop
     command: ymuse
     extensions:
-      - gnome-3-34
+      - gnome-3-38
     plugs:
       - network
     slots:
@@ -45,7 +44,8 @@ parts:
     override-build: |
       set -eu
       go generate
-      go build -ldflags "-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)" -o "${SNAPCRAFT_PART_INSTALL}"
+      CGO_LDFLAGS="-s -w -X main.version=$(git describe --always --tags) -X main.commit=$(git rev-parse HEAD) -X main.date=$(date --iso-8601=seconds)"
+      go build -tags "glib_2_64" -o "${SNAPCRAFT_PART_INSTALL}"
 
   resources:
     plugin: dump
