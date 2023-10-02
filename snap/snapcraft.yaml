@@ -1,5 +1,5 @@
 name: ymuse
-base: core18
+base: core20
 adopt-info: metadata
 icon: resources/icons/hicolor/scalable/apps/com.yktoo.ymuse.svg
 confinement: strict
