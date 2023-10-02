@@ -312,8 +312,8 @@ msgstr "トラックを再生できませんでした"
 msgid "Failed to toggle random mode"
 msgstr "ランダムモードを切り替えられませんでした"
 
-msgid "Failed to toggle repeat mode"
-msgstr "リピートモードを切り替えられませんでした"
+msgid "Failed to toggle repeat/single mode"
+msgstr "リピート／シングルモードの切り替えに失敗"
 
 msgid "Failed to update the library"
 msgstr "音楽ライブラリを更新できませんでした"

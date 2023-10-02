@@ -359,8 +359,8 @@ msgstr "Het is niet gelukt om het afspelen om te schakelen"
 msgid "Failed to toggle random mode"
 msgstr "Het is niet gelukt om de willekeurigmodus om te schakelen"
 
-msgid "Failed to toggle repeat mode"
-msgstr "Het is niet gelukt om de herhaalmodus om te schakelen"
+msgid "Failed to toggle repeat/single mode"
+msgstr "Het is niet gelukt om de herhaal-/single-modus om te schakelen"
 
 msgid "Failed to update the library"
 msgstr "Het is niet gelukt om de mediatheek bij te werken"

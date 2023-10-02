@@ -363,8 +363,8 @@ msgstr "Не удалось приостановить или возобнови
 msgid "Failed to toggle random mode"
 msgstr "Не удалось переключить режим случайного порядка"
 
-msgid "Failed to toggle repeat mode"
-msgstr "Не удалось переключить режим повтора"
+msgid "Failed to toggle repeat/single mode"
+msgstr "Не удалось переключить режим повтора/одного трека"
 
 msgid "Failed to update the library"
 msgstr "Не удалось обновить библиотеку"

@@ -345,7 +345,7 @@ msgstr ""
 msgid "Failed to toggle random mode"
 msgstr ""
 
-msgid "Failed to toggle repeat mode"
+msgid "Failed to toggle repeat/single mode"
 msgstr ""
 
 msgid "Failed to update the library"

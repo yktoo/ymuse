@@ -1329,20 +1329,26 @@ func (w *MainWindow) playerToggleRandom() {
 	w.errCheckDialog(err, glib.Local("Failed to toggle random mode"))
 }
 
-// playerToggleRepeat toggles player's repeat mode
+// playerToggleRepeat toggles player's repeat/single modes
 func (w *MainWindow) playerToggleRepeat() {
 	// Ignore if the state of the button is being updated programmatically
 	if w.optionsUpdating {
 		return
 	}
 
+	// Toggle Repeat and Single in the following pattern: No repeat → Repeat all → Repeat single
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
-		err = client.Repeat(w.connector.Status()["repeat"] == "0")
+		status := w.connector.Status()
+		repeat := status["repeat"] != "0"
+		single := status["single"] != "0"
+		if err = client.Repeat(!repeat || !single); err == nil {
+			err = client.Single(repeat && !single)
+		}
 	})
 
 	// Check for error
-	w.errCheckDialog(err, glib.Local("Failed to toggle repeat mode"))
+	w.errCheckDialog(err, glib.Local("Failed to toggle repeat/single mode"))
 }
 
 // queueClear empties MPD's play queue
@@ -2163,8 +2169,14 @@ func (w *MainWindow) updateLibraryPath() {
 func (w *MainWindow) updateOptions() {
 	w.optionsUpdating = true
 	status := w.connector.Status()
+	repeat, single := status["repeat"] == "1", status["single"] == "1"
 	w.RandomButton.SetActive(status["random"] == "1")
-	w.RepeatButton.SetActive(status["repeat"] == "1")
+	w.RepeatButton.SetActive(repeat)
+	if repeat && single {
+		w.RepeatButton.SetIconName("ymuse-repeat-1-symbolic")
+	} else {
+		w.RepeatButton.SetIconName("ymuse-repeat-symbolic")
+	}
 	w.ConsumeButton.SetActive(status["consume"] == "1")
 	w.optionsUpdating = false
 }

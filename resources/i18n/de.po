@@ -357,8 +357,8 @@ msgstr "Umschalten der Wiedergabe fehlgeschlagen"
 msgid "Failed to toggle random mode"
 msgstr "Umschaltung des Zufallsmodus fehlgeschlagen"
 
-msgid "Failed to toggle repeat mode"
-msgstr "Umschalten des Wiederholungsmodus fehlgeschlagen"
+msgid "Failed to toggle repeat/single mode"
+msgstr "Umschalten des Wiederholungs- und Einzelmodus fehlgeschlagen"
 
 msgid "Failed to update the library"
 msgstr "Aktualisierung der Bibliothek fehlgeschlagen"
