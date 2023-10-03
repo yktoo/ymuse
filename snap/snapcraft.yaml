@@ -33,30 +33,12 @@ parts:
       - gcc
       - gettext
       # gotk3 deps
-      - libatk-bridge2.0-0
-      - libepoxy0
-      - libfribidi0
+      - libgtk-3-0
       - libgraphite2-3
-      - libpangoft2-1.0-0
       - libpixman-1-0
-      - libthai0
-      - libwayland-client0
-      - libwayland-cursor0
-      - libwayland-egl1
-      - libx11-6
+      - libpango-1.0-0
       - libx11-xcb1
-      - libxcb-render0
-      - libxcb-shm0
-      - libxcb1
-      - libxcomposite1
-      - libxcursor1
-      - libxdamage1
-      - libxext6
-      - libxfixes3
-      - libxi6
-      - libxinerama1
-      - libxkbcommon0
-      - libxrandr2
+      - libcairo2
 
     override-pull: |
       snapcraftctl pull
