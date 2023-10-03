@@ -538,14 +538,19 @@ func (w *MainWindow) onQueueReorder(self *gtk.ListStore, path *gtk.TreePath, ite
 		err = errors.New("invalid new position")
 		return
 
-		// Don't bother if no position change
 	} else if newPos = newIdx[0]; newPos == oldPos {
+		// No position change
 		return
+	}
 
-		// When dragged beyond the last item, move to the end of the list (minus one because the item will disappear at
-		// the old pos)
-	} else if cnt := self.IterNChildren(nil); cnt > 0 && newPos >= cnt-1 {
+	// When dragged beyond the last item, move to the end of the list
+	if cnt := self.IterNChildren(nil); cnt > 0 && newPos >= cnt-1 {
 		newPos = cnt - 2
+
+		// When dragging an item down, the new index must be decremented, because the item will first disappear at the
+		// oldPos
+	} else if newPos > oldPos {
+		newPos--
 	}
 
 	// Move the track to the new position
