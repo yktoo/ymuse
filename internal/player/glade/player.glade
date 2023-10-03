@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <object class="GtkMenu" id="LibraryMenu">
@@ -126,6 +126,8 @@
       <column type="gchararray"/>
       <!-- column-name Label -->
       <column type="gchararray"/>
+      <!-- column-name Pos -->
+      <column type="gchararray"/>
       <!-- column-name Icon -->
       <column type="gchararray"/>
       <!-- column-name FontWeight -->
@@ -135,6 +137,7 @@
       <!-- column-name Visible -->
       <column type="gboolean"/>
     </columns>
+    <signal name="row-changed" handler="on_QueueListStore_row_changed" swapped="no"/>
   </object>
   <object class="GtkTreeModelFilter" id="QueueTreeModelFilter">
     <property name="child-model">QueueListStore</property>
@@ -681,11 +684,11 @@
                         <property name="can-focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">QueueTreeModelFilter</property>
+                        <property name="model">QueueListStore</property>
+                        <property name="reorderable">True</property>
                         <property name="enable-search">False</property>
                         <property name="fixed-height-mode">True</property>
                         <property name="show-expanders">False</property>
-                        <property name="rubber-banding">True</property>
                         <signal name="button-press-event" handler="on_QueueTreeView_buttonPress" swapped="no"/>
                         <signal name="key-press-event" handler="on_QueueTreeView_keyPress" swapped="no"/>
                         <child internal-child="selection">

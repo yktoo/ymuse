@@ -46,6 +46,7 @@ const (
 	MTAttrGrouping
 	MTAttrComment
 	MTAttrLabel
+	MTAttrPos
 	// List store's "artificial" columns used for rendering
 	QueueColumnIcon
 	QueueColumnFontWeight
@@ -91,6 +92,7 @@ var MpdTrackAttributes = map[int]MpdTrackAttribute{
 	MTAttrGrouping:        {"Grouping", "Grouping", "Grouping", false, false, 200, 0, nil, nil},
 	MTAttrComment:         {"Comment", "Comment", "Comment", false, true, 200, 0, nil, nil},
 	MTAttrLabel:           {"Label", "Label", "Label", false, true, 200, 0, nil, nil},
+	MTAttrPos:             {"Pos", "Position", "Pos", true, false, 0, 1, nil, nil},
 }
 
 // MpdTrackAttributeIds stores attribute IDs sorted in desired display order

@@ -253,6 +253,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_StreamsReplaceMenuItem_activate":           func() { w.applyStreamSelection(tbTrue) },
 		"on_StreamsEditMenuItem_activate":              w.onStreamEdit,
 		"on_StreamsDeleteMenuItem_activate":            w.onStreamDelete,
+		"on_QueueListStore_row_changed":                w.onQueueReorder,
 	})
 
 	// Register the main window with the app
@@ -510,6 +511,42 @@ func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) 
 	}
 }
 
+func (w *MainWindow) onQueueReorder(self *gtk.ListStore, path *gtk.TreePath, iter *gtk.TreeIter) {
+	cancelReorder := func(err error) {
+		log.Errorf("Failed to reorder queue: %v", err)
+		w.updateQueue()
+	}
+
+	val, err := self.GetValue(iter, config.MTAttrPos)
+	if err != nil {
+		cancelReorder(err)
+		return
+	}
+	posStr, err := val.GetString()
+	if err != nil {
+		cancelReorder(err)
+		return
+	}
+	oldPos, err := strconv.Atoi(posStr)
+	if err != nil {
+		cancelReorder(err)
+		return
+	}
+	newPos := path.GetIndices()[0]
+	if newPos == oldPos {
+		return
+	}
+	err = fmt.Errorf("not connected")
+	w.connector.IfConnected(func(client *mpd.Client) {
+		log.Debugf("move %d -> %d", oldPos, newPos)
+		err = client.Move(oldPos, oldPos+1, newPos)
+	})
+	if err == nil {
+		return
+	}
+	cancelReorder(err)
+}
+
 func (w *MainWindow) onQueueSavePopoverValidate() {
 	// Only show new playlist widgets if (new playlist) is selected in the combo box
 	selectedID := w.QueueSavePlaylistComboBox.GetActiveID()
@@ -526,8 +563,15 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 func (w *MainWindow) onQueueSearchMode() {
 	w.queueFilter()
 
-	// Return focus to the queue on deactivating search
-	if !w.QueueSearchBar.GetSearchMode() {
+	// Only use (non-reorderable) QueueTreeModelFilter when searching
+	if w.QueueSearchBar.GetSearchMode() {
+		w.QueueTreeView.SetModel(w.QueueTreeModelFilter)
+		w.QueueTreeView.SetReorderable(false)
+	} else {
+		w.QueueTreeView.SetModel(w.QueueListStore)
+		w.QueueTreeView.SetReorderable(true)
+
+		// Return focus to the queue on deactivating search
 		w.focusMainList()
 	}
 }
@@ -1904,6 +1948,7 @@ func (w *MainWindow) updateAll() {
 	w.aMPDDisconnect.SetEnabled(connected || connecting)
 	w.aMPDInfo.SetEnabled(connected)
 	w.aMPDOutputs.SetEnabled(connected)
+	w.QueueTreeView.SetReorderable(connected)
 
 	// Update other widgets
 	w.updateQueue()
@@ -2396,7 +2441,9 @@ func (w *MainWindow) updateQueue() {
 	w.QueueTreeView.FreezeChildNotify()
 	defer w.QueueTreeView.ThawChildNotify()
 
-	// Detach the tree view from the list model to speed up processing
+	// Detach the tree view from the list model to speed up processing.
+	// Model may either be QueueTreeModelFilter (when searching) or QueueListStore (otherwise).
+	model, _ := w.QueueTreeView.GetModel()
 	w.QueueTreeView.SetModel(nil)
 
 	// Clear the queue list store
@@ -2503,7 +2550,7 @@ func (w *MainWindow) updateQueue() {
 	w.updateQueueActions()
 
 	// Restore the tree view model
-	w.QueueTreeView.SetModel(w.QueueTreeModelFilter)
+	w.QueueTreeView.SetModel(model)
 
 	// Highlight and scroll the tree to the currently played item
 	w.updateQueueNowPlaying()
