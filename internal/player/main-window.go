@@ -219,6 +219,7 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_MainWindow_map":                            w.onMap,
 		"on_MainWindow_styleUpdated":                   w.updateStyle,
 		"on_MainStack_switched":                        w.focusMainList,
+		"on_QueueListStore_rowChanged":                 w.onQueueReorder,
 		"on_QueueTreeView_buttonPress":                 w.onQueueTreeViewButtonPress,
 		"on_QueueTreeView_keyPress":                    w.onQueueTreeViewKeyPress,
 		"on_QueueTreeSelection_changed":                w.updateQueueActions,
@@ -253,7 +254,6 @@ func NewMainWindow(application *gtk.Application) (*MainWindow, error) {
 		"on_StreamsReplaceMenuItem_activate":           func() { w.applyStreamSelection(tbTrue) },
 		"on_StreamsEditMenuItem_activate":              w.onStreamEdit,
 		"on_StreamsDeleteMenuItem_activate":            w.onStreamDelete,
-		"on_QueueListStore_row_changed":                w.onQueueReorder,
 	})
 
 	// Register the main window with the app
@@ -512,39 +512,46 @@ func (w *MainWindow) onPlayPositionButtonEvent(_ interface{}, event *gdk.Event) 
 }
 
 func (w *MainWindow) onQueueReorder(self *gtk.ListStore, path *gtk.TreePath, iter *gtk.TreeIter) {
-	cancelReorder := func(err error) {
-		log.Errorf("Failed to reorder queue: %v", err)
-		w.updateQueue()
+	// Make sure the list order is recovered should the reordering fail
+	var err error
+	defer func() {
+		if errCheck(err, "Failed to reorder the queue") {
+			w.updateQueue()
+		}
+	}()
+
+	// Fetch the old position
+	var oldPosVal *glib.Value
+	var oldPosStr string
+	var oldPos int
+	if oldPosVal, err = self.GetValue(iter, config.MTAttrPos); err != nil {
+		return
+	} else if oldPosStr, err = oldPosVal.GetString(); err != nil {
+		return
+	} else if oldPos, err = strconv.Atoi(oldPosStr); err != nil {
+		return
 	}
 
-	val, err := self.GetValue(iter, config.MTAttrPos)
-	if err != nil {
-		cancelReorder(err)
+	// Fetch the new position
+	var newPos int
+	if newIdx := path.GetIndices(); len(newIdx) == 0 {
+		err = errors.New("invalid new position")
 		return
-	}
-	posStr, err := val.GetString()
-	if err != nil {
-		cancelReorder(err)
+
+		// Don't bother if no position change
+	} else if newPos = newIdx[0]; newPos == oldPos {
 		return
+
+		// When dragged beyond the last item, move to the end of the list (minus one because the item will disappear at
+		// the old pos)
+	} else if cnt := self.IterNChildren(nil); cnt > 0 && newPos >= cnt-1 {
+		newPos = cnt - 2
 	}
-	oldPos, err := strconv.Atoi(posStr)
-	if err != nil {
-		cancelReorder(err)
-		return
-	}
-	newPos := path.GetIndices()[0]
-	if newPos == oldPos {
-		return
-	}
-	err = fmt.Errorf("not connected")
+
+	// Move the track to the new position
 	w.connector.IfConnected(func(client *mpd.Client) {
-		log.Debugf("move %d -> %d", oldPos, newPos)
 		err = client.Move(oldPos, oldPos+1, newPos)
 	})
-	if err == nil {
-		return
-	}
-	cancelReorder(err)
 }
 
 func (w *MainWindow) onQueueSavePopoverValidate() {
@@ -563,15 +570,11 @@ func (w *MainWindow) onQueueSavePopoverValidate() {
 func (w *MainWindow) onQueueSearchMode() {
 	w.queueFilter()
 
-	// Only use (non-reorderable) QueueTreeModelFilter when searching
-	if w.QueueSearchBar.GetSearchMode() {
-		w.QueueTreeView.SetModel(w.QueueTreeModelFilter)
-		w.QueueTreeView.SetReorderable(false)
-	} else {
-		w.QueueTreeView.SetModel(w.QueueListStore)
-		w.QueueTreeView.SetReorderable(true)
+	// Update the queue model
+	w.updateQueueTreeViewModel()
 
-		// Return focus to the queue on deactivating search
+	// Return focus to the queue on deactivating search
+	if !w.QueueSearchBar.GetSearchMode() {
 		w.focusMainList()
 	}
 }
@@ -1948,7 +1951,9 @@ func (w *MainWindow) updateAll() {
 	w.aMPDDisconnect.SetEnabled(connected || connecting)
 	w.aMPDInfo.SetEnabled(connected)
 	w.aMPDOutputs.SetEnabled(connected)
-	w.QueueTreeView.SetReorderable(connected)
+
+	// Update the queue model
+	w.updateQueueTreeViewModel()
 
 	// Update other widgets
 	w.updateQueue()
@@ -2090,7 +2095,7 @@ func (w *MainWindow) updateLibrary() {
 			return
 		}
 
-		// If no specific row to select, pick the first one. Otherwise check for a matching marshalled form
+		// If no specific row to select, pick the first one. Otherwise, check for a matching marshalled form
 		if rowToSelect == nil && (w.libPathElementToSelect == "" || w.libPathElementToSelect == element.Marshal()) {
 			rowToSelect = row
 		}
@@ -2385,7 +2390,7 @@ func (w *MainWindow) updatePlayerAlbumArt(uri string) {
 	}
 	w.AlbumArtworkImage.SetVisible(show)
 
-	// If the image isn't visible, center-justify the title. Otherwise use left justification
+	// If the image isn't visible, center-justify the title. Otherwise, use left justification
 	justification := gtk.JUSTIFY_CENTER
 	if show {
 		justification = gtk.JUSTIFY_LEFT
@@ -2441,9 +2446,7 @@ func (w *MainWindow) updateQueue() {
 	w.QueueTreeView.FreezeChildNotify()
 	defer w.QueueTreeView.ThawChildNotify()
 
-	// Detach the tree view from the list model to speed up processing.
-	// Model may either be QueueTreeModelFilter (when searching) or QueueListStore (otherwise).
-	model, _ := w.QueueTreeView.GetModel()
+	// Detach the tree view from the list model to speed up processing
 	w.QueueTreeView.SetModel(nil)
 
 	// Clear the queue list store
@@ -2550,7 +2553,7 @@ func (w *MainWindow) updateQueue() {
 	w.updateQueueActions()
 
 	// Restore the tree view model
-	w.QueueTreeView.SetModel(model)
+	w.updateQueueTreeViewModel()
 
 	// Highlight and scroll the tree to the currently played item
 	w.updateQueueNowPlaying()
@@ -2673,6 +2676,19 @@ func (w *MainWindow) updateQueueNowPlaying() {
 			w.QueueTreeView.ScrollToCell(treePath, nil, true, 0.5, 0)
 		}
 	}
+}
+
+// updateQueueTreeViewModel updates the model (and related properties) of the queue tree view
+func (w *MainWindow) updateQueueTreeViewModel() {
+	// Only use (non-reorderable) QueueTreeModelFilter when connected and searching
+	connected, _ := w.connector.ConnectStatus()
+	searching := w.QueueSearchBar.GetSearchMode()
+	var model gtk.ITreeModel = w.QueueListStore
+	if connected && searching {
+		model = w.QueueTreeModelFilter
+	}
+	w.QueueTreeView.SetModel(model)
+	w.QueueTreeView.SetReorderable(connected && !searching)
 }
 
 // updateStreams updates the current streams list contents

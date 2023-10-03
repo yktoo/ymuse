@@ -137,7 +137,7 @@
       <!-- column-name Visible -->
       <column type="gboolean"/>
     </columns>
-    <signal name="row-changed" handler="on_QueueListStore_row_changed" swapped="no"/>
+    <signal name="row-changed" handler="on_QueueListStore_rowChanged" swapped="no"/>
   </object>
   <object class="GtkTreeModelFilter" id="QueueTreeModelFilter">
     <property name="child-model">QueueListStore</property>
@@ -684,8 +684,7 @@
                         <property name="can-focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="model">QueueListStore</property>
-                        <property name="reorderable">True</property>
+                        <property name="model">QueueTreeModelFilter</property>
                         <property name="enable-search">False</property>
                         <property name="fixed-height-mode">True</property>
                         <property name="show-expanders">False</property>
