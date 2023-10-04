@@ -39,7 +39,7 @@ jobs:
         go test -v ./...
 
   deploy:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
