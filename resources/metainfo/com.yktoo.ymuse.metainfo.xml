@@ -55,6 +55,19 @@
     </keywords>
 
     <releases>
+        <release date="2023-10-04" version="0.22">
+            <description>
+                <p>Changelog:</p>
+                <ul>
+                    <li>Updated app icon (#79)</li>
+                    <li>Add drag-and-drop queue reordering (#34)</li>
+                    <li>Support for single-track repeat (#76)</li>
+                    <li>Allow adding/replacing of all tracks in Library by Files context menu (#69)</li>
+                    <li>Remove warnings about non-existent/empty Ymuse config (#70)</li>
+                    <li>German translation (#68)</li>
+                </ul>
+            </description>
+        </release>
         <release date="2022-08-19" version="0.21">
             <description>
                 <p>Changelog:</p>

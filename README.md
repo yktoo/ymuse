@@ -22,6 +22,7 @@ Watch Ymuse feature tour video:
 ## Installing
 
 * If your distribution supports [snap packages](https://snapcraft.io/ymuse): `sudo snap install ymuse`
+* Ubuntu (as of 23.04) or Debian Testing: `sudo apt install ymuse`
 * A flatpak is available in the [Flathub repository](https://flathub.org/apps/details/com.yktoo.ymuse).
 * Otherwise, you can use a binary package from the [Releases](https://github.com/yktoo/ymuse/releases) section.
 
@@ -30,7 +31,7 @@ Watch Ymuse feature tour video:
 ### Requirements
 
 * Go 1.21+
-* GTK 3.22+
+* GTK 3.24+
 
 ### Getting started
 
@@ -76,12 +77,23 @@ goreleaser release --rm-dist --skip-publish [--snapshot]
 4. Optional: make a `.flatpak` bundle:
    `flatpak build-bundle /path/to/repository ymuse.flatpak com.yktoo.ymuse`
 
+### Snap
+
+Install and run `snapcraft` (it will also ask to install Multipass, which you'll have to confirm):
+
+```bash
+snap install snapcraft
+snapcraft clean # Optional, when rebuilding the snap
+snapcraft
+```
+
 ## License
 
 See [COPYING](COPYING).
 
 ## Credits
 
+* Icon artwork: [Jeppe Zapp](https://github.com/mrzapp)
 * [gotk3](https://github.com/gotk3/gotk3)
 * [gompd](https://github.com/fhs/gompd) by Fazlul Shahriar
 * [go-logging](https://github.com/op/go-logging) by Örjan Fors
@@ -90,6 +102,6 @@ See [COPYING](COPYING).
 ## TODO
 
 * Automated UI testing.
-* Drag’n’drop in the play queue.
+* Drag’n’drop of multiple tracks in the play queue.
 * More settings.
 * Multiple MPD connections support.
