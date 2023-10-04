@@ -9,7 +9,7 @@ on:
 
 jobs:
 
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
     - name: Verify format
       run: test `gofmt -l . | wc -l` = 0
 
-    - name: Test
+    - name: Unit test
       run: |
         export DISPLAY=:99.0
         sudo /usr/bin/Xvfb $DISPLAY &>/dev/null &
