@@ -70,13 +70,13 @@ nfpms:
     bindir: /usr/bin
     contents:
         - src: "resources/icons/hicolor/**/*"
-          dst: "/usr/share/icons/hicolor/"
+          dst: "/usr/share/icons/hicolor"
         - src: "resources/*.desktop"
-          dst: "/usr/share/applications/"
+          dst: "/usr/share/applications"
         - src: "resources/metainfo/*.metainfo.xml"
-          dst: "/usr/share/metainfo/"
+          dst: "/usr/share/metainfo"
         - src: "resources/i18n/generated/**/*"
-          dst: "/usr/share/locale/"
+          dst: "/usr/share/locale"
     scripts:
         postinstall: "resources/scripts/postinst"
         postremove:  "resources/scripts/postrm"

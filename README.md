@@ -66,7 +66,7 @@ This will create the application executable `ymuse` in the project root director
 Requires `goreleaser` installed.
 
 ```bash
-goreleaser release --rm-dist --skip-publish [--snapshot]
+goreleaser release --clean --skip=publish [--snapshot]
 ```
 
 ### Flatpak
