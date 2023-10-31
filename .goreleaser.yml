@@ -23,7 +23,7 @@ archives:
       files:
           - COPYING
           - README.md
-          - resources/icons/**/*.png
+          - resources/icons/**
           - resources/com.yktoo.ymuse.desktop
 
 checksum:
