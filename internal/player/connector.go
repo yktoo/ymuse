@@ -16,8 +16,8 @@
 package player
 
 import (
+	"fmt"
 	"github.com/fhs/gompd/v2/mpd"
-	"github.com/pkg/errors"
 	"sort"
 	"sync"
 	"time"
@@ -211,7 +211,7 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 		if client, err = mpd.DialAuthenticated(c.mpdNetwork, c.mpdAddress, c.mpdPassword); err == nil {
 			connected = true
 		} else {
-			err = errors.Errorf("DialAuthenticated() failed: %v", err)
+			err = fmt.Errorf("DialAuthenticated() failed: %v", err)
 		}
 	}
 
@@ -230,7 +230,7 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 			go func() { c.chWatcherStart <- true }()
 		} else {
 			connected = false
-			err = errors.Errorf("Status() after dial failed: %v", err)
+			err = fmt.Errorf("Status() after dial failed: %v", err)
 			// Disconnect since we're not "fully connected"
 			errCheck(client.Close(), "doConnect(): Close() failed")
 		}
@@ -243,7 +243,7 @@ func (c *Connector) doConnect(connect, heartbeat bool) {
 			if status, err = client.Status(); err == nil {
 				connected = true
 			} else {
-				err = errors.Errorf("Status() failed: %v", err)
+				err = fmt.Errorf("Status() failed: %v", err)
 			}
 		})
 

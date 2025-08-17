@@ -23,7 +23,6 @@ import (
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/pkg/errors"
 	"github.com/yktoo/ymuse/internal/config"
 	"github.com/yktoo/ymuse/internal/util"
 	"html"
@@ -535,7 +534,7 @@ func (w *MainWindow) onQueueReorder(self *gtk.ListStore, path *gtk.TreePath, ite
 	// Fetch the new position
 	var newPos int
 	if newIdx := path.GetIndices(); len(newIdx) == 0 {
-		err = errors.New("invalid new position")
+		err = fmt.Errorf("invalid new position")
 		return
 
 	} else if newPos = newIdx[0]; newPos == oldPos {
@@ -987,13 +986,13 @@ func (w *MainWindow) getQueueSelectedTrackAttrs() (mpd.Attrs, error) {
 
 		// If no data returned
 		if len(attrs) == 0 {
-			return nil, errors.New("No data returned by MPD for the current selection")
+			return nil, fmt.Errorf("No data returned by MPD for the current selection")
 		}
 
 		// All OK
 		return attrs[0], nil
 	}
-	return nil, errors.New("No selection in the queue")
+	return nil, fmt.Errorf("No selection in the queue")
 }
 
 // getSelectedLibraryElement returns the path element of the currently selected library item or nil if there's an error
@@ -1163,7 +1162,7 @@ func (w *MainWindow) libraryAddToPlaylist() {
 
 // libraryAppendPlaylist appends the provided URIs to a playlist with the given name
 func (w *MainWindow) libraryAppendPlaylist(name string, uris ...string) {
-	err := errors.New(glib.Local("Not connected to MPD"))
+	err := fmt.Errorf(glib.Local("Not connected to MPD"))
 	w.connector.IfConnected(func(client *mpd.Client) {
 		commands := client.BeginCommandList()
 		for _, uri := range uris {
@@ -1616,7 +1615,7 @@ func (w *MainWindow) queueSaveApply(replace bool) {
 		name = util.EntryText(w.QueueSavePlaylistNameEntry, glib.Local("Unnamed"))
 	}
 
-	err := errors.New(glib.Local("Not connected to MPD"))
+	err := fmt.Errorf(glib.Local("Not connected to MPD"))
 	w.connector.IfConnected(func(client *mpd.Client) {
 		// Fetch the queue
 		var attrs []mpd.Attrs
