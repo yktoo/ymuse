@@ -1292,6 +1292,21 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkToggleToolButton" id="SingleButton">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Single mode</property>
+                    <property name="action-name">app.player.toggle.single</property>
+                    <property name="label" translatable="yes">Single</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-name">ymuse-repeat-1-symbolic</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkToggleToolButton" id="ConsumeButton">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>

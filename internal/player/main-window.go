@@ -52,6 +52,7 @@ type MainWindow struct {
 	PlayPauseButton        *gtk.ToolButton
 	RandomButton           *gtk.ToggleToolButton
 	RepeatButton           *gtk.ToggleToolButton
+	SingleButton           *gtk.ToggleToolButton
 	ConsumeButton          *gtk.ToggleToolButton
 	VolumeButton           *gtk.VolumeButton
 	VolumeAdjustment       *gtk.Adjustment
@@ -155,6 +156,7 @@ type MainWindow struct {
 	aPlayerSeekForward    *glib.SimpleAction
 	aPlayerRandom         *glib.SimpleAction
 	aPlayerRepeat         *glib.SimpleAction
+	aPlayerSingle         *glib.SimpleAction
 	aPlayerConsume        *glib.SimpleAction
 
 	// Colours
@@ -1092,6 +1094,7 @@ func (w *MainWindow) initPlayerWidgets() {
 	// NB convert to stateful actions once Gotk3 supporting GVariant is released
 	w.aPlayerRandom = w.addAction("player.toggle.random", "<Ctrl>U", w.playerToggleRandom)
 	w.aPlayerRepeat = w.addAction("player.toggle.repeat", "<Ctrl>R", w.playerToggleRepeat)
+	w.aPlayerSingle = w.addAction("player.toggle.single", "", w.playerToggleSingle)
 	w.aPlayerConsume = w.addAction("player.toggle.consume", "<Ctrl>N", w.playerToggleConsume)
 }
 
@@ -1408,26 +1411,40 @@ func (w *MainWindow) playerToggleRandom() {
 	w.errCheckDialog(err, glib.Local("Failed to toggle random mode"))
 }
 
-// playerToggleRepeat toggles player's repeat/single modes
+// playerToggleRepeat toggles player's repeat mode
 func (w *MainWindow) playerToggleRepeat() {
 	// Ignore if the state of the button is being updated programmatically
 	if w.optionsUpdating {
 		return
 	}
 
-	// Toggle Repeat and Single in the following pattern: No repeat → Repeat all → Repeat single
 	var err error
 	w.connector.IfConnected(func(client *mpd.Client) {
 		status := w.connector.Status()
 		repeat := status["repeat"] != "0"
-		single := status["single"] != "0"
-		if err = client.Repeat(!repeat || !single); err == nil {
-			err = client.Single(repeat && !single)
-		}
+		err = client.Repeat(!repeat)
 	})
 
 	// Check for error
-	w.errCheckDialog(err, glib.Local("Failed to toggle repeat/single mode"))
+	w.errCheckDialog(err, glib.Local("Failed to toggle repeat mode"))
+}
+
+// playerToggleSingle toggles player's single mode
+func (w *MainWindow) playerToggleSingle() {
+	// Ignore if the state of the button is being updated programmatically
+	if w.optionsUpdating {
+		return
+	}
+
+	var err error
+	w.connector.IfConnected(func(client *mpd.Client) {
+		status := w.connector.Status()
+		single := status["single"] != "0"
+		err = client.Single(!single)
+	})
+
+	// Check for error
+	w.errCheckDialog(err, glib.Local("Failed to toggle single mode"))
 }
 
 // queueClear empties MPD's play queue
@@ -2254,11 +2271,7 @@ func (w *MainWindow) updateOptions() {
 	repeat, single := status["repeat"] == "1", status["single"] == "1"
 	w.RandomButton.SetActive(status["random"] == "1")
 	w.RepeatButton.SetActive(repeat)
-	if repeat && single {
-		w.RepeatButton.SetIconName("ymuse-repeat-1-symbolic")
-	} else {
-		w.RepeatButton.SetIconName("ymuse-repeat-symbolic")
-	}
+	w.SingleButton.SetActive(single)
 	w.ConsumeButton.SetActive(status["consume"] == "1")
 	w.optionsUpdating = false
 }
@@ -2347,6 +2360,7 @@ func (w *MainWindow) updatePlayer() {
 	w.aPlayerSeekForward.SetEnabled(playing)
 	w.aPlayerRandom.SetEnabled(connected)
 	w.aPlayerRepeat.SetEnabled(connected)
+	w.aPlayerSingle.SetEnabled(connected)
 	w.aPlayerConsume.SetEnabled(connected)
 
 	// Update the seek bar
